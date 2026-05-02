@@ -19,9 +19,13 @@ urlpatterns = [
     path("jobs/", include("apps.jobs.web_urls")),
     path("health/", health_check, name="health-check"),
     path("api/", include("apps.api.urls")),
+    path("api/v1/", include("apps.api.urls")),
     path("api/schema/", SpectacularAPIView.as_view(), name="api-schema"),
+    path("api/v1/schema/", SpectacularAPIView.as_view(), name="api-v1-schema"),
     path("api/docs/swagger/", SpectacularSwaggerView.as_view(url_name="api-schema"), name="api-docs-swagger"),
     path("api/docs/redoc/", SpectacularRedocView.as_view(url_name="api-schema"), name="api-docs-redoc"),
+    path("api/v1/docs/swagger/", SpectacularSwaggerView.as_view(url_name="api-v1-schema"), name="api-v1-docs-swagger"),
+    path("api/v1/docs/redoc/", SpectacularRedocView.as_view(url_name="api-v1-schema"), name="api-v1-docs-redoc"),
 ]
 
 if settings.DEBUG:
