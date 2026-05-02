@@ -7,6 +7,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 from .web_views import (
     dashboard_home,
     frontend_page,
+    health_check,
 )
 
 urlpatterns = [
@@ -16,6 +17,7 @@ urlpatterns = [
     path("adminpanel/", include("apps.adminpanel.urls")),
     path("", include("apps.applications.web_urls")),
     path("jobs/", include("apps.jobs.web_urls")),
+    path("health/", health_check, name="health-check"),
     path("api/", include("apps.api.urls")),
     path("api/schema/", SpectacularAPIView.as_view(), name="api-schema"),
     path("api/docs/swagger/", SpectacularSwaggerView.as_view(url_name="api-schema"), name="api-docs-swagger"),

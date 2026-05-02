@@ -9,6 +9,5 @@ Pillow>=10.0.0
 gunicorn==22.0.0
 whitenoise==6.7.0
 
-# # PostgreSQL driver (Render managed Postgres uses DATABASE_URL)
-# psycopg2-binary==2.9.9; python_version < "3.13"
-# psycopg[binary]==3.2.1; python_version >= "3.13"
+# PostgreSQL driver (Render managed Postgres uses DATABASE_URL)
+psycopg[binary]==3.2.1

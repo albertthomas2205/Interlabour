@@ -20,6 +20,6 @@ COPY . /app
 COPY ./scripts/entrypoint.sh /app/scripts/entrypoint.sh
 RUN chmod +x /app/scripts/entrypoint.sh
 
-EXPOSE 8000
+EXPOSE 10000
 
 CMD ["/app/scripts/entrypoint.sh"]

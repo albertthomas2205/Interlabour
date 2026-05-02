@@ -4,7 +4,7 @@ from pathlib import Path
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.http import FileResponse, Http404
+from django.http import FileResponse, Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from apps.accounts.models import User
@@ -120,6 +120,10 @@ I18N = {
         "quick_actions": "Quick actions",
     },
 }
+
+
+def health_check(request):
+    return JsonResponse({"status": "ok"})
 
 
 def _resolve_frontend_path(page_path: str) -> Path:

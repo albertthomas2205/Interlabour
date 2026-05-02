@@ -1,25 +1,39 @@
 services:
   - type: web
-    name: interlabor-backend
+    name: interlabour-backend
     env: docker
     plan: free
     dockerfilePath: ./Dockerfile
-    healthCheckPath: /
+    healthCheckPath: /health/
     envVars:
+      - key: PORT
+        value: "10000"
       - key: DJANGO_DEBUG
         value: "False"
       - key: DJANGO_ALLOWED_HOSTS
         value: ".onrender.com"
+      - key: DJANGO_CSRF_TRUSTED_ORIGINS
+        value: "https://*.onrender.com"
+      - key: DJANGO_SECRET_KEY
+        sync: false
       - key: DATABASE_URL
         fromDatabase:
-          name: interlabor-db
+          name: interlabour-db
           property: connectionString
+      - key: CORS_ALLOW_ALL_ORIGINS
+        value: "False"
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+      - key: PUBLIC_SITE_URL
+        sync: false
+      - key: DJANGO_SUPERUSER_USERNAME
+        sync: false
+      - key: DJANGO_SUPERUSER_EMAIL
+        sync: false
+      - key: DJANGO_SUPERUSER_PASSWORD
+        sync: false
       # Set these securely in Render (do NOT commit real values):
-      # - DJANGO_SECRET_KEY
-      # - DJANGO_SUPERUSER_USERNAME
-      # - DJANGO_SUPERUSER_EMAIL
-      # - DJANGO_SUPERUSER_PASSWORD
 
 databases:
-  - name: interlabor-db
+  - name: interlabour-db
     plan: free
