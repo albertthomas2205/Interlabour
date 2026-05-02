@@ -49,19 +49,19 @@ services:
       - key: EMAIL_HOST_USER
         value: "hr@interlabour.nl"
       - key: EMAIL_HOST_PASSWORD
-        value: "CHANGE_ME_ZOHO_HR_APP_PASSWORD"
+        value: "1WwXZZUGxaiB"
       - key: DEFAULT_FROM_EMAIL
         value: "Interlabour <hr@interlabour.nl>"
       - key: SUPPORT_EMAIL_HOST_USER
         value: "support@interlabour.nl"
       - key: SUPPORT_EMAIL_HOST_PASSWORD
-        value: "CHANGE_ME_ZOHO_SUPPORT_APP_PASSWORD"
+        value: "agYvJXuJ7Uep"
       - key: SUPPORT_FROM_EMAIL
         value: "Interlabour <support@interlabour.nl>"
       - key: HR_EMAIL_HOST_USER
         value: "hr@interlabour.nl"
       - key: HR_EMAIL_HOST_PASSWORD
-        value: "CHANGE_ME_ZOHO_HR_APP_PASSWORD"
+        value: "1WwXZZUGxaiB"
       - key: HR_FROM_EMAIL
         value: "Interlabour <hr@interlabour.nl>"
       - key: OTP_FROM_EMAIL
