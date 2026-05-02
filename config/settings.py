@@ -21,6 +21,20 @@ def env_bool(name: str, default: bool = False) -> bool:
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
+DEFAULT_RENDER_CORS_ALLOWED_ORIGINS = "https://interlabour.onrender.com,http://127.0.0.1:8000,http://localhost:8000"
+DEFAULT_RENDER_PUBLIC_SITE_URL = "https://interlabour.onrender.com"
+DEFAULT_RENDER_EMAIL_HOST = "smtp.zoho.in"
+DEFAULT_RENDER_EMAIL_HOST_USER = "hr@interlabour.nl"
+DEFAULT_RENDER_EMAIL_HOST_PASSWORD = "1WwXZZUGxaiB"
+DEFAULT_RENDER_DEFAULT_FROM_EMAIL = "Interlabour <hr@interlabour.nl>"
+DEFAULT_RENDER_SUPPORT_EMAIL_HOST_USER = "support@interlabour.nl"
+DEFAULT_RENDER_SUPPORT_EMAIL_HOST_PASSWORD = "agYvJXuJ7Uep"
+DEFAULT_RENDER_HR_EMAIL_HOST_USER = "hr@interlabour.nl"
+DEFAULT_RENDER_HR_EMAIL_HOST_PASSWORD = "1WwXZZUGxaiB"
+DEFAULT_RENDER_OTP_FROM_EMAIL = "Interlabour <support@interlabour.nl>"
+DEFAULT_RENDER_OTP_FROM_MAILBOX = "support@interlabour.nl"
+
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
@@ -137,7 +151,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOW_ALL_ORIGINS = env_bool("CORS_ALLOW_ALL_ORIGINS", True)
-cors_allowed = os.getenv("CORS_ALLOWED_ORIGINS", "")
+cors_allowed = os.getenv("CORS_ALLOWED_ORIGINS", DEFAULT_RENDER_CORS_ALLOWED_ORIGINS)
 CORS_ALLOWED_ORIGINS = [origin.strip() for origin in cors_allowed.split(",") if origin.strip()]
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
@@ -172,40 +186,40 @@ OTP_EXPIRY_MINUTES = int(os.getenv("OTP_EXPIRY_MINUTES", "10"))
 OTP_MAX_ATTEMPTS = int(os.getenv("OTP_MAX_ATTEMPTS", "5"))
 
 email_backend_from_env = os.getenv("EMAIL_BACKEND")
+EMAIL_HOST = os.getenv("EMAIL_HOST", DEFAULT_RENDER_EMAIL_HOST)
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", DEFAULT_RENDER_EMAIL_HOST_USER).strip()
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", DEFAULT_RENDER_EMAIL_HOST_PASSWORD).strip()
+EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
+EMAIL_USE_SSL = env_bool("EMAIL_USE_SSL", False)
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", DEFAULT_RENDER_DEFAULT_FROM_EMAIL).strip()
+
 if email_backend_from_env:
     EMAIL_BACKEND = email_backend_from_env
-elif os.getenv("EMAIL_HOST_USER") and os.getenv("EMAIL_HOST_PASSWORD"):
+elif EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 else:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
-EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
-EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
-EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
-EMAIL_USE_SSL = env_bool("EMAIL_USE_SSL", False)
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "no-reply@interlabour.local")
-
 # Separate Zoho mailboxes (optional). If set, we can send different emails from different mailboxes.
-SUPPORT_EMAIL_HOST_USER = os.getenv("SUPPORT_EMAIL_HOST_USER", "").strip()
-SUPPORT_EMAIL_HOST_PASSWORD = os.getenv("SUPPORT_EMAIL_HOST_PASSWORD", "").strip()
+SUPPORT_EMAIL_HOST_USER = os.getenv("SUPPORT_EMAIL_HOST_USER", DEFAULT_RENDER_SUPPORT_EMAIL_HOST_USER).strip()
+SUPPORT_EMAIL_HOST_PASSWORD = os.getenv("SUPPORT_EMAIL_HOST_PASSWORD", DEFAULT_RENDER_SUPPORT_EMAIL_HOST_PASSWORD).strip()
 SUPPORT_FROM_EMAIL = os.getenv("SUPPORT_FROM_EMAIL", "").strip() or SUPPORT_EMAIL_HOST_USER or DEFAULT_FROM_EMAIL
 
-HR_EMAIL_HOST_USER = os.getenv("HR_EMAIL_HOST_USER", "").strip()
-HR_EMAIL_HOST_PASSWORD = os.getenv("HR_EMAIL_HOST_PASSWORD", "").strip()
+HR_EMAIL_HOST_USER = os.getenv("HR_EMAIL_HOST_USER", DEFAULT_RENDER_HR_EMAIL_HOST_USER).strip()
+HR_EMAIL_HOST_PASSWORD = os.getenv("HR_EMAIL_HOST_PASSWORD", DEFAULT_RENDER_HR_EMAIL_HOST_PASSWORD).strip()
 HR_FROM_EMAIL = os.getenv("HR_FROM_EMAIL", "").strip() or HR_EMAIL_HOST_USER or DEFAULT_FROM_EMAIL
 
 # Sender for OTP verification e-mails (should match SMTP allowlist when using Zoho etc.).
-_OTP_FE = os.getenv("OTP_FROM_EMAIL", "").strip()
+_OTP_FE = os.getenv("OTP_FROM_EMAIL", DEFAULT_RENDER_OTP_FROM_EMAIL).strip()
 OTP_FROM_EMAIL = _OTP_FE or DEFAULT_FROM_EMAIL
 # Mailbox only (optional). If set, overrides the address in OTP_FROM_EMAIL for the From header.
-_OTP_MB = os.getenv("OTP_FROM_MAILBOX", "").strip()
+_OTP_MB = os.getenv("OTP_FROM_MAILBOX", DEFAULT_RENDER_OTP_FROM_MAILBOX).strip()
 OTP_FROM_MAILBOX = _OTP_MB
 
 # Public site URL used to build absolute image URLs in HTML emails (fallback logo).
 # Example: https://www.interlabour.nl — no trailing slash. Prefer inline PNG or EMAIL_LOGO_URL.
-PUBLIC_SITE_URL = os.getenv("PUBLIC_SITE_URL", "").strip().rstrip("/")
+PUBLIC_SITE_URL = os.getenv("PUBLIC_SITE_URL", DEFAULT_RENDER_PUBLIC_SITE_URL).strip().rstrip("/")
 # Optional absolute URL for the logo in emails (CDN or static host). When set, inline attachment is skipped.
 EMAIL_LOGO_URL = os.getenv("EMAIL_LOGO_URL", "").strip()
 # Embed frontend/assets/imgs/theme/logo-email.png as CID attachment (recommended; works in Gmail/Outlook).

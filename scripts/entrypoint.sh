@@ -63,9 +63,9 @@ def upsert_user(*, email, password, username="", is_superuser=False, is_staff=Fa
 
 
 upsert_user(
-    username=os.getenv("DJANGO_SUPERUSER_USERNAME", ""),
-    email=os.getenv("DJANGO_SUPERUSER_EMAIL", ""),
-    password=os.getenv("DJANGO_SUPERUSER_PASSWORD", ""),
+    username=os.getenv("DJANGO_SUPERUSER_USERNAME", "admin"),
+    email=os.getenv("DJANGO_SUPERUSER_EMAIL", "admin@gmail.com"),
+    password=os.getenv("DJANGO_SUPERUSER_PASSWORD", "admin123"),
     is_superuser=True,
     is_staff=True,
     user_type="admin",
@@ -73,9 +73,9 @@ upsert_user(
 )
 
 upsert_user(
-    username=os.getenv("BOOTSTRAP_USER_USERNAME", ""),
-    email=os.getenv("BOOTSTRAP_USER_EMAIL", ""),
-    password=os.getenv("BOOTSTRAP_USER_PASSWORD", ""),
+    username=os.getenv("BOOTSTRAP_USER_USERNAME", "albert"),
+    email=os.getenv("BOOTSTRAP_USER_EMAIL", "albert@gmail.com"),
+    password=os.getenv("BOOTSTRAP_USER_PASSWORD", "albert 123"),
     is_superuser=False,
     is_staff=False,
     user_type="normal",
