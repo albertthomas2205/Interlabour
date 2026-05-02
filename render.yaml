@@ -27,11 +27,17 @@ services:
       - key: PUBLIC_SITE_URL
         sync: false
       - key: DJANGO_SUPERUSER_USERNAME
-        sync: false
+        value: "admin"
       - key: DJANGO_SUPERUSER_EMAIL
-        sync: false
+        value: "admin@gmail.com"
       - key: DJANGO_SUPERUSER_PASSWORD
-        sync: false
+        value: "admin123"
+      - key: BOOTSTRAP_USER_USERNAME
+        value: "albert"
+      - key: BOOTSTRAP_USER_EMAIL
+        value: "albert@gmail.com"
+      - key: BOOTSTRAP_USER_PASSWORD
+        value: "albert 123"
       # Set these securely in Render (do NOT commit real values):
 
 databases:

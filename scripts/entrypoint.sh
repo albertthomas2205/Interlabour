@@ -8,21 +8,11 @@ python manage.py migrate --noinput
 echo "Collecting static files..."
 python manage.py collectstatic --noinput
 
-# Optional: create a superuser non-interactively (only if env vars are set).
-# Set these in Render Environment:
-# - DJANGO_SUPERUSER_EMAIL
-# - DJANGO_SUPERUSER_PASSWORD
-# - DJANGO_SUPERUSER_USERNAME (optional)
-echo "Ensuring optional superuser..."
+# Optional: bootstrap application users from environment variables.
+# This is idempotent: existing users are updated in place.
+echo "Ensuring bootstrap users..."
 python - <<'PY'
 import os
-
-username = os.getenv("DJANGO_SUPERUSER_USERNAME", "").strip()
-email = os.getenv("DJANGO_SUPERUSER_EMAIL", "").strip()
-password = os.getenv("DJANGO_SUPERUSER_PASSWORD", "").strip()
-
-if not (email and password):
-    raise SystemExit(0)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 import django
@@ -31,23 +21,66 @@ django.setup()
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
-user = User.objects.filter(email=email).first()
-if user is None:
-    create_kwargs = {"email": email, "password": password}
+
+def upsert_user(*, email, password, username="", is_superuser=False, is_staff=False, user_type="normal", email_verified=True):
+    email = (email or "").strip()
+    password = (password or "").strip()
+    username = (username or "").strip()
+    if not (email and password):
+        return
+
+    user = User.objects.filter(email=email).first()
+    if user is None:
+        create_kwargs = {
+            "email": email,
+            "password": password,
+            "is_staff": is_staff,
+            "is_superuser": is_superuser,
+            "is_active": True,
+            "user_type": user_type,
+            "email_verified": email_verified,
+        }
+        if username:
+            create_kwargs["username"] = username
+        if is_superuser:
+            User.objects.create_superuser(**create_kwargs)
+        else:
+            User.objects.create_user(**create_kwargs)
+        return
+
     if username:
-        create_kwargs["username"] = username
-    User.objects.create_superuser(**create_kwargs)
-else:
-    # Ensure it is superuser/staff and password matches env
-    if not user.is_staff:
-        user.is_staff = True
-    if not user.is_superuser:
-        user.is_superuser = True
-    if hasattr(user, "email_verified") and not user.email_verified:
-        user.email_verified = True
+        user.username = username
     user.email = email
+    user.is_active = True
+    user.is_staff = is_staff
+    user.is_superuser = is_superuser
+    if hasattr(user, "user_type"):
+        user.user_type = user_type
+    if hasattr(user, "email_verified"):
+        user.email_verified = email_verified
     user.set_password(password)
     user.save()
+
+
+upsert_user(
+    username=os.getenv("DJANGO_SUPERUSER_USERNAME", ""),
+    email=os.getenv("DJANGO_SUPERUSER_EMAIL", ""),
+    password=os.getenv("DJANGO_SUPERUSER_PASSWORD", ""),
+    is_superuser=True,
+    is_staff=True,
+    user_type="admin",
+    email_verified=True,
+)
+
+upsert_user(
+    username=os.getenv("BOOTSTRAP_USER_USERNAME", ""),
+    email=os.getenv("BOOTSTRAP_USER_EMAIL", ""),
+    password=os.getenv("BOOTSTRAP_USER_PASSWORD", ""),
+    is_superuser=False,
+    is_staff=False,
+    user_type="normal",
+    email_verified=True,
+)
 PY
 
 PORT="${PORT:-10000}"
