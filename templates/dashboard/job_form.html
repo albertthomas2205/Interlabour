@@ -1,0 +1,13 @@
+﻿{% extends "dashboard/base.html" %}
+
+{% block content %}
+<section class="panel">
+    <h3>{{ text.post_job }}</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn" type="submit">{{ text.save }}</button>
+        <a class="btn ghost" href="/dashboard/company/">{{ text.cancel }}</a>
+    </form>
+</section>
+{% endblock %}

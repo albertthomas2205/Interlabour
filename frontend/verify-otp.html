@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Inter Labour - Verify OTP</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" type="image/x-icon" href="assets/imgs/theme/favicon.svg" />
+    <link rel="stylesheet" href="assets/css/plugins/animate.min.css" />
+    <link rel="stylesheet" href="assets/css/main.css@v=1.0.css" />
+</head>
+
+<body>
+    <header class="header sticky-bar">
+        <div class="container">
+            <div class="main-header">
+                <div class="header-left">
+                    <div class="header-logo">
+                        <a href="index.html" class="d-flex"><img alt="Inter Labour" src="assets/imgs/theme/logo.svg" /></a>
+                    </div>
+                    <div class="header-nav">
+                        <nav class="nav-main-menu d-none d-xl-block">
+                            <ul class="main-menu">
+                                <li><a href="index.html">Home</a></li>
+                                <li><a href="page-about.html">About Us</a></li>
+                                <li><a href="page-service.html">Services</a></li>
+                                <li><a href="/jobs/">Jobs</a></li>
+                                <li><a href="page-contact.html">Contact</a></li>
+                            </ul>
+                        </nav>
+                        <div class="burger-icon burger-icon-white">
+                            <span class="burger-icon-top"></span>
+                            <span class="burger-icon-mid"></span>
+                            <span class="burger-icon-bottom"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="mobile-header-active mobile-header-wrapper-style perfect-scrollbar">
+        <div class="mobile-header-wrapper-inner">
+            <div class="mobile-header-content-area">
+                <div class="perfect-scroll">
+                    <div class="mobile-menu-wrap mobile-header-border">
+                        <nav>
+                            <ul class="mobile-menu font-heading">
+                                <li class="has-children"><a href="index.html">Home</a></li>
+                                <li class="has-children"><a href="page-about.html">About</a></li>
+                                <li class="has-children"><a href="page-service.html">Services</a></li>
+                                <li class="has-children"><a href="/jobs/">Jobs</a></li>
+                                <li class="has-children"><a href="page-contact.html">Contact</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="main">
+        <section class="section-box mt-120 mb-80">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-6 col-md-8">
+                        <div class="box-white-style-icon border-0">
+                            <h3 class="mb-15">Verify Email OTP</h3>
+                            <p class="text-md mb-30">Enter the OTP sent to your email address.</p>
+                            <form id="verify-otp-form">
+                                <div class="input-style-1 mb-20">
+                                    <input id="email" type="email" placeholder="Email address" required />
+                                </div>
+                                <div class="input-style-1 mb-20">
+                                    <input id="otp" type="text" maxlength="6" placeholder="6-digit OTP" required />
+                                </div>
+                                <div class="mb-15">
+                                    <button type="submit" class="btn btn-default btn-shadow hover-up w-100">Verify OTP</button>
+                                </div>
+                            </form>
+                            <div class="mt-10">
+                                <button id="resend-otp-btn" class="btn btn-border-brand-2 w-100">Resend OTP</button>
+                            </div>
+                            <p id="verify-message" class="text-md mt-15"></p>
+                            <p class="text-md mt-20">
+                                Back to <a href="login.html"><strong>Login</strong></a>
+                            </p>
+                            <p class="text-sm mt-10 color-muted">
+                                If SMTP is not configured, OTP appears in the Django server console.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="assets/js/vendor/modernizr-3.6.0.min.js"></script>
+    <script src="assets/js/vendor/jquery-3.6.0.min.js"></script>
+    <script src="assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
+    <script src="assets/js/vendor/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/plugins/perfect-scrollbar.min.js"></script>
+    <script src="assets/js/main.js@v=1.0"></script>
+    <script src="/assets/js/auth-integration.js"></script>
+</body>
+
+</html>

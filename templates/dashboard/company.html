@@ -1,0 +1,40 @@
+﻿{% extends "dashboard/base.html" %}
+
+{% block content %}
+<section class="panel">
+    <h3>{{ text.quick_actions }}</h3>
+    {% if company %}
+        <a class="btn" href="/dashboard/company/jobs/new/">{{ text.post_job }}</a>
+        <a class="btn alt" href="/dashboard/company/profile/">{{ text.edit_company }}</a>
+    {% else %}
+        <p class="muted">{{ text.no_company_profile }}</p>
+        <a class="btn" href="/dashboard/company/profile/">{{ text.create_company }}</a>
+    {% endif %}
+</section>
+
+<section class="panel">
+    <h3>{{ text.recent_applications }}</h3>
+    {% if recent_applications %}
+        <table>
+            <thead>
+                <tr>
+                    <th>{{ text.applications }}</th>
+                    <th>{{ text.jobs }}</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in recent_applications %}
+                    <tr>
+                        <td>{{ item.full_name }}<br><span class="muted">{{ item.email }}</span></td>
+                        <td>{{ item.job.title }}</td>
+                        <td>{{ item.get_status_display }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="muted">{{ text.no_records }}</p>
+    {% endif %}
+</section>
+{% endblock %}

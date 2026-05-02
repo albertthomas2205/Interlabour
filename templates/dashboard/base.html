@@ -1,0 +1,285 @@
+﻿{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ request.LANGUAGE_CODE|default:'en' }}">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Inter Labour{% endblock %} - Inter Labour</title>
+    <style>
+        :root {
+            --bg-1: #f2f6ff;
+            --bg-2: #ffffff;
+            --line: #d9e3f4;
+            --text: #13233c;
+            --muted: #59708f;
+            --brand: #1150c1;
+            --brand-2: #0f8f83;
+            --danger: #ad3348;
+            --shadow: 0 16px 30px rgba(17, 80, 193, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top right, #dbeafe 0, transparent 35%),
+                radial-gradient(circle at top left, #d8f5ef 0, transparent 30%),
+                var(--bg-1);
+            min-height: 100vh;
+        }
+
+        .layout {
+            max-width: 1180px;
+            margin: 28px auto;
+            padding: 0 16px 28px;
+        }
+
+        .top {
+            background: var(--bg-2);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 14px 16px;
+            box-shadow: var(--shadow);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .top-right {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .btn {
+            text-decoration: none;
+            background: var(--brand);
+            border: none;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn.alt {
+            background: #1a7f74;
+        }
+
+        .btn.ghost {
+            background: #ecf2fe;
+            color: var(--brand);
+        }
+
+        .btn.danger {
+            background: var(--danger);
+        }
+
+        .main {
+            margin-top: 14px;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 14px;
+        }
+
+        .nav,
+        .panel,
+        .cards .card {
+            background: var(--bg-2);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .nav {
+            padding: 14px;
+            position: sticky;
+            top: 14px;
+            align-self: start;
+        }
+
+        .nav a {
+            display: block;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.93rem;
+            padding: 9px 10px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            border: 1px solid transparent;
+        }
+
+        .nav a:hover {
+            background: #f3f7ff;
+            border-color: #dbe7ff;
+        }
+
+        .content {
+            min-width: 0;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 10px;
+        }
+
+        .card {
+            padding: 14px;
+        }
+
+        .card .label {
+            color: var(--muted);
+            font-size: 0.82rem;
+        }
+
+        .card .value {
+            margin-top: 5px;
+            font-size: 1.7rem;
+            font-weight: 700;
+        }
+
+        .panel {
+            margin-top: 12px;
+            padding: 14px;
+        }
+
+        .panel h3 {
+            margin: 0 0 10px;
+            font-size: 1rem;
+        }
+
+        .message {
+            margin-top: 12px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid #cde0ff;
+            background: #f5f9ff;
+            color: #1f4f8d;
+            font-size: 0.9rem;
+        }
+
+        .message.warning {
+            border-color: #ffe1ad;
+            background: #fff8eb;
+            color: #845500;
+        }
+
+        .message.error {
+            border-color: #ffd2d8;
+            background: #fff3f5;
+            color: #8e2d3b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th,
+        td {
+            text-align: left;
+            border-bottom: 1px solid #e8eef9;
+            padding: 8px 4px;
+            vertical-align: top;
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        form p {
+            margin: 0 0 10px;
+        }
+
+        form input,
+        form textarea,
+        form select {
+            width: 100%;
+            margin-top: 4px;
+            border: 1px solid #cdd9ec;
+            border-radius: 10px;
+            padding: 9px 10px;
+            font: inherit;
+            background: #fff;
+        }
+
+        @media (max-width: 900px) {
+            .main {
+                grid-template-columns: 1fr;
+            }
+
+            .nav {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <div class="top">
+            <div class="title">{% block page_title %}{% trans "Dashboard" %}{% endblock %}</div>
+            <div class="top-right">
+                {% block top_actions %}{% endblock %}
+                <a class="btn ghost" href="?lang=nl">{% trans "Language" %}: NL</a>
+                <a class="btn ghost" href="?lang=en">{% trans "Language" %}: EN</a>
+                <form method="post" action="/accounts/logout/">
+                    {% csrf_token %}
+                    <button class="btn danger" type="submit">{% trans "Logout" %}</button>
+                </form>
+            </div>
+        </div>
+
+        {% for message in messages %}
+            <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
+        {% endfor %}
+
+        <div class="main">
+            <nav class="nav">
+                <a href="/dashboard/">{% trans "Dashboard" %}</a>
+                {% if request.user.user_type == "admin" or request.user.is_staff or request.user.is_superuser %}
+                    <a href="/adminpanel/">{% trans "Admin dashboard" %}</a>
+                {% endif %}
+                {% if request.user.user_type == "normal" %}
+                    <a href="/dashboard/user/">{% trans "User dashboard" %}</a>
+                    <a href="/dashboard/user/applications/">{% trans "My applications" %}</a>
+                    <a href="/jobs/">{% trans "Browse jobs" %}</a>
+                {% endif %}
+                <a href="/api/docs/swagger/">{% trans "API Docs" %}</a>
+                <a href="/adminpanel/">{% trans "Admin panel" %}</a>
+                <a href="/">{% trans "Frontend Home" %}</a>
+            </nav>
+
+            <main class="content">
+                {% if cards %}
+                    <section class="cards">
+                        {% for card in cards %}
+                            <article class="card">
+                                <div class="label">{{ card.label }}</div>
+                                <div class="value">{{ card.value }}</div>
+                            </article>
+                        {% endfor %}
+                    </section>
+                {% endif %}
+
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+</body>
+</html>

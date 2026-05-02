@@ -1,0 +1,90 @@
+{% extends "adminpanel/base.html" %}
+{% load i18n %}
+
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="head">
+        <h3>{{ title }}</h3>
+    </div>
+    <div class="body" style="padding: 22px;">
+        <form method="post" {% if multipart %}enctype="multipart/form-data"{% endif %} class="adm-form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="alert error">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <div class="form-grid {% if form_single_column %}form-grid--single{% endif %}">
+                {% for field in form.visible_fields %}
+                    <div class="form-row {% if field.field.widget.input_type == 'checkbox' %}is-check{% endif %}">
+                        {% if field.field.widget.input_type == 'checkbox' %}
+                            <label class="check-row">
+                                {{ field }}
+                                <span>{{ field.label }}</span>
+                            </label>
+                        {% else %}
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}<small class="hint">{{ field.help_text }}</small>{% endif %}
+                        {% endif %}
+                        {% if field.errors %}
+                            <div class="field-err">{{ field.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+
+            <div class="form-actions">
+                <button class="btn" type="submit">{% trans "Save" %}</button>
+                <a class="btn ghost" href="javascript:history.back()">{% trans "Cancel" %}</a>
+            </div>
+        </form>
+    </div>
+</section>
+
+<style>
+    .adm-form .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px 22px;
+    }
+    .adm-form .form-grid.form-grid--single {
+        grid-template-columns: 1fr;
+    }
+    .adm-form .form-row { display: flex; flex-direction: column; gap: 6px; }
+    .adm-form .form-row.is-check { background: var(--panel-soft); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; justify-content: center; }
+    .adm-form label { font-size: 12px; color: var(--text-soft); font-weight: 600; }
+    .adm-form input[type=text],
+    .adm-form input[type=email],
+    .adm-form input[type=password],
+    .adm-form input[type=number],
+    .adm-form input[type=date],
+    .adm-form input[type=url],
+    .adm-form input[type=file],
+    .adm-form select,
+    .adm-form textarea {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font: inherit;
+        background: #fff;
+        color: var(--text);
+    }
+    .adm-form textarea { min-height: 90px; resize: vertical; }
+    .adm-form .check-row { display: flex; gap: 10px; align-items: center; cursor: pointer; }
+    .adm-form .check-row input { width: 18px; height: 18px; }
+    .adm-form .check-row span { font-size: 13px; color: var(--text); font-weight: 600; }
+    .adm-form .hint { color: var(--muted); font-size: 11px; }
+    .adm-form .field-err { color: #b91c1c; font-size: 12px; }
+    .adm-form .form-actions {
+        display: flex; gap: 10px; margin-top: 20px;
+        padding-top: 18px; border-top: 1px solid var(--line);
+    }
+    @media (max-width: 720px) { .adm-form .form-grid { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}

@@ -1,0 +1,487 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html class="no-js" lang="{{ request.LANGUAGE_CODE|default:'nl' }}">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Inter Labour – {% trans "My Account" %}</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'imgs/theme/favicon.svg' %}" />
+    <link rel="stylesheet" href="{% static 'css/plugins/animate.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/main.css@v=1.0.css' %}" />
+    <style>
+        .il-alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: .9rem; }
+        .il-alert.success { background: #ecfdf5; border: 1px solid #bbf7d0; color: #14532d; }
+        .il-alert.error   { background: #fef2f2; border: 1px solid #fecaca; color: #7f1d1d; }
+        .profile-form .form-group { margin-bottom: 18px; }
+        .profile-form label { display: block; font-size: 13px; font-weight: 600; color: #384152; margin-bottom: 6px; }
+        .profile-form input[type=text],
+        .profile-form input[type=email],
+        .profile-form input[type=password] {
+            width: 100%; border: 1px solid #e0e6f7; border-radius: 8px;
+            padding: 10px 14px; font-size: 14px; background: #fff; color: #384152;
+            transition: border-color .15s, box-shadow .15s;
+        }
+        .profile-form input:focus { outline: none; border-color: #3c65f5; box-shadow: 0 0 0 3px rgba(60,101,245,.12); }
+        .profile-form .field-err { color: #c0392b; font-size: 12px; margin-top: 4px; }
+        .profile-form .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        @media (max-width: 600px) { .profile-form .form-row-2 { grid-template-columns: 1fr; } }
+        .cv-upload-box {
+            border: 2px dashed #c7d3f5; border-radius: 12px;
+            padding: 26px 20px; text-align: center; background: #f4f7ff; cursor: pointer;
+            transition: border-color .15s;
+        }
+        .cv-upload-box:hover { border-color: #3c65f5; }
+        .cv-upload-box input[type=file] { width: 1px; height: 1px; opacity: 0; position: absolute; pointer-events: none; }
+        .cv-upload-box .cv-browse { color: #3c65f5; font-weight: 600; text-decoration: underline; cursor: pointer; }
+        .cv-upload-box small { display: block; color: #8a9ab5; font-size: 12px; margin-top: 4px; }
+        .cv-current { display: flex; align-items: center; gap: 10px; background: #eef3ff; border: 1px solid #c7d3f5; border-radius: 8px; padding: 10px 14px; margin-top: 10px; font-size: 13px; }
+        .cv-current a { color: #3c65f5; font-weight: 600; word-break: break-all; }
+        .cv-current .cv-label { color: #8a9ab5; font-size: 12px; white-space: nowrap; }
+        .status-badge { display: inline-block; padding: 3px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+        .status-badge.hired     { background: #dcfce7; color: #166534; }
+        .status-badge.reviewing { background: #fef3c7; color: #92400e; }
+        .status-badge.rejected  { background: #fee2e2; color: #991b1b; }
+        .status-badge.submitted { background: #dbeafe; color: #1e40af; }
+        .acc-section-title { font-size: 1rem; font-weight: 700; color: #05264e; border-bottom: 2px solid #e0e6f7; padding-bottom: 10px; margin-bottom: 20px; }
+    </style>
+</head>
+
+<body>
+    <!-- Preloader -->
+    <div id="preloader-active">
+        <div class="preloader d-flex align-items-center justify-content-center">
+            <div class="preloader-inner position-relative">
+                <div class="text-center">
+                    <img src="{% static 'imgs/theme/loading.gif' %}" alt="jobhub" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════ HEADER — exact copy from index.html ══════════════════ -->
+    <header class="header sticky-bar">
+        <div class="container">
+            <div class="main-header">
+                <div class="header-left">
+                    <div class="header-logo">
+                        <a href="/" class="d-flex"><img alt="Inter Labour" src="{% static 'imgs/theme/logo.svg' %}" /></a>
+                    </div>
+                    <div class="header-nav">
+                        <nav class="nav-main-menu d-none d-xl-block">
+                            <ul class="main-menu">
+                                <li class=""><a href="/">{% trans "Home" %}</a></li>
+                                <li class=""><a href="/page-about.html">{% trans "About Us" %}</a></li>
+                                <li class=""><a href="/page-service.html">{% trans "Services" %}</a></li>
+                                <li class=""><a href="/jobs/">{% trans "Jobs" %}</a></li>
+                                <li class=""><a href="/page-contact.html">{% trans "Contact" %}</a></li>
+                            </ul>
+                        </nav>
+                        <div class="burger-icon burger-icon-white">
+                            <span class="burger-icon-top"></span>
+                            <span class="burger-icon-mid"></span>
+                            <span class="burger-icon-bottom"></span>
+                        </div>
+                    </div>
+                </div>
+                <div id="header-right" style="display:flex;align-items:center;gap:10px;margin-left:auto;">
+                    <div id="header-lang"></div>
+                    <div id="header-auth"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="mobile-header-active mobile-header-wrapper-style perfect-scrollbar">
+        <div class="mobile-header-wrapper-inner">
+            <div class="mobile-header-content-area">
+                <div class="perfect-scroll">
+                    <div class="mobile-search mobile-header-border mb-30">
+                        <form action="#">
+                            <input type="text" placeholder="{% trans "Search for items…" %}" />
+                            <i class="fi-rr-search"></i>
+                        </form>
+                    </div>
+                    <div class="mobile-menu-wrap mobile-header-border">
+                        <nav>
+                            <ul class="mobile-menu font-heading">
+                                <li class="has-children"><a class="active" href="/">{% trans "Home" %}</a></li>
+                                <li class="has-children"><a href="/page-about.html">{% trans "About Us" %}</a></li>
+                                <li class="has-children"><a href="/jobs/">{% trans "Jobs" %}</a></li>
+                                <li class="has-children"><a href="/page-service.html">{% trans "Services" %}</a></li>
+                                <li class="has-children"><a href="/page-contact.html">{% trans "Contact" %}</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End header-->
+
+    <!-- ══════════════════ MAIN CONTENT ══════════════════ -->
+    <main class="main">
+        <section class="section-box-2">
+            <div class="box-head-single none-bg">
+                <div class="container">
+                    <h4>{% trans "My Account" %}</h4>
+                    <div class="row mt-15 mb-40">
+                        <div class="col-lg-7 col-md-9">
+                            <span class="text-mutted">
+                                {% if request.user.first_name %}{{ request.user.first_name }} {{ request.user.last_name }}{% else %}{{ request.user.email }}{% endif %}
+                            </span>
+                        </div>
+                        <div class="col-lg-5 col-md-3 text-lg-end text-start">
+                            <ul class="breadcrumbs mt-sm-15">
+                                <li><a href="/">{% trans "Home" %}</a></li>
+                                <li>{% trans "My Account" %}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-box mt-50">
+            <div class="container">
+                <div class="row flex-row-reverse">
+
+                    <!-- ── Main column ── -->
+                    <div class="col-lg-9 col-md-12 col-sm-12 col-12 float-right">
+                        <div class="content-page">
+
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="il-alert {% if 'error' in message.tags %}error{% else %}success{% endif %}">{{ message }}</div>
+                                {% endfor %}
+                            {% endif %}
+
+                            <!-- ── Profile & CV form ── -->
+                            <div class="mb-40">
+                                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;" class="mb-20">
+                                    <h5 class="acc-section-title mb-0" style="border:none;padding:0;">{% trans "Profile information" %}</h5>
+                                    <button type="button" id="btn-open-settings" class="btn btn-border btn-sm" style="font-size:13px;">
+                                        ⚙ {% trans "Settings" %}
+                                    </button>
+                                </div>
+                                <hr style="border-color:#e0e6f7;margin-bottom:20px;">
+                                <form method="post" enctype="multipart/form-data" class="profile-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="_action" value="profile">
+                                    {% if form.non_field_errors %}
+                                        <div class="il-alert error">{{ form.non_field_errors }}</div>
+                                    {% endif %}
+
+                                    <div class="form-row-2">
+                                        <div class="form-group">
+                                            <label for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }}</label>
+                                            {{ form.first_name }}
+                                            {% if form.first_name.errors %}<div class="field-err">{{ form.first_name.errors|join:", " }}</div>{% endif %}
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }}</label>
+                                            {{ form.last_name }}
+                                            {% if form.last_name.errors %}<div class="field-err">{{ form.last_name.errors|join:", " }}</div>{% endif %}
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                                        {{ form.email }}
+                                        {% if form.email.errors %}<div class="field-err">{{ form.email.errors|join:", " }}</div>{% endif %}
+                                    </div>
+
+                                    <!-- CV Upload -->
+                                    <div class="form-group mt-25">
+                                        <h5 class="acc-section-title">{% trans "My CV / Resume" %}</h5>
+                                        <div class="cv-upload-box" id="cv-drop-zone">
+                                            <div style="font-size:2rem;margin-bottom:8px;">📄</div>
+                                            <p class="mb-5" id="cv-label-text">
+                                                {% trans "Drag & drop your CV here, or" %}
+                                                <span class="cv-browse">{% trans "browse to upload" %}</span>
+                                            </p>
+                                            {{ form.cv }}
+                                            <small>{% trans "Accepted formats: PDF, DOC, DOCX. Max 5 MB." %}</small>
+                                        </div>
+                                        {% if request.user.cv %}
+                                            <div class="cv-current">
+                                                <span class="cv-label">{% trans "Current CV:" %}</span>
+                                                <a href="{{ request.user.cv.url }}" target="_blank" rel="noopener">
+                                                    {{ request.user.cv.name|slice:"4:" }}
+                                                </a>
+                                            </div>
+                                        {% endif %}
+                                        {% if form.cv.errors %}<div class="field-err mt-5">{{ form.cv.errors|join:", " }}</div>{% endif %}
+                                    </div>
+
+                                    <div class="mt-20 mb-10">
+                                        <button type="submit" class="btn btn-default btn-shadow hover-up mr-15">{% trans "Save changes" %}</button>
+                                        <a href="/" class="btn btn-border">{% trans "Cancel" %}</a>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- ── Settings panel (password change) ── -->
+                            <div id="settings-panel" class="mb-40" style="{% if not open_settings %}display:none;{% endif %}">
+                                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;" class="mb-20">
+                                    <h5 class="acc-section-title mb-0" style="border:none;padding:0;">⚙ {% trans "Settings" %}</h5>
+                                    <button type="button" id="btn-close-settings" class="btn btn-border btn-sm" style="font-size:13px;">✕ {% trans "Close" %}</button>
+                                </div>
+                                <hr style="border-color:#e0e6f7;margin-bottom:20px;">
+                                <form method="post" class="profile-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="_action" value="password">
+                                    {% if password_form.non_field_errors %}
+                                        <div class="il-alert error">{{ password_form.non_field_errors }}</div>
+                                    {% endif %}
+                                    <h6 style="font-size:.9rem;font-weight:700;color:#05264e;margin-bottom:16px;">{% trans "Change password" %}</h6>
+                                    <div class="form-row-2">
+                                        <div class="form-group">
+                                            <label for="{{ password_form.new_password.id_for_label }}">{{ password_form.new_password.label }}</label>
+                                            {{ password_form.new_password }}
+                                            {% if password_form.new_password.errors %}<div class="field-err">{{ password_form.new_password.errors|join:", " }}</div>{% endif %}
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="{{ password_form.confirm_password.id_for_label }}">{{ password_form.confirm_password.label }}</label>
+                                            {{ password_form.confirm_password }}
+                                            {% if password_form.confirm_password.errors %}<div class="field-err">{{ password_form.confirm_password.errors|join:", " }}</div>{% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="mt-10 mb-10">
+                                        <button type="submit" class="btn btn-default btn-shadow hover-up">{% trans "Update password" %}</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Applied jobs -->
+                            <div class="job-list-list mb-15">
+                                <h5 class="acc-section-title">{% trans "My applications" %}</h5>
+                                {% if applications %}
+                                    <div class="list-recent-jobs">
+                                        {% for app in applications %}
+                                            <div class="card-job hover-up wow animate__animated animate__fadeIn">
+                                                <div class="card-job-top">
+                                                    <div class="card-job-top--image">
+                                                        <a href="/jobs/{{ app.job.slug }}/">
+                                                            <figure>
+                                                                <img alt="{{ app.job.title_i18n|default:app.job.title }}"
+                                                                     src="{% if app.job.image_url %}{{ app.job.image_url }}{% else %}{% static 'imgs/page/job/digital.png' %}{% endif %}" />
+                                                            </figure>
+                                                        </a>
+                                                    </div>
+                                                    <div class="card-job-top--info">
+                                                        <h6 class="card-job-top--info-heading">
+                                                            <a href="/jobs/{{ app.job.slug }}/">{{ app.job.title_i18n|default:app.job.title }}</a>
+                                                        </h6>
+                                                        <div class="row">
+                                                            <div class="col-lg-7">
+                                                                <span class="card-job-top--company">{{ app.job.company.name }}</span>
+                                                                <span class="card-job-top--location text-sm"><i class="fi-rr-marker"></i> {{ app.job.location }}</span>
+                                                                <span class="card-job-top--type-job text-sm"><i class="fi-rr-briefcase"></i> {{ app.job.job_type_label }}</span>
+                                                            </div>
+                                                            <div class="col-lg-5 text-lg-end">
+                                                                <span class="card-job-top--post-time text-sm"><i class="fi-rr-clock"></i> {{ app.applied_at|date:"d M Y" }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card-job-bottom mt-25">
+                                                    <div class="row">
+                                                        <div class="col-lg-9 col-sm-8 col-12">
+                                                            {% if app.status == 'hired' %}<span class="status-badge hired">{{ app.get_status_display }}</span>
+                                                            {% elif app.status == 'rejected' %}<span class="status-badge rejected">{{ app.get_status_display }}</span>
+                                                            {% elif app.status == 'reviewing' %}<span class="status-badge reviewing">{{ app.get_status_display }}</span>
+                                                            {% else %}<span class="status-badge submitted">{{ app.get_status_display }}</span>
+                                                            {% endif %}
+                                                        </div>
+                                                        <div class="col-lg-3 col-sm-4 col-12 text-end pt-5 pt-sm-15">
+                                                            <a href="/jobs/{{ app.job.slug }}/" class="text-lg color-muted"><i class="fi-rr-eye"></i></a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="mb-20 mt-10">
+                                        <a href="/jobs/" class="btn btn-default hover-up">{% trans "Browse more jobs" %} →</a>
+                                    </div>
+                                {% else %}
+                                    <div class="text-center mt-20 mb-40">
+                                        <p class="text-muted mb-20">{% trans "You haven't applied to any jobs yet." %}</p>
+                                        <a href="/jobs/" class="btn btn-default hover-up">{% trans "Browse Jobs" %}</a>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- ── Sidebar ── -->
+                    <div class="col-lg-3 col-md-12 col-sm-12 col-12">
+                        <div class="sidebar-shadow">
+                            <div class="text-center mb-20">
+                                <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#3c65f5,#0ea5e9);display:grid;place-items:center;color:#fff;font-size:1.6rem;font-weight:700;margin:0 auto 10px;">
+                                    {{ request.user.first_name|first|upper|default:request.user.email|first|upper }}
+                                </div>
+                                <strong style="display:block;font-size:.95rem;color:#05264e;">
+                                    {% if request.user.first_name %}{{ request.user.first_name }} {{ request.user.last_name }}{% else %}{% trans "User" %}{% endif %}
+                                </strong>
+                                <span style="font-size:12px;color:#8a9ab5;">{{ request.user.email }}</span>
+                            </div>
+                            <div class="sidebar-list-job">
+                                <ul>
+                                    <li>
+                                        <div class="sidebar-icon-item"><i class="fi-rr-clock"></i></div>
+                                        <div class="sidebar-text-info">
+                                            <span class="text-description">{% trans "Member since" %}</span>
+                                            <strong class="small-heading">{{ request.user.date_joined|date:"d M Y" }}</strong>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="sidebar-icon-item"><i class="fi-rr-document"></i></div>
+                                        <div class="sidebar-text-info">
+                                            <span class="text-description">{% trans "Applications" %}</span>
+                                            <strong class="small-heading">{{ applications|length }}</strong>
+                                        </div>
+                                    </li>
+                                    {% if request.user.cv %}
+                                    <li>
+                                        <div class="sidebar-icon-item"><i class="fi-rr-file"></i></div>
+                                        <div class="sidebar-text-info">
+                                            <span class="text-description">CV</span>
+                                            <a href="{{ request.user.cv.url }}" target="_blank" class="small-heading" style="font-size:12px;color:#3c65f5;">{% trans "Download" %}</a>
+                                        </div>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="sidebar-normal mt-20">
+                            <h6 class="small-heading">{% trans "Quick links" %}</h6>
+                            <ul class="ul-lists">
+                                <li><a href="/jobs/">{% trans "Browse Jobs" %}</a></li>
+                                <li><a href="/page-about.html">{% trans "About Us" %}</a></li>
+                                <li><a href="/page-contact.html">{% trans "Contact" %}</a></li>
+                                <li><a href="#" class="js-auth-logout">{% trans "Logout" %}</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ══════════════════ FOOTER ══════════════════ -->
+    <footer class="footer mt-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 col-sm-12" style="width: 300px">
+                    <a href="/"><img alt="Inter Labour" src="{% static 'imgs/theme/logo.svg' %}" style="width: 150px;" /></a>
+                    <div class="mt-20 mb-20">{% trans "Inter Labour is an international recruitment and staffing company that helps organisations find the right employees, worldwide." %}</div>
+                </div>
+                <div class="col-md-2 col-xs-6">
+                    <h6>{% trans "Company" %}</h6>
+                    <ul class="menu-footer mt-40">
+                        <li><a href="/page-about.html">{% trans "About us" %}</a></li>
+                        <li><a href="/page-service.html">{% trans "Our Services" %}</a></li>
+                        <li><a href="/jobs/">{% trans "Job List" %}</a></li>
+                        <li><a href="/page-contact.html">{% trans "Contact Us" %}</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 col-xs-6">
+                    <h6>{% trans "Job List" %}</h6>
+                    <ul class="menu-footer mt-40">
+                        <li><a href="/jobs/">{% trans "General Worker" %}</a></li>
+                        <li><a href="/jobs/">{% trans "Construction Assistant" %}</a></li>
+                        <li><a href="/jobs/">{% trans "Bricklayer Assistant" %}</a></li>
+                        <li><a href="/jobs/">{% trans "Scaffolding Assistant" %}</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 col-xs-6">
+                    <h6>{% trans "Logistics & Warehouse" %}</h6>
+                    <ul class="menu-footer mt-40">
+                        <li><a href="/jobs/">{% trans "Warehouse Worker" %}</a></li>
+                        <li><a href="/jobs/">{% trans "Packing & Sorting Employee" %}</a></li>
+                        <li><a href="/jobs/">{% trans "Loading & Unloading Employee" %}</a></li>
+                        <li><a href="/jobs/">{% trans "Delivery Assistant" %}</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 col-xs-6">
+                    <h6>{% trans "Support" %}</h6>
+                    <ul class="menu-footer mt-40">
+                        <li><a href="#">{% trans "Privacy Policy" %}</a></li>
+                        <li><a href="#">{% trans "Help Desk" %}</a></li>
+                        <li><a href="#">{% trans "Terms & Conditions" %}</a></li>
+                        <li><a href="#">{% trans "FAQ" %}</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom mt-50">
+                <div class="row">
+                    <div class="col-md-6">
+                        Copyright ©2026 <a href="#"><strong>Inter Labour</strong></a>. {% trans "All Rights Reserved" %}
+                    </div>
+                    <div class="col-md-6 text-md-end text-start">
+                        <div class="footer-social">
+                            <a href="#" class="icon-socials icon-facebook"></a>
+                            <a href="#" class="icon-socials icon-twitter"></a>
+                            <a href="#" class="icon-socials icon-instagram"></a>
+                            <a href="#" class="icon-socials icon-linkedin"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Vendor JS — same list as index.html -->
+    <script src="{% static 'js/vendor/modernizr-3.6.0.min.js' %}"></script>
+    <script src="{% static 'js/vendor/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'js/vendor/jquery-migrate-3.3.0.min.js' %}"></script>
+    <script src="{% static 'js/vendor/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/plugins/waypoints.js' %}"></script>
+    <script src="{% static 'js/plugins/wow.js' %}"></script>
+    <script src="{% static 'js/plugins/magnific-popup.js' %}"></script>
+    <script src="{% static 'js/plugins/perfect-scrollbar.min.js' %}"></script>
+    <script src="{% static 'js/plugins/select2.min.js' %}"></script>
+    <script src="{% static 'js/plugins/isotope.js' %}"></script>
+    <script src="{% static 'js/plugins/scrollup.js' %}"></script>
+    <script src="{% static 'js/plugins/swiper-bundle.min.js' %}"></script>
+    <script src="{% static 'js/main.js@v=1.0' %}"></script>
+    <script src="{% static 'js/auth-integration.js' %}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            /* CV upload box */
+            var zone = document.getElementById("cv-drop-zone");
+            var inp  = zone && zone.querySelector("input[type=file]");
+            var lbl  = document.getElementById("cv-label-text");
+            if (zone && inp) {
+                zone.addEventListener("click", function (e) { if (e.target !== inp) inp.click(); });
+                inp.addEventListener("change", function () {
+                    if (this.files[0] && lbl)
+                        lbl.innerHTML = "📎 <strong>" + this.files[0].name + "</strong>";
+                });
+            }
+
+            /* Settings panel toggle */
+            var panel  = document.getElementById("settings-panel");
+            var btnOpen  = document.getElementById("btn-open-settings");
+            var btnClose = document.getElementById("btn-close-settings");
+            if (btnOpen && panel) {
+                btnOpen.addEventListener("click", function () {
+                    panel.style.display = "block";
+                    panel.scrollIntoView({ behavior: "smooth", block: "start" });
+                });
+            }
+            if (btnClose && panel) {
+                btnClose.addEventListener("click", function () {
+                    panel.style.display = "none";
+                });
+            }
+        });
+    </script>
+</body>
+</html>

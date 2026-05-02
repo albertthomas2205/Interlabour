@@ -1,0 +1,9 @@
+﻿{% extends "dashboard/base.html" %}
+
+{% block content %}
+<section class="panel">
+    <h3>{{ text.quick_actions }}</h3>
+    <a class="btn" href="/admin/">{{ text.django_admin }}</a>
+    <a class="btn alt" href="/api/docs/swagger/">{{ text.api_docs }}</a>
+</section>
+{% endblock %}

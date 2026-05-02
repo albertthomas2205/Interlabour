@@ -1,0 +1,14 @@
+﻿{% extends "dashboard/base.html" %}
+
+{% block content %}
+<section class="panel">
+    <h3>{{ text.submit_application }}: {{ job.title }}</h3>
+    <p class="muted">{{ job.company.name }} - {{ job.location }}</p>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn" type="submit">{{ text.submit_application }}</button>
+        <a class="btn ghost" href="/dashboard/user/">{{ text.back_dashboard }}</a>
+    </form>
+</section>
+{% endblock %}

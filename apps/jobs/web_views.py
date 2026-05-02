@@ -1,0 +1,80 @@
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import gettext as _
+
+from apps.applications.models import Application
+from apps.applications.emailing import send_application_submitted_email
+
+from .forms import JobApplicationForm
+from .models import ExperienceLevel, Job, JobCategory, JobType
+
+
+def job_list(request):
+    jobs = Job.objects.filter(is_active=True).select_related("company", "category").order_by("-posted_at")
+
+    # Optional sidebar filters
+    category_id    = request.GET.get("category")
+    job_type_id    = request.GET.get("job_type")
+    experience_id  = request.GET.get("experience")
+
+    if category_id:
+        jobs = jobs.filter(category__id=category_id)
+    if job_type_id:
+        jobs = jobs.filter(job_type_ref__id=job_type_id)
+    if experience_id:
+        jobs = jobs.filter(experience_level_ref__id=experience_id)
+
+    jobs = jobs[:50]
+
+    return render(request, "frontend/job-list.html", {
+        "jobs":              jobs,
+        "categories":        JobCategory.objects.all().order_by("name"),
+        "job_types":         JobType.objects.all().order_by("name_en"),
+        "experience_levels": ExperienceLevel.objects.all().order_by("name_en"),
+    })
+
+
+def job_detail(request, slug: str):
+    job = get_object_or_404(
+        Job.objects.select_related("company", "category", "job_type_ref", "experience_level_ref"),
+        slug=slug,
+        is_active=True,
+    )
+    recent_jobs = (
+        Job.objects.filter(is_active=True)
+        .exclude(id=job.id)
+        .select_related("company", "category")
+        .order_by("-posted_at")[:6]
+    )
+    return render(request, "frontend/job-single.html", {"job": job, "recent_jobs": recent_jobs})
+
+
+def job_apply(request, slug: str):
+    if not request.user.is_authenticated:
+        return redirect(f"/login.html?next=/jobs/{slug}/apply/")
+
+    job = get_object_or_404(Job.objects.select_related("company"), slug=slug, is_active=True)
+    if Application.objects.filter(job=job, applicant=request.user).exists():
+        messages.info(request, _("You have already applied to this job."))
+        return redirect("user-account")
+
+    initial = {
+        "full_name": f"{request.user.first_name} {request.user.last_name}".strip(),
+        "email": request.user.email,
+    }
+    form = JobApplicationForm(request.POST or None, request.FILES or None, initial=initial)
+    if request.method == "POST" and form.is_valid():
+        application = form.save(commit=False)
+        application.job       = job
+        application.applicant = request.user
+        application.status    = Application.ApplicationStatus.REVIEWING
+        application.save()
+        try:
+            send_application_submitted_email(application)
+        except Exception:
+            pass
+        messages.success(request, _("Application submitted successfully."))
+        return redirect("user-account")
+
+    return render(request, "frontend/job-apply.html", {"job": job, "form": form})

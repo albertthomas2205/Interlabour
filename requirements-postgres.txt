@@ -1,0 +1,4 @@
+# Install this only if you want PostgreSQL support.
+# For local development with SQLite, you do NOT need this file.
+psycopg2-binary==2.9.9; python_version < "3.13"
+psycopg[binary]==3.2.1; python_version >= "3.13"

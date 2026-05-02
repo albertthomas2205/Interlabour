@@ -1,0 +1,43 @@
+{% extends "adminpanel/base.html" %}
+{% load i18n %}
+
+{% block page_title %}{% trans "Categories" %}{% endblock %}
+
+{% block top_actions %}
+    <a class="btn" href="{% url 'adminpanel-category-create' %}">+ {% trans "Create category" %}</a>
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="head">
+        <h3>{% trans "All Categories" %}</h3>
+        <a class="btn ghost" href="{% url 'adminpanel-category-create' %}">+ {% trans "Create" %}</a>
+    </div>
+    <div class="body">
+        {% if categories %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>{% trans "Name" %}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in categories %}
+                        <tr>
+                            <td><strong>{{ c.display_name }}</strong></td>
+                            <td style="text-align:right;">
+                                <a class="btn ghost" href="{% url 'adminpanel-category-edit' category_id=c.id %}">{% trans "Edit" %}</a>
+                                <a class="btn danger" href="{% url 'adminpanel-category-delete' category_id=c.id %}">{% trans "Delete" %}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="muted" style="padding: 14px 18px;">{% trans "No records found." %}</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+

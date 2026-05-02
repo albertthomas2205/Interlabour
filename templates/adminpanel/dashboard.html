@@ -1,0 +1,97 @@
+{% extends "adminpanel/base.html" %}
+{% load i18n %}
+
+{% block page_title %}{% trans "Dashboard" %}{% endblock %}
+
+{% block top_actions %}
+    <a class="btn" href="{% url 'adminpanel-job-create' %}">+ {% trans "Create job" %}</a>
+{% endblock %}
+
+{% block content %}
+{% if pending_testimonials_count %}
+    <a href="{% url 'adminpanel-testimonials' %}" style="text-decoration:none;">
+        <div style="background:#fffbeb;border:1px solid #fde68a;color:#92400e;padding:14px 18px;border-radius:10px;margin-bottom:18px;display:flex;align-items:center;gap:12px;">
+            <span style="font-size:20px;">⏳</span>
+            <div style="flex:1;">
+                <strong>{{ pending_testimonials_count }}</strong>
+                {% blocktrans count counter=pending_testimonials_count %}new customer review awaiting your approval.{% plural %}new customer reviews awaiting your approval.{% endblocktrans %}
+            </div>
+            <span style="font-weight:600;">{% trans "Review now" %} →</span>
+        </div>
+    </a>
+{% endif %}
+<section class="stats">
+    <article class="stat">
+        <div class="label">{% trans "Total Jobs" %}</div>
+        <div class="value">{{ jobs_count }}</div>
+        <div class="hint">{% trans "Active and inactive listings" %}</div>
+    </article>
+    <article class="stat">
+        <div class="label">{% trans "Categories" %}</div>
+        <div class="value">{{ categories_count }}</div>
+        <div class="hint">{% trans "Job categories available" %}</div>
+    </article>
+    <article class="stat">
+        <div class="label">{% trans "Applications" %}</div>
+        <div class="value">{{ applications_count }}</div>
+        <div class="hint">{% trans "Submitted to date" %}</div>
+    </article>
+    <article class="stat">
+        <div class="label">{% trans "Services" %}</div>
+        <div class="value">{{ services_count }}</div>
+        <div class="hint">{% trans "Active and inactive" %}</div>
+    </article>
+    <article class="stat">
+        <div class="label">{% trans "Blog posts" %}</div>
+        <div class="value">{{ blog_posts_count }}</div>
+        <div class="hint">{% trans "Drafts and published" %}</div>
+    </article>
+</section>
+
+<section class="panel">
+    <div class="head">
+        <h3>{% trans "Recent applications" %}</h3>
+        <a class="btn ghost" href="{% url 'adminpanel-applications' %}">{% trans "View all" %} →</a>
+    </div>
+    <div class="body">
+        {% if recent_applications %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>{% trans "Job" %}</th>
+                        <th>{% trans "Applicant" %}</th>
+                        <th>{% trans "Status" %}</th>
+                        <th>{% trans "Date" %}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in recent_applications %}
+                        <tr>
+                            <td>{{ app.job.title_i18n|default:app.job.title }}</td>
+                            <td>{{ app.email }}</td>
+                            <td>
+                                {% if app.status == 'hired' %}
+                                    <span class="badge success">{{ app.get_status_display }}</span>
+                                {% elif app.status == 'rejected' %}
+                                    <span class="badge danger">{{ app.get_status_display }}</span>
+                                {% elif app.status == 'reviewing' %}
+                                    <span class="badge warn">{{ app.get_status_display }}</span>
+                                {% else %}
+                                    <span class="badge info">{{ app.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ app.applied_at|date:"Y-m-d" }}</td>
+                            <td>
+                                <a class="btn ghost" href="{% url 'adminpanel-application-status' app_id=app.id %}">{% trans "Update" %}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="muted" style="padding: 14px 18px;">{% trans "No records found." %}</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,39 @@
+﻿{% extends "dashboard/base.html" %}
+
+{% block content %}
+<section class="panel">
+    <h3>{{ text.jobs }}</h3>
+    <form method="get" style="margin-bottom: 12px; display: flex; gap: 8px;">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search jobs" />
+        <button class="btn" type="submit">Search</button>
+    </form>
+
+    {% if jobs %}
+        <table>
+            <thead>
+                <tr>
+                    <th>{{ text.jobs }}</th>
+                    <th>{{ text.companies }}</th>
+                    <th>Location</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in jobs %}
+                    <tr>
+                        <td>
+                            {{ job.title }}
+                            {% if job.category %}<br><span class="muted">{{ job.category.name }}</span>{% endif %}
+                        </td>
+                        <td>{{ job.company.name }}</td>
+                        <td>{{ job.location }}</td>
+                        <td><a class="btn" href="/dashboard/user/jobs/{{ job.id }}/apply/">{{ text.apply_now }}</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="muted">{{ text.no_records }}</p>
+    {% endif %}
+</section>
+{% endblock %}

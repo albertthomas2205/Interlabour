@@ -1,0 +1,14 @@
+Django==4.2.11
+djangorestframework==3.14.0
+djangorestframework-simplejwt==5.5.1
+django-cors-headers==4.3.1
+drf-spectacular==0.26.5
+dj-database-url==2.1.0
+python-dotenv==1.0.0
+Pillow>=10.0.0
+gunicorn==22.0.0
+whitenoise==6.7.0
+
+# # PostgreSQL driver (Render managed Postgres uses DATABASE_URL)
+# psycopg2-binary==2.9.9; python_version < "3.13"
+# psycopg[binary]==3.2.1; python_version >= "3.13"

@@ -1,0 +1,314 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html class="no-js" lang="{{ request.LANGUAGE_CODE|default:'nl' }}">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Inter Labour – {% trans "Our Jobs" %}</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'imgs/theme/favicon.svg' %}" />
+    <link rel="stylesheet" href="{% static 'css/plugins/animate.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/main.css@v=1.0.css' %}" />
+</head>
+
+<body>
+    <!-- Preloader -->
+    <div id="preloader-active">
+        <div class="preloader d-flex align-items-center justify-content-center">
+            <div class="preloader-inner position-relative">
+                <div class="text-center">
+                    <img src="{% static 'imgs/theme/loading.gif' %}" alt="" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header sticky-bar">
+        <div class="container">
+            <div class="main-header">
+                <div class="header-left">
+                    <div class="header-logo">
+                        <a href="/" class="d-flex"><img alt="Inter Labour" src="{% static 'imgs/theme/logo.svg' %}" /></a>
+                    </div>
+                    <div class="header-nav">
+                        <nav class="nav-main-menu d-none d-xl-block">
+                            <ul class="main-menu">
+                                <li class=""><a href="/">{% trans "Home" %}</a></li>
+                                <li class=""><a href="/page-about.html">{% trans "About Us" %}</a></li>
+                                <li class=""><a href="/page-service.html">{% trans "Services" %}</a></li>
+                                <li class="active"><a href="/jobs/">{% trans "Jobs" %}</a></li>
+                                <li class=""><a href="/page-contact.html">{% trans "Contact" %}</a></li>
+                            </ul>
+                        </nav>
+                        <div class="burger-icon burger-icon-white">
+                            <span class="burger-icon-top"></span>
+                            <span class="burger-icon-mid"></span>
+                            <span class="burger-icon-bottom"></span>
+                        </div>
+                    </div>
+                </div>
+                <div id="header-right" style="display:flex;align-items:center;gap:10px;margin-left:auto;">
+                    <div id="header-lang"></div>
+                    <div id="header-auth"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="mobile-header-active mobile-header-wrapper-style perfect-scrollbar">
+        <div class="mobile-header-wrapper-inner">
+            <div class="mobile-header-content-area">
+                <div class="perfect-scroll">
+                    <div class="mobile-search mobile-header-border mb-30">
+                        <form action="#">
+                            <input type="text" placeholder="{% trans "Search for items…" %}" />
+                            <i class="fi-rr-search"></i>
+                        </form>
+                    </div>
+                    <div class="mobile-menu-wrap mobile-header-border">
+                        <nav>
+                            <ul class="mobile-menu font-heading">
+                                <li class="has-children"><a href="/">{% trans "Home" %}</a></li>
+                                <li class="has-children"><a href="/page-about.html">{% trans "About Us" %}</a></li>
+                                <li class="has-children has-active"><a href="/jobs/">{% trans "Jobs" %}</a></li>
+                                <li class="has-children"><a href="/page-service.html">{% trans "Services" %}</a></li>
+                                <li class="has-children"><a href="/page-contact.html">{% trans "Contact" %}</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End header-->
+
+    <main class="main">
+        <!-- Page banner -->
+        <section class="section-box-2">
+            <div class="box-head-single none-bg">
+                <div class="container">
+                    <h4>{% trans "Find Your Next Job" %}</h4>
+                    <div class="row mt-15 mb-40">
+                        <div class="col-lg-7 col-md-9">
+                            <span class="text-mutted">{% trans "Discover international vacancies and build your career with Inter Labour" %}</span>
+                        </div>
+                        <div class="col-lg-5 col-md-3 text-lg-end text-start">
+                            <ul class="breadcrumbs mt-sm-15">
+                                <li><a href="/">{% trans "Home" %}</a></li>
+                                <li>{% trans "Our Jobs" %}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Job listings + sidebar -->
+        <section class="section-box mt-80">
+            <div class="container">
+                <div class="row flex-row-reverse">
+
+                    <!-- Job cards -->
+                    <div class="col-lg-9 col-md-12 col-sm-12 col-12 float-right">
+                        <div class="content-page">
+                            <div class="job-list-list mb-15">
+                                <div class="list-recent-jobs">
+                                    {% for job in jobs %}
+                                        <div class="card-job hover-up wow animate__animated animate__fadeIn">
+                                            <div class="card-job-top">
+                                                <div class="card-job-top--image">
+                                                    <a href="{% url 'jobs-detail' slug=job.slug %}">
+                                                        <figure><img alt="{{ job.title_i18n }}"
+                                                            src="{% if job.image_url %}{{ job.image_url }}{% else %}{% static 'imgs/page/job/digital.png' %}{% endif %}" /></figure>
+                                                    </a>
+                                                </div>
+                                                <div class="card-job-top--info">
+                                                    <h6 class="card-job-top--info-heading">
+                                                        <a href="{% url 'jobs-detail' slug=job.slug %}">{{ job.title_i18n }}</a>
+                                                    </h6>
+                                                    <div class="row">
+                                                        <div class="col-lg-7">
+                                                            <span class="card-job-top--company">{{ job.company.name }}</span>
+                                                            <span class="card-job-top--location text-sm"><i class="fi-rr-marker"></i> {{ job.location }}</span>
+                                                            <span class="card-job-top--type-job text-sm"><i class="fi-rr-briefcase"></i> {{ job.job_type_label }}</span>
+                                                        </div>
+                                                        <div class="col-lg-5 text-lg-end">
+                                                            {% if job.salary_min %}
+                                                                <span class="card-job-top--price">{{ job.currency_symbol }}{{ job.salary_min }}{% if job.salary_max %} – {{ job.currency_symbol }}{{ job.salary_max }}{% endif %}<span>/{% trans "Month" %}</span></span>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-job-description mt-20">
+                                                {{ job.description_i18n|truncatechars:220 }}
+                                            </div>
+                                            <div class="card-job-bottom mt-25">
+                                                <div class="row">
+                                                    <div class="col-lg-9 col-sm-8 col-12">
+                                                        {% if job.is_featured %}
+                                                            <a href="#" class="btn btn-small background-urgent btn-pink mr-5">{% trans "Urgent" %}</a>
+                                                        {% endif %}
+                                                        <a href="#" class="btn btn-small background-6 disc-btn">{{ job.job_type_label }}</a>
+                                                    </div>
+                                                    <div class="col-lg-3 col-sm-4 col-12 text-lg-end d-lg-block d-none">
+                                                        <a href="{% url 'jobs-detail' slug=job.slug %}" class="btn btn-default btn-small hover-up">{% trans "Apply now" %}</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% empty %}
+                                        <div class="text-center mt-40 mb-40">
+                                            <p class="text-body-999">{% trans "No jobs found." %}</p>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="col-lg-3 col-md-12 col-sm-12 col-12">
+                        <div class="sidebar-with-bg mb-30">
+                            <h5 class="font-semibold mb-10">{% trans "Set a job alert" %}</h5>
+                            <p class="text-body-999">{% trans "Enter your email and receive job notifications." %}</p>
+                            <div class="box-email-reminder">
+                                <form>
+                                    <div class="form-group mt-15">
+                                        <input type="text" class="form-control input-bg-white form-icons"
+                                               placeholder="{% trans "Enter your email address." %}" />
+                                        <i class="fi-rr-envelope"></i>
+                                    </div>
+                                    <div class="form-group mt-25 mb-5">
+                                        <button class="btn btn-default btn-md">{% trans "Submit" %}</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        {% if categories %}
+                        <div class="sidebar-shadow none-shadow mb-30">
+                            <h6 class="f-18 color-text-mutted mb-30">{% trans "Category" %}</h6>
+                            <div class="sidebar-list-job">
+                                <ul>
+                                    {% for cat in categories %}
+                                        <li><a href="?category={{ cat.id }}">{{ cat.display_name }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if job_types %}
+                        <div class="sidebar-shadow none-shadow mb-30">
+                            <h6 class="f-18 color-text-mutted mb-30">{% trans "Job type" %}</h6>
+                            <div class="sidebar-list-job">
+                                <ul>
+                                    {% for jt in job_types %}
+                                        <li><a href="?job_type={{ jt.id }}">{{ jt.display_name }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if experience_levels %}
+                        <div class="sidebar-shadow none-shadow mb-30">
+                            <h6 class="f-18 color-text-mutted mb-30">{% trans "Experience levels" %}</h6>
+                            <div class="sidebar-list-job">
+                                <ul>
+                                    {% for el in experience_levels %}
+                                        <li><a href="?experience={{ el.id }}">{{ el.display_name }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer mt-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 col-sm-12" style="width: 300px">
+                    <a href="/"><img alt="Inter Labour" src="{% static 'imgs/theme/logo.svg' %}" style="width: 150px;" /></a>
+                    <div class="mt-20 mb-20">{% trans "Inter Labour is an international recruitment and staffing company that helps organisations find the right employees, worldwide." %}</div>
+                </div>
+                <div class="col-md-2 col-xs-6">
+                    <h6>{% trans "Company" %}</h6>
+                    <ul class="menu-footer mt-40">
+                        <li><a href="/page-about.html">{% trans "About us" %}</a></li>
+                        <li><a href="/page-service.html">{% trans "Our Services" %}</a></li>
+                        <li><a href="/jobs/">{% trans "Job List" %}</a></li>
+                        <li><a href="/page-contact.html">{% trans "Contact Us" %}</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 col-xs-6">
+                    <h6>{% trans "Job List" %}</h6>
+                    <ul class="menu-footer mt-40">
+                        <li><a href="/jobs/">{% trans "General Worker" %}</a></li>
+                        <li><a href="/jobs/">{% trans "Construction Assistant" %}</a></li>
+                        <li><a href="/jobs/">{% trans "Bricklayer Assistant" %}</a></li>
+                        <li><a href="/jobs/">{% trans "Scaffolding Assistant" %}</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 col-xs-6">
+                    <h6>{% trans "Logistics & Warehouse" %}</h6>
+                    <ul class="menu-footer mt-40">
+                        <li><a href="/jobs/">{% trans "Warehouse Worker" %}</a></li>
+                        <li><a href="/jobs/">{% trans "Packing & Sorting Employee" %}</a></li>
+                        <li><a href="/jobs/">{% trans "Loading & Unloading Employee" %}</a></li>
+                        <li><a href="/jobs/">{% trans "Delivery Assistant" %}</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 col-xs-6">
+                    <h6>{% trans "Support" %}</h6>
+                    <ul class="menu-footer mt-40">
+                        <li><a href="#">{% trans "Privacy Policy" %}</a></li>
+                        <li><a href="#">{% trans "Help Desk" %}</a></li>
+                        <li><a href="#">{% trans "Terms & Conditions" %}</a></li>
+                        <li><a href="#">{% trans "FAQ" %}</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom mt-50">
+                <div class="row">
+                    <div class="col-md-6">
+                        Copyright ©2026 <a href="#"><strong>Inter Labour</strong></a>. {% trans "All Rights Reserved" %}
+                    </div>
+                    <div class="col-md-6 text-md-end text-start">
+                        <div class="footer-social">
+                            <a href="#" class="icon-socials icon-facebook"></a>
+                            <a href="#" class="icon-socials icon-twitter"></a>
+                            <a href="#" class="icon-socials icon-instagram"></a>
+                            <a href="#" class="icon-socials icon-linkedin"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/vendor/modernizr-3.6.0.min.js' %}"></script>
+    <script src="{% static 'js/vendor/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'js/vendor/jquery-migrate-3.3.0.min.js' %}"></script>
+    <script src="{% static 'js/vendor/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/plugins/waypoints.js' %}"></script>
+    <script src="{% static 'js/plugins/wow.js' %}"></script>
+    <script src="{% static 'js/plugins/magnific-popup.js' %}"></script>
+    <script src="{% static 'js/plugins/perfect-scrollbar.min.js' %}"></script>
+    <script src="{% static 'js/plugins/select2.min.js' %}"></script>
+    <script src="{% static 'js/plugins/isotope.js' %}"></script>
+    <script src="{% static 'js/plugins/scrollup.js' %}"></script>
+    <script src="{% static 'js/plugins/swiper-bundle.min.js' %}"></script>
+    <script src="{% static 'js/main.js@v=1.0' %}"></script>
+    <script src="{% static 'js/auth-integration.js' %}"></script>
+</body>
+</html>

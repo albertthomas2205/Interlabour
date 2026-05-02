@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inter Labour Admin Dashboard</title>
+    <style>
+        :root {
+            --bg: #f4f7fb;
+            --panel: #ffffff;
+            --text: #1f2a37;
+            --muted: #667085;
+            --accent: #0f766e;
+            --border: #e4e7ec;
+        }
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+        .wrap {
+            max-width: 1100px;
+            margin: 36px auto;
+            padding: 0 16px 24px;
+        }
+        .top {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+        .title {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            text-decoration: none;
+            color: #fff;
+            background: var(--accent);
+            padding: 9px 14px;
+            border-radius: 8px;
+            font-size: 0.92rem;
+        }
+        .btn.alt {
+            background: #0b4f6c;
+        }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 12px;
+        }
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+        }
+        .label {
+            font-size: 0.82rem;
+            color: var(--muted);
+        }
+        .value {
+            margin-top: 6px;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        .panel {
+            margin-top: 18px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px;
+        }
+        ul {
+            margin: 10px 0 0;
+            padding-left: 18px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        code {
+            background: #eef2f6;
+            padding: 2px 6px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="top">
+            <div class="title">Inter Labour Admin Dashboard</div>
+            <div class="actions">
+                <a class="btn" href="/admin/">Django Admin</a>
+                <a class="btn alt" href="/api/docs/swagger/">API Docs</a>
+                <a class="btn alt" href="/">Frontend Home</a>
+            </div>
+        </div>
+
+        <div class="cards">
+            <div class="card"><div class="label">Users</div><div class="value">{{ users_count }}</div></div>
+            <div class="card"><div class="label">Jobs</div><div class="value">{{ jobs_count }}</div></div>
+            <div class="card"><div class="label">Companies</div><div class="value">{{ companies_count }}</div></div>
+            <div class="card"><div class="label">Applications</div><div class="value">{{ applications_count }}</div></div>
+            <div class="card"><div class="label">Candidates</div><div class="value">{{ candidates_count }}</div></div>
+            <div class="card"><div class="label">Services</div><div class="value">{{ services_count }}</div></div>
+            <div class="card"><div class="label">Blog Posts</div><div class="value">{{ blog_posts_count }}</div></div>
+            <div class="card"><div class="label">Contact Messages</div><div class="value">{{ messages_count }}</div></div>
+        </div>
+
+        <div class="panel">
+            <strong>Quick Usage</strong>
+            <ul>
+                <li>Manage database records in <code>/admin/</code>.</li>
+                <li>View API schema/docs in <code>/api/docs/swagger/</code>.</li>
+                <li>Frontend pages are served by Django directly from <code>backend/frontend/</code>.</li>
+                <li>Main site: <code>/</code> and additional pages such as <code>/page-about.html</code> and <code>/pages/job-grid.html</code>.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

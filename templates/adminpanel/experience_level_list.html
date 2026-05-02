@@ -1,0 +1,45 @@
+{% extends "adminpanel/base.html" %}
+{% load i18n %}
+
+{% block page_title %}{% trans "Experience Levels" %}{% endblock %}
+
+{% block top_actions %}
+    <a class="btn" href="{% url 'adminpanel-experience-level-create' %}">+ {% trans "Create experience level" %}</a>
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="head">
+        <h3>{% trans "All Experience Levels" %}</h3>
+        <a class="btn ghost" href="{% url 'adminpanel-experience-level-create' %}">+ {% trans "Create" %}</a>
+    </div>
+    <div class="body">
+        {% if items %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>{% trans "English" %}</th>
+                        <th>{% trans "Dutch" %}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                        <tr>
+                            <td><strong>{{ item.name_en }}</strong></td>
+                            <td>{{ item.name_nl }}</td>
+                            <td style="text-align:right;">
+                                <a class="btn ghost" href="{% url 'adminpanel-experience-level-edit' item_id=item.id %}">{% trans "Edit" %}</a>
+                                <a class="btn danger" href="{% url 'adminpanel-experience-level-delete' item_id=item.id %}">{% trans "Delete" %}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="muted" style="padding: 14px 18px;">{% trans "No records found." %}</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+

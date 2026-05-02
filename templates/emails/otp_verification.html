@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Je verificatiecode - Inter Labour</title>
+</head>
+<body style="margin:0;padding:0;background-color:#eef1f6;-webkit-font-smoothing:antialiased;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1e293b;line-height:1.6;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#eef1f6;padding:32px 16px;">
+        <tr>
+            <td align="center">
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:560px;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 10px 40px rgba(25,38,63,0.08);">
+                    <tr>
+                        <td style="height:4px;background:linear-gradient(90deg,#19263F 0%,#2D467A 42%,#902D3A 72%,#B19357 100%);"></td>
+                    </tr>
+                    <tr>
+                        <td style="padding:36px 40px 28px 40px;text-align:center;border-bottom:1px solid #eef1f6;">
+                            {% if logo_cid %}
+                                <img src="cid:{{ logo_cid }}" alt="Inter Labour" width="196" height="auto" style="display:block;margin:0 auto;max-width:196px;height:auto;" />
+                            {% elif logo_url %}
+                                <img src="{{ logo_url }}" alt="Inter Labour" width="196" height="auto" style="display:block;margin:0 auto;max-width:196px;height:auto;" />
+                            {% else %}
+                                <div style="display:inline-block;text-align:center;">
+                                    <div style="font-size:22px;font-weight:700;letter-spacing:0.12em;color:#19263F;line-height:1.2;">INTER LABOUR</div>
+                                    <div style="font-size:12px;color:#64748b;margin-top:6px;letter-spacing:0.08em;text-transform:uppercase;">Werving &amp; uitzendbureau</div>
+                                </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:32px 40px 8px 40px;">
+                            <p style="margin:0 0 18px 0;font-size:16px;color:#1e293b;">Hallo {{ recipient_name }},</p>
+                            <p style="margin:0 0 24px 0;font-size:15px;color:#475569;">
+                                Bedankt voor je registratie bij <strong style="color:#19263F;">Inter Labour</strong>.
+                                Om je e-mailadres te bevestigen, voer je onderstaande code in op de verificatiepagina.
+                            </p>
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td align="center" style="padding:24px 16px;background-color:#f8fafc;border-radius:12px;border:1px dashed #cbd5e1;">
+                                        <div style="font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#64748b;margin-bottom:10px;">Je verificatiecode</div>
+                                        <div style="font-size:32px;font-weight:700;letter-spacing:0.35em;color:#19263F;font-family:'Consolas','Monaco','Courier New',monospace;">{{ otp_code }}</div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <p style="margin:24px 0 0 0;font-size:14px;color:#64748b;">
+                                Deze code is <strong style="color:#334155;">{{ expiry_minutes }} minuten</strong> geldig. Deel de code nooit met anderen - wij vragen deze nooit telefonisch of via social media.
+                            </p>
+                            <p style="margin:20px 0 0 0;font-size:14px;color:#64748b;">
+                                Heb je deze aanmelding niet zelf gestart? Dan kun je deze e-mail gewoon negeren; er wordt geen account geactiveerd zonder deze stap.
+                            </p>
+
+                            <div style="margin:28px 0 0 0;padding-top:22px;border-top:1px solid #eef1f6;"></div>
+
+                            <p style="margin:0 0 18px 0;font-size:16px;color:#1e293b;">Hello {{ recipient_name }},</p>
+                            <p style="margin:0 0 24px 0;font-size:15px;color:#475569;">
+                                Thank you for registering with <strong style="color:#19263F;">Inter Labour</strong>.
+                                To confirm your email address, enter the code below on the verification page.
+                            </p>
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td align="center" style="padding:24px 16px;background-color:#f8fafc;border-radius:12px;border:1px dashed #cbd5e1;">
+                                        <div style="font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#64748b;margin-bottom:10px;">Your verification code</div>
+                                        <div style="font-size:32px;font-weight:700;letter-spacing:0.35em;color:#19263F;font-family:'Consolas','Monaco','Courier New',monospace;">{{ otp_code }}</div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <p style="margin:24px 0 0 0;font-size:14px;color:#64748b;">
+                                This code is <strong style="color:#334155;">{{ expiry_minutes }} minutes</strong> valid. Never share the code with anyone - we never ask for it by phone or on social media.
+                            </p>
+                            <p style="margin:20px 0 0 0;font-size:14px;color:#64748b;">
+                                If you did not start this registration yourself, you can ignore this email; no account will be activated without this step.
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:0 40px 36px 40px;">
+                            <p style="margin:0;font-size:14px;color:#1e293b;">
+                                Met vriendelijke groet,<br />
+                                <strong style="color:#19263F;">Het team van Inter Labour</strong>
+                            </p>
+                            {% if site_url %}
+                            <p style="margin:28px 0 0 0;padding-top:22px;border-top:1px solid #eef1f6;font-size:13px;color:#94a3b8;">
+                                <a href="{{ site_url }}" style="color:#2D467A;text-decoration:none;font-weight:600;">Website bezoeken</a>
+                            </p>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:18px 28px;background-color:#f1f5f9;text-align:center;font-size:11px;color:#94a3b8;line-height:1.5;">
+                            Deze e-mail is automatisch verzonden door Inter Labour. Antwoorden op dit bericht worden niet gelezen.
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

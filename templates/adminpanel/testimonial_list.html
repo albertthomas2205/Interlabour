@@ -1,0 +1,83 @@
+{% extends "adminpanel/base.html" %}
+{% load i18n %}
+
+{% block page_title %}{% trans "Testimonials" %}{% endblock %}
+
+{% block top_actions %}
+    <a class="btn" href="{% url 'adminpanel-testimonial-create' %}">+ {% trans "Add testimonial" %}</a>
+{% endblock %}
+
+{% block content %}
+{% if pending_count %}
+    <div style="background:#fffbeb;border:1px solid #fde68a;color:#92400e;padding:12px 16px;border-radius:10px;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
+        <span style="font-size:18px;">⏳</span>
+        <div>
+            <strong>{{ pending_count }}</strong>
+            {% blocktrans count counter=pending_count %}user-submitted review awaiting your approval.{% plural %}user-submitted reviews awaiting your approval.{% endblocktrans %}
+        </div>
+    </div>
+{% endif %}
+<section class="panel">
+    <div class="head"><h3>{% trans "All Testimonials" %}</h3></div>
+    <div class="body">
+        {% if items %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>{% trans "Photo" %}</th>
+                        <th>{% trans "Client" %}</th>
+                        <th>{% trans "Role / Company" %}</th>
+                        <th>{% trans "Review" %}</th>
+                        <th>{% trans "Rating" %}</th>
+                        <th>{% trans "Status" %}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in items %}
+                        <tr {% if not t.is_active %}style="background:#fffbeb;"{% endif %}>
+                            <td>
+                                {% if t.photo_url %}
+                                    <img src="{{ t.photo_url }}" alt="" style="width:42px;height:42px;border-radius:50%;object-fit:cover;" />
+                                {% else %}
+                                    <span style="display:inline-flex;width:42px;height:42px;border-radius:50%;background:#f1f5f9;align-items:center;justify-content:center;color:#94a3b8;font-weight:700;">{{ t.author_name|first|upper }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <strong>{{ t.author_name }}</strong>
+                                <div style="font-size:11px;color:var(--text-soft);">{{ t.created_at|date:"M d, Y" }}</div>
+                            </td>
+                            <td>{{ t.author_role_en|default:t.author_role_nl|default:t.author_role|default:"—" }}</td>
+                            <td style="max-width:280px;">
+                                <div style="font-size:13px;color:var(--text-soft);max-height:54px;overflow:hidden;text-overflow:ellipsis;line-height:1.4;">
+                                    {{ t.message_en|default:t.message_nl|default:t.message|truncatechars:140 }}
+                                </div>
+                            </td>
+                            <td style="white-space:nowrap;color:#f59e0b;">{% for i in "12345" %}{% if forloop.counter <= t.rating %}★{% else %}<span style="color:#e2e8f0;">★</span>{% endif %}{% endfor %}</td>
+                            <td>
+                                {% if t.is_active %}
+                                    <span class="badge success">{% trans "Active" %}</span>
+                                {% else %}
+                                    <span class="badge danger">{% trans "Pending" %}</span>
+                                {% endif %}
+                            </td>
+                            <td style="text-align:right;white-space:nowrap;">
+                                {% if not t.is_active %}
+                                    <form method="post" action="{% url 'adminpanel-testimonial-approve' item_id=t.id %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn" style="background:#10b981;border-color:#10b981;">{% trans "Approve" %}</button>
+                                    </form>
+                                {% endif %}
+                                <a class="btn ghost" href="{% url 'adminpanel-testimonial-edit' item_id=t.id %}">{% trans "Edit" %}</a>
+                                <a class="btn danger" href="{% url 'adminpanel-testimonial-delete' item_id=t.id %}">{% trans "Delete" %}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p style="padding:14px 18px;color:var(--muted);">{% trans "No testimonials yet. Visitors can submit reviews from the homepage, or click Add testimonial to create one manually." %}</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

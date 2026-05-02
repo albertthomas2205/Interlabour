@@ -1,0 +1,466 @@
+{% extends "adminpanel/base.html" %}
+{% load i18n %}
+
+{% block page_title %}{% trans "Applications" %}{% endblock %}
+
+{% block content %}
+<style>
+    .app-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin-bottom: 14px;
+        box-shadow: var(--shadow);
+        transition: box-shadow 0.15s, transform 0.15s;
+    }
+    .app-card:hover { box-shadow: var(--shadow-lg); }
+    .app-card .app-head {
+        display: flex; justify-content: space-between; align-items: flex-start;
+        gap: 14px; flex-wrap: wrap; margin-bottom: 10px;
+    }
+    .app-card .app-job-title {
+        font-size: 1.05rem; font-weight: 700; color: var(--text); margin: 0 0 4px;
+    }
+    .app-card .app-meta {
+        font-size: 0.8rem; color: var(--text-soft);
+    }
+    .app-card .app-meta strong { color: var(--text); font-weight: 600; }
+    .app-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 14px;
+        background: var(--panel-soft);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin: 12px 0;
+    }
+    .app-info-block .label {
+        font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+        color: var(--muted); font-weight: 600; margin-bottom: 3px;
+    }
+    .app-info-block .value {
+        font-size: 0.86rem; color: var(--text); font-weight: 500; word-break: break-word;
+    }
+    .docs-row {
+        display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; align-items: stretch;
+    }
+    .doc-group {
+        display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0;
+        border-radius: 8px; overflow: hidden; font-size: 12px; font-weight: 600;
+        border: 1px solid transparent;
+    }
+    .doc-group .doc-label {
+        padding: 7px 10px; font-size: 11px; text-transform: uppercase;
+        letter-spacing: 0.05em; color: inherit; opacity: 0.9; white-space: nowrap;
+    }
+    .doc-group button.doc-open {
+        cursor: pointer; font: inherit;
+        display: inline-flex; align-items: center; justify-content: center;
+        padding: 8px 10px; color: inherit; font-weight: 600;
+        border: none; border-left: 1px solid rgba(15,23,42,0.12); background: transparent;
+        transition: background 0.12s; min-width: 40px;
+    }
+    .doc-group button.doc-open:hover { filter: brightness(0.96); }
+    .doc-group button.doc-open svg { width: 18px; height: 18px; display: block; }
+    /* Document preview modal — responsive shell; PDF in iframe; images centered in <img> */
+    #il-doc-modal.il-doc-modal-root {
+        display: none; position: fixed; inset: 0; z-index: 99999;
+        align-items: center; justify-content: center;
+        padding: clamp(8px, 2vmin, 20px); box-sizing: border-box;
+    }
+    #il-doc-modal.il-doc-modal-root.is-visible { display: flex; }
+    .il-doc-modal-backdrop {
+        position: absolute; inset: 0; z-index: 0;
+        background: rgba(15,23,42,0.52); backdrop-filter: blur(3px); cursor: pointer;
+    }
+    .il-doc-modal-shell {
+        position: relative; z-index: 1;
+        width: min(1200px, calc(100vw - 18px));
+        max-width: 98vw;
+        max-height: min(calc(100dvh - 18px), 940px);
+        height: min(92dvh, 900px);
+        background: #f8fafc; border-radius: 16px;
+        box-shadow: 0 28px 65px rgba(15,23,42,0.4);
+        display: flex; flex-direction: column; overflow: hidden; border: 1px solid #e2e8f0;
+    }
+    @media (max-height: 520px) {
+        .il-doc-modal-shell {
+            height: calc(100dvh - 12px); max-height: none;
+        }
+    }
+    @media (max-width: 540px) {
+        .il-doc-modal-shell {
+            width: calc(100vw - 14px); max-height: calc(100dvh - 12px);
+            border-radius: 12px;
+        }
+    }
+    .il-doc-modal-toolbar {
+        flex-shrink: 0;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center; gap: 10px;
+        padding: 12px 16px; background: #fff; border-bottom: 1px solid #e2e8f0;
+    }
+    .il-doc-modal-toolbar h2 {
+        margin: 0; font-size: clamp(0.92rem, 2.8vw, 1.06rem); font-weight: 700;
+        color: #0f172a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        text-align: center;
+    }
+    .il-doc-modal-toolbar .btn-il-back {
+        flex-shrink: 0; cursor: pointer; font: inherit; font-weight: 600;
+        display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px;
+        border-radius: 10px; border: 1px solid #e2e8f0; background: #fff; color: #334155;
+        transition: background 0.12s;
+    }
+    .il-doc-modal-toolbar .btn-il-back:hover { background: #f1f5f9; }
+    .il-doc-modal-toolbar .btn-il-dl {
+        flex-shrink: 0; font-weight: 600; text-decoration: none;
+        display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px;
+        border-radius: 10px; border: none; background: linear-gradient(135deg,#2563eb,#1d4ed8);
+        color: #fff !important; box-shadow: 0 4px 14px rgba(37,99,235,0.35);
+        white-space: nowrap;
+    }
+    .il-doc-modal-toolbar .btn-il-dl:hover { filter: brightness(1.05); }
+    .il-doc-modal-body {
+        flex: 1; min-height: 0;
+        margin: clamp(10px, 2vw, 14px);
+        margin-top: 10px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    .il-doc-modal-stage {
+        flex: 1; min-height: 0;
+        position: relative;
+        min-height: min(320px, 38dvh);
+    }
+    .il-doc-modal-iframe {
+        display: none;
+        position: absolute; inset: 0;
+        width: 100%; height: 100%; border: 0; background: #f8fafc;
+    }
+    .il-doc-modal-iframe.is-visible { display: block; }
+    .il-doc-modal-img-wrap {
+        display: none;
+        position: absolute; inset: 0;
+        align-items: center;
+        justify-content: center;
+        padding: clamp(12px, 3vw, 28px);
+        overflow: auto;
+        background: linear-gradient(165deg, #fafafa 0%, #eef2f6 55%, #e4e9ef 100%);
+    }
+    .il-doc-modal-img-wrap.is-visible { display: flex; }
+    .il-doc-modal-img-wrap img {
+        display: block;
+        margin: auto;
+        max-width: min(100%, 1120px);
+        max-height: min(calc(100dvh - 200px), 78vh, 760px);
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        object-position: center;
+        border-radius: 10px;
+        box-shadow: 0 18px 50px rgba(15,23,42,0.18);
+        background: #fff;
+    }
+    .il-doc-modal-fallback {
+        display: none;
+        position: absolute; inset: 0;
+        flex-direction: column; align-items: center;
+        justify-content: center; padding: 28px; text-align: center;
+        color: #64748b; background: #fff;
+    }
+    .il-doc-modal-fallback.is-on { display: flex; }
+    .il-doc-modal-fallback p { margin: 0; max-width: 400px; line-height: 1.55; font-size: 0.95rem; }
+
+    .doc-group.aadhaar-grp { background: #eef4ff; color: #1e40af; border-color: #cde0ff; }
+    .doc-group.pan-grp { background: #ecfdf5; color: #065f46; border-color: #bbf7d0; }
+    .doc-group.passport-grp { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+    .doc-group.resume-grp { background: #f3e8ff; color: #6b21a8; border-color: #e9d5ff; }
+    .doc-chip {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 7px 12px; border-radius: 8px; font-size: 12px;
+        font-weight: 600; text-decoration: none;
+        transition: transform 0.1s, box-shadow 0.15s;
+    }
+    .doc-chip:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(15,23,42,0.1); }
+    .doc-chip.aadhaar { background: #eef4ff; color: #1e40af; border: 1px solid #cde0ff; }
+    .doc-chip.pan { background: #ecfdf5; color: #065f46; border: 1px solid #bbf7d0; }
+    .doc-chip.passport { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .doc-chip.resume { background: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
+    .doc-chip.missing { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; cursor: not-allowed; }
+    .cover-letter {
+        margin-top: 10px; font-size: 0.85rem; color: var(--text-soft);
+        background: #fbfbfd; border-left: 3px solid var(--brand); padding: 8px 12px;
+        border-radius: 0 6px 6px 0; max-height: 80px; overflow: auto;
+    }
+    .filter-bar {
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px;
+    }
+    .filter-bar .form-control { padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; font: inherit; }
+    .app-zip-icn { display: inline-flex; align-items: center; justify-content: center; min-width: 42px; }
+</style>
+
+<form method="get" class="filter-bar">
+    <input type="text" name="q" class="form-control" placeholder="{% trans 'Search by name / email / job…' %}" value="{{ q|default:'' }}" style="flex:1;min-width:220px;" />
+    <select name="status" class="form-control">
+        <option value="">{% trans "All statuses" %}</option>
+        <option value="submitted" {% if status == 'submitted' %}selected{% endif %}>{% trans "Submitted (Pending)" %}</option>
+        <option value="reviewing" {% if status == 'reviewing' %}selected{% endif %}>{% trans "Reviewing" %}</option>
+        <option value="hired" {% if status == 'hired' %}selected{% endif %}>{% trans "Approved / Hired" %}</option>
+        <option value="rejected" {% if status == 'rejected' %}selected{% endif %}>{% trans "Rejected" %}</option>
+    </select>
+    <button type="submit" class="btn">{% trans "Filter" %}</button>
+    {% if q or status %}<a href="{% url 'adminpanel-applications' %}" class="btn ghost">{% trans "Reset" %}</a>{% endif %}
+</form>
+
+<section>
+    {% if applications %}
+        <div style="font-size:0.85rem;color:var(--text-soft);margin-bottom:10px;">
+            {% blocktrans count counter=applications|length %}{{ counter }} application{% plural %}{{ counter }} applications{% endblocktrans %}
+        </div>
+        {% for app in applications %}
+            <article class="app-card">
+                <div class="app-head">
+                    <div style="flex:1;min-width:0;">
+                        <h3 class="app-job-title">{{ app.job.title_i18n|default:app.job.title }}</h3>
+                        <div class="app-meta">
+                            <strong>{{ app.full_name }}</strong>
+                            {% if app.job.company %} • {{ app.job.company.name }}{% endif %}
+                            {% if app.job.location %} • {{ app.job.location }}{% endif %}
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                        {% if app.status == 'hired' %}
+                            <span class="badge success">{{ app.get_status_display }}</span>
+                        {% elif app.status == 'rejected' %}
+                            <span class="badge danger">{{ app.get_status_display }}</span>
+                        {% elif app.status == 'reviewing' %}
+                            <span class="badge warn">{{ app.get_status_display }}</span>
+                        {% else %}
+                            <span class="badge info">{{ app.get_status_display }}</span>
+                        {% endif %}
+                        {% if app.aadhaar_card or app.pan_card or app.passport or app.resume %}
+                            <a class="btn app-zip-icn" href="{% url 'adminpanel-application-download-all' app_id=app.id %}" title="{% trans 'Download every uploaded file as a ZIP' %}" aria-label="{% trans 'Download all (ZIP)' %}">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="5" rx="1"/><path d="M5 8v11a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8"/><line x1="10" y1="13" x2="14" y2="13"/></svg>
+                            </a>
+                        {% endif %}
+                        <a class="btn ghost" href="{% url 'adminpanel-application-status' app_id=app.id %}">{% trans "Update status" %}</a>
+                    </div>
+                </div>
+
+                <div class="app-grid">
+                    <div class="app-info-block">
+                        <div class="label">{% trans "Email" %}</div>
+                        <div class="value"><a href="mailto:{{ app.email }}">{{ app.email }}</a></div>
+                    </div>
+                    <div class="app-info-block">
+                        <div class="label">{% trans "Phone" %}</div>
+                        <div class="value">{{ app.phone|default:"—" }}</div>
+                    </div>
+                    <div class="app-info-block">
+                        <div class="label">{% trans "Applied on" %}</div>
+                        <div class="value">{{ app.applied_at|date:"Y-m-d H:i" }}</div>
+                    </div>
+                    <div class="app-info-block">
+                        <div class="label">{% trans "Job type" %}</div>
+                        <div class="value">{{ app.job.job_type_label|default:"—" }}</div>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);font-weight:600;">{% trans "Uploaded Documents" %}</div>
+                    <div class="docs-row">
+                        {% if app.aadhaar_card %}
+                            <div class="doc-group aadhaar-grp">
+                                <span class="doc-label">{% trans "Aadhaar" %}</span>
+                                <button type="button" class="doc-open js-doc-preview-open"
+                                    data-preview-view-url="{% url 'adminpanel-application-document-view' app_id=app.id kind='aadhaar' %}"
+                                    data-preview-download-url="{% url 'adminpanel-application-document-download' app_id=app.id kind='aadhaar' %}"
+                                    data-preview-heading="{% trans 'Aadhaar' %} — {{ app.full_name }}"
+                                    data-preview-filename="{{ app.aadhaar_card.name }}"
+                                    title="{% trans 'Open preview' %}" aria-label="{% trans 'Open preview' %}">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
+                                </button>
+                            </div>
+                        {% else %}
+                            <span class="doc-chip missing">⚠ {% trans "No Aadhaar" %}</span>
+                        {% endif %}
+                        {% if app.pan_card %}
+                            <div class="doc-group pan-grp">
+                                <span class="doc-label">{% trans "PAN" %}</span>
+                                <button type="button" class="doc-open js-doc-preview-open"
+                                    data-preview-view-url="{% url 'adminpanel-application-document-view' app_id=app.id kind='pan' %}"
+                                    data-preview-download-url="{% url 'adminpanel-application-document-download' app_id=app.id kind='pan' %}"
+                                    data-preview-heading="{% trans 'PAN' %} — {{ app.full_name }}"
+                                    data-preview-filename="{{ app.pan_card.name }}"
+                                    title="{% trans 'Open preview' %}" aria-label="{% trans 'Open preview' %}">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
+                                </button>
+                            </div>
+                        {% else %}
+                            <span class="doc-chip missing">⚠ {% trans "No PAN" %}</span>
+                        {% endif %}
+                        {% if app.passport %}
+                            <div class="doc-group passport-grp">
+                                <span class="doc-label">{% trans "Passport" %}</span>
+                                <button type="button" class="doc-open js-doc-preview-open"
+                                    data-preview-view-url="{% url 'adminpanel-application-document-view' app_id=app.id kind='passport' %}"
+                                    data-preview-download-url="{% url 'adminpanel-application-document-download' app_id=app.id kind='passport' %}"
+                                    data-preview-heading="{% trans 'Passport' %} — {{ app.full_name }}"
+                                    data-preview-filename="{{ app.passport.name }}"
+                                    title="{% trans 'Open preview' %}" aria-label="{% trans 'Open preview' %}">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
+                                </button>
+                            </div>
+                        {% else %}
+                            <span class="doc-chip missing">⚠ {% trans "No Passport" %}</span>
+                        {% endif %}
+                        {% if app.resume %}
+                            <div class="doc-group resume-grp">
+                                <span class="doc-label">{% trans "Resume" %}</span>
+                                <button type="button" class="doc-open js-doc-preview-open"
+                                    data-preview-view-url="{% url 'adminpanel-application-document-view' app_id=app.id kind='resume' %}"
+                                    data-preview-download-url="{% url 'adminpanel-application-document-download' app_id=app.id kind='resume' %}"
+                                    data-preview-heading="{% trans 'Resume' %} — {{ app.full_name }}"
+                                    data-preview-filename="{{ app.resume.name }}"
+                                    title="{% trans 'Open preview' %}" aria-label="{% trans 'Open preview' %}">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if app.cover_letter %}
+                    <div class="cover-letter">{{ app.cover_letter|linebreaksbr }}</div>
+                {% endif %}
+            </article>
+        {% endfor %}
+    {% else %}
+        <div class="panel">
+            <div class="body">
+                <p style="padding: 20px; color: var(--muted); text-align: center;">{% trans "No applications match your filters." %}</p>
+            </div>
+        </div>
+    {% endif %}
+</section>
+
+{# Large preview modal — PDF/image in iframe; DOC etc. fallback + Download #}
+<div id="il-doc-modal" class="il-doc-modal-root" aria-hidden="true">
+    <div class="il-doc-modal-backdrop" data-il-doc-close tabindex="-1" role="presentation"></div>
+    <div class="il-doc-modal-shell" role="dialog" aria-modal="true" aria-labelledby="il-doc-modal-title">
+        <div class="il-doc-modal-toolbar">
+            <button type="button" class="btn-il-back" data-il-doc-close>
+                ← {% trans "Back" %}
+            </button>
+            <h2 id="il-doc-modal-title"></h2>
+            <a href="#" id="il-doc-modal-download" class="btn-il-dl">
+                {% trans "Download" %}
+            </a>
+        </div>
+        <div class="il-doc-modal-body">
+            <div class="il-doc-modal-stage">
+                <iframe id="il-doc-modal-iframe" class="il-doc-modal-iframe" title="{% trans 'Document preview' %}"></iframe>
+                <div id="il-doc-modal-img-wrap" class="il-doc-modal-img-wrap">
+                    <img id="il-doc-modal-img" src="" alt="{% trans 'Document preview' %}" loading="lazy" decoding="async" />
+                </div>
+                <div id="il-doc-modal-fallback" class="il-doc-modal-fallback">
+                    <p>{% trans "Inline preview isn't available for this file type. Use Download, or Back to return to the list." %}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    "use strict";
+    var root = document.getElementById("il-doc-modal");
+    if (!root) return;
+    var iframe = document.getElementById("il-doc-modal-iframe");
+    var wrap = document.getElementById("il-doc-modal-img-wrap");
+    var img = document.getElementById("il-doc-modal-img");
+    var fb = document.getElementById("il-doc-modal-fallback");
+    var dl = document.getElementById("il-doc-modal-download");
+    var titleEl = document.getElementById("il-doc-modal-title");
+
+    function fileExt(fn) {
+        if (!fn) return "";
+        var i = fn.lastIndexOf(".");
+        return i >= 0 ? fn.slice(i + 1).toLowerCase() : "";
+    }
+    function isPdf(ext) { return ext === "pdf"; }
+    function isRasterOrSvg(ext) {
+        return ["png", "jpg", "jpeg", "gif", "webp", "svg", "bmp", "tif", "tiff"].indexOf(ext) !== -1;
+    }
+    function hideAllMedia() {
+        iframe.classList.remove("is-visible");
+        iframe.src = "about:blank";
+        wrap.classList.remove("is-visible");
+        img.removeAttribute("src");
+        fb.classList.remove("is-on");
+    }
+    function openDoc(btn) {
+        var viewUrl = btn.getAttribute("data-preview-view-url") || "";
+        var downloadUrl = btn.getAttribute("data-preview-download-url") || "";
+        var hd = btn.getAttribute("data-preview-heading") || "";
+        var fn = btn.getAttribute("data-preview-filename") || "";
+        hideAllMedia();
+        titleEl.textContent = hd || "";
+        dl.setAttribute("href", downloadUrl || "#");
+        var ext = fileExt(fn);
+        if (isPdf(ext)) {
+            iframe.classList.add("is-visible");
+            iframe.src = viewUrl;
+        } else if (isRasterOrSvg(ext)) {
+            wrap.classList.add("is-visible");
+            img.onload = function () {
+                fb.classList.remove("is-on");
+            };
+            img.onerror = function () {
+                hideAllMedia();
+                fb.classList.add("is-on");
+            };
+            img.src = viewUrl;
+            img.alt = hd || "";
+        } else {
+            fb.classList.add("is-on");
+        }
+        root.classList.add("is-visible");
+        root.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+        var bk = root.querySelector(".btn-il-back[data-il-doc-close]");
+        if (bk) bk.focus();
+    }
+    function closeDoc() {
+        hideAllMedia();
+        iframe.classList.remove("is-visible");
+        root.classList.remove("is-visible");
+        root.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+        img.onload = null;
+        img.onerror = null;
+    }
+
+    document.addEventListener("click", function (e) {
+        var btn = e.target.closest && e.target.closest(".js-doc-preview-open");
+        if (btn) {
+            openDoc(btn);
+            return;
+        }
+        var closeHit = e.target.closest && e.target.closest("[data-il-doc-close]");
+        if (!closeHit) return;
+        if (!root.classList.contains("is-visible")) return;
+        closeDoc();
+    });
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && root.classList.contains("is-visible")) closeDoc();
+    });
+})();
+</script>
+{% endblock %}

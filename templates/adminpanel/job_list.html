@@ -1,0 +1,61 @@
+{% extends "adminpanel/base.html" %}
+{% load i18n %}
+
+{% block page_title %}{% trans "Jobs" %}{% endblock %}
+
+{% block top_actions %}
+    <a class="btn" href="{% url 'adminpanel-job-create' %}">+ {% trans "Create job" %}</a>
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="head">
+        <h3>{% trans "All Jobs" %}</h3>
+        <a class="btn ghost" href="{% url 'adminpanel-job-create' %}">+ {% trans "Create" %}</a>
+    </div>
+    <div class="body">
+        {% if jobs %}
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>{% trans "Title" %}</th>
+                        <th>{% trans "Category" %}</th>
+                        <th>{% trans "Status" %}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in jobs %}
+                        <tr>
+                            <td style="width:64px;">
+                                {% if job.image_url %}
+                                    <img src="{{ job.image_url }}" alt="" style="width:48px;height:48px;border-radius:8px;object-fit:cover;border:1px solid var(--line);" />
+                                {% else %}
+                                    <div style="width:48px;height:48px;border-radius:8px;background:var(--panel-soft);display:grid;place-items:center;color:var(--muted);font-size:11px;">—</div>
+                                {% endif %}
+                            </td>
+                            <td><strong>{{ job.title_i18n|default:job.title }}</strong></td>
+                            <td>{% if job.category %}{{ job.category.display_name }}{% else %}—{% endif %}</td>
+                            <td>
+                                {% if job.is_active %}
+                                    <span class="badge success">{% trans "Active" %}</span>
+                                {% else %}
+                                    <span class="badge">{% trans "Inactive" %}</span>
+                                {% endif %}
+                            </td>
+                            <td style="text-align:right;">
+                                <a class="btn ghost" href="{% url 'adminpanel-job-edit' job_id=job.id %}">{% trans "Edit" %}</a>
+                                <a class="btn danger" href="{% url 'adminpanel-job-delete' job_id=job.id %}">{% trans "Delete" %}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="muted" style="padding: 14px 18px;">{% trans "No records found." %}</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+

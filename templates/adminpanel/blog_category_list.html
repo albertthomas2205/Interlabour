@@ -1,0 +1,43 @@
+{% extends "adminpanel/base.html" %}
+{% load i18n %}
+
+{% block page_title %}{% trans "Blog Categories" %}{% endblock %}
+
+{% block top_actions %}
+    <a class="btn" href="{% url 'adminpanel-blog-category-create' %}">+ {% trans "Add category" %}</a>
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="head"><h3>{% trans "All Blog Categories" %}</h3></div>
+    <div class="body">
+        {% if categories %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>{% trans "Name" %}</th>
+                        <th>{% trans "Slug" %}</th>
+                        <th>{% trans "Posts" %}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cat in categories %}
+                        <tr>
+                            <td><strong>{{ cat.display_name|default:cat.name }}</strong></td>
+                            <td><code>{{ cat.slug }}</code></td>
+                            <td>{{ cat.posts.count }}</td>
+                            <td style="text-align:right;white-space:nowrap;">
+                                <a class="btn ghost" href="{% url 'adminpanel-blog-category-edit' item_id=cat.id %}">{% trans "Edit" %}</a>
+                                <a class="btn danger" href="{% url 'adminpanel-blog-category-delete' item_id=cat.id %}">{% trans "Delete" %}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p style="padding:14px 18px;color:var(--muted);">{% trans "No categories yet." %}</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

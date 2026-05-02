@@ -1,0 +1,45 @@
+{% load i18n %}
+{% extends "dashboard/base.html" %}
+
+{% block title %}{% trans "User dashboard" %}{% endblock %}
+{% block page_title %}{% trans "User dashboard" %}{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <h3>{% trans "My dashboard" %}</h3>
+    <p class="muted">{% trans "Applications" %}: {{ applications_count }}</p>
+    <a class="btn" href="{% url 'user-applications' %}">{% trans "View applied jobs" %}</a>
+</section>
+
+<section class="panel">
+    <h3>{% trans "Recent applications" %}</h3>
+    {% if applications %}
+        <table>
+            <thead>
+                <tr>
+                    <th>{% trans "Job" %}</th>
+                    <th>{% trans "Status" %}</th>
+                    <th>{% trans "Date" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in applications %}
+                    <tr>
+                        <td>
+                            {% if item.job.image_url %}
+                                <img src="{{ item.job.image_url }}" alt="" style="width:36px;height:36px;border-radius:6px;object-fit:cover;vertical-align:middle;margin-right:8px;border:1px solid #e2e8f0;" />
+                            {% endif %}
+                            {{ item.job.title_i18n|default:item.job.title }}
+                        </td>
+                        <td>{{ item.get_status_display }}</td>
+                        <td>{{ item.applied_at|date:"Y-m-d" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="muted">{% trans "No records found." %}</p>
+    {% endif %}
+</section>
+{% endblock %}
+

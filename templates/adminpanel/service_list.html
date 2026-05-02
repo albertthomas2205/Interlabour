@@ -1,0 +1,61 @@
+{% extends "adminpanel/base.html" %}
+{% load i18n %}
+
+{% block page_title %}{% trans "Services" %}{% endblock %}
+
+{% block top_actions %}
+    <a class="btn" href="{% url 'adminpanel-service-create' %}">+ {% trans "Add service" %}</a>
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="head"><h3>{% trans "All Services" %}</h3></div>
+    <div class="body">
+        {% if services %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>{% trans "Image" %}</th>
+                        <th>{% trans "Name (EN)" %}</th>
+                        <th>{% trans "Naam (NL)" %}</th>
+                        <th>{% trans "Order" %}</th>
+                        <th>{% trans "Status" %}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in services %}
+                        <tr>
+                            <td>{{ s.id }}</td>
+                            <td>
+                                {% if s.image_url %}
+                                    <img src="{{ s.image_url }}" alt="" style="width:42px;height:42px;border-radius:8px;object-fit:cover;" />
+                                {% else %}
+                                    <span style="display:inline-flex;width:42px;height:42px;border-radius:8px;background:#f1f5f9;align-items:center;justify-content:center;color:#94a3b8;font-size:18px;">◆</span>
+                                {% endif %}
+                            </td>
+                            <td><strong>{{ s.name_en|default:s.name }}</strong></td>
+                            <td>{{ s.name_nl|default:"—" }}</td>
+                            <td>{{ s.display_order }}</td>
+                            <td>
+                                {% if s.is_active %}
+                                    <span class="badge success">{% trans "Active" %}</span>
+                                {% else %}
+                                    <span class="badge danger">{% trans "Inactive" %}</span>
+                                {% endif %}
+                            </td>
+                            <td style="text-align:right;white-space:nowrap;">
+                                <a class="btn ghost" href="{% url 'adminpanel-service-edit' item_id=s.id %}">{% trans "Edit" %}</a>
+                                <a class="btn danger" href="{% url 'adminpanel-service-delete' item_id=s.id %}">{% trans "Delete" %}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p style="padding:14px 18px;color:var(--muted);">{% trans "No services yet. Click Add service to create your first one." %}</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

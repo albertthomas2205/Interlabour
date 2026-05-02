@@ -1,0 +1,798 @@
+# Inter Labour Dutch translations.
+msgid ""
+msgstr ""
+"Project-Id-Version: Inter Labour 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# --- Admin layout ---
+msgid "Admin Dashboard"
+msgstr "Beheerdersdashboard"
+
+msgid "Admin Panel"
+msgstr "Beheerderspaneel"
+
+msgid "Admin Login"
+msgstr "Beheerder Inloggen"
+
+msgid "Welcome back"
+msgstr "Welkom terug"
+
+msgid "Sign in with your admin email and password."
+msgstr "Log in met uw beheerders e-mailadres en wachtwoord."
+
+msgid "Email"
+msgstr "E-mail"
+
+msgid "Password"
+msgstr "Wachtwoord"
+
+msgid "Login"
+msgstr "Inloggen"
+
+msgid "Logout"
+msgstr "Uitloggen"
+
+msgid "Invalid credentials."
+msgstr "Ongeldige inloggegevens."
+
+msgid "Overview"
+msgstr "Overzicht"
+
+msgid "Manage"
+msgstr "Beheren"
+
+msgid "Account"
+msgstr "Account"
+
+msgid "View Site"
+msgstr "Bekijk site"
+
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Jobs"
+msgstr "Vacatures"
+
+msgid "Categories"
+msgstr "Categorieën"
+
+msgid "Job Types"
+msgstr "Vacaturetypes"
+
+msgid "Experience Levels"
+msgstr "Ervaringsniveaus"
+
+msgid "Applications"
+msgstr "Sollicitaties"
+
+# --- Dashboard ---
+msgid "Total Jobs"
+msgstr "Totaal aantal vacatures"
+
+msgid "Active and inactive listings"
+msgstr "Actieve en inactieve vermeldingen"
+
+msgid "Job categories available"
+msgstr "Beschikbare vacaturecategorieën"
+
+msgid "Submitted to date"
+msgstr "Tot heden ingediend"
+
+msgid "Recent applications"
+msgstr "Recente sollicitaties"
+
+msgid "View all"
+msgstr "Alles bekijken"
+
+msgid "Job"
+msgstr "Vacature"
+
+msgid "Applicant"
+msgstr "Sollicitant"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Date"
+msgstr "Datum"
+
+msgid "Update"
+msgstr "Bijwerken"
+
+msgid "Update status"
+msgstr "Status bijwerken"
+
+msgid "Update application status"
+msgstr "Sollicitatiestatus bijwerken"
+
+# --- Lists ---
+msgid "All Jobs"
+msgstr "Alle vacatures"
+
+msgid "All Categories"
+msgstr "Alle categorieën"
+
+msgid "All Job Types"
+msgstr "Alle vacaturetypes"
+
+msgid "All Experience Levels"
+msgstr "Alle ervaringsniveaus"
+
+msgid "All Applications"
+msgstr "Alle sollicitaties"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Category"
+msgstr "Categorie"
+
+msgid "Active"
+msgstr "Actief"
+
+msgid "Inactive"
+msgstr "Inactief"
+
+msgid "Edit"
+msgstr "Bewerken"
+
+msgid "Delete"
+msgstr "Verwijderen"
+
+msgid "Create"
+msgstr "Aanmaken"
+
+msgid "Save"
+msgstr "Opslaan"
+
+msgid "Cancel"
+msgstr "Annuleren"
+
+msgid "No records found."
+msgstr "Geen records gevonden."
+
+msgid "Are you sure you want to delete"
+msgstr "Weet u zeker dat u wilt verwijderen"
+
+msgid "Name"
+msgstr "Naam"
+
+msgid "English"
+msgstr "Engels"
+
+msgid "Dutch"
+msgstr "Nederlands"
+
+# --- Job form labels & actions ---
+msgid "Create job"
+msgstr "Vacature aanmaken"
+
+msgid "Edit job"
+msgstr "Vacature bewerken"
+
+msgid "Delete job"
+msgstr "Vacature verwijderen"
+
+msgid "Job created."
+msgstr "Vacature aangemaakt."
+
+msgid "Job updated."
+msgstr "Vacature bijgewerkt."
+
+msgid "Job deleted."
+msgstr "Vacature verwijderd."
+
+msgid "Picture"
+msgstr "Afbeelding"
+
+msgid "Company"
+msgstr "Bedrijf"
+
+msgid "Location"
+msgstr "Locatie"
+
+msgid "Job type"
+msgstr "Soort baan"
+
+msgid "Experience level"
+msgstr "Ervaringsniveau"
+
+msgid "Salary min"
+msgstr "Salaris minimum"
+
+msgid "Salary max"
+msgstr "Salaris maximum"
+
+msgid "Currency"
+msgstr "Valuta"
+
+msgid "Description"
+msgstr "Beschrijving"
+
+msgid "Requirements"
+msgstr "Vereisten"
+
+msgid "Responsibilities"
+msgstr "Verantwoordelijkheden"
+
+msgid "Deadline"
+msgstr "Deadline"
+
+msgid "Is featured"
+msgstr "Uitgelicht"
+
+msgid "Is active"
+msgstr "Actief"
+
+# --- Categories / Types / Levels ---
+msgid "Create category"
+msgstr "Categorie aanmaken"
+
+msgid "Edit category"
+msgstr "Categorie bewerken"
+
+msgid "Delete category"
+msgstr "Categorie verwijderen"
+
+msgid "Category created."
+msgstr "Categorie aangemaakt."
+
+msgid "Category updated."
+msgstr "Categorie bijgewerkt."
+
+msgid "Category deleted."
+msgstr "Categorie verwijderd."
+
+msgid "Create job type"
+msgstr "Vacaturetype aanmaken"
+
+msgid "Edit job type"
+msgstr "Vacaturetype bewerken"
+
+msgid "Delete job type"
+msgstr "Vacaturetype verwijderen"
+
+msgid "Job type created."
+msgstr "Vacaturetype aangemaakt."
+
+msgid "Job type updated."
+msgstr "Vacaturetype bijgewerkt."
+
+msgid "Job type deleted."
+msgstr "Vacaturetype verwijderd."
+
+msgid "Create experience level"
+msgstr "Ervaringsniveau aanmaken"
+
+msgid "Edit experience level"
+msgstr "Ervaringsniveau bewerken"
+
+msgid "Delete experience level"
+msgstr "Ervaringsniveau verwijderen"
+
+msgid "Experience level created."
+msgstr "Ervaringsniveau aangemaakt."
+
+msgid "Experience level updated."
+msgstr "Ervaringsniveau bijgewerkt."
+
+msgid "Experience level deleted."
+msgstr "Ervaringsniveau verwijderd."
+
+msgid "Application status updated."
+msgstr "Sollicitatiestatus bijgewerkt."
+
+# --- Frontend / dashboard navigation ---
+msgid "Home"
+msgstr "Home"
+
+msgid "About Us"
+msgstr "Over ons"
+
+msgid "about"
+msgstr "over"
+
+msgid "jobs"
+msgstr "vacatures"
+
+msgid "Services"
+msgstr "Diensten"
+
+msgid "Contact"
+msgstr "Contact"
+
+msgid "Our Jobs"
+msgstr "Onze vacatures"
+
+msgid "Vind Uw Volgende Baan"
+msgstr "Vind uw volgende baan"
+
+msgid "Ontdek internationale vacatures en bouw uw carrière met Inter Labour"
+msgstr "Ontdek internationale vacatures en bouw uw carrière met Inter Labour"
+
+msgid "Stel een vacatureherinnering in"
+msgstr "Stel een vacatureherinnering in"
+
+msgid "Voer uw e-mailadres in en ontvang vacaturemeldingen."
+msgstr "Voer uw e-mailadres in en ontvang vacaturemeldingen."
+
+msgid "Voer uw e-mailadres in."
+msgstr "Voer uw e-mailadres in."
+
+msgid "Indienen"
+msgstr "Indienen"
+
+msgid "Dringend"
+msgstr "Dringend"
+
+msgid "Solliciteer nu"
+msgstr "Solliciteer nu"
+
+msgid "Recent jobs"
+msgstr "Recente vacatures"
+
+msgid "BELANGRIJKSTE TAKEN"
+msgstr "BELANGRIJKSTE TAKEN"
+
+msgid "VEREISTEN"
+msgstr "VEREISTEN"
+
+msgid "Soort baan"
+msgstr "Soort baan"
+
+msgid "Locatie"
+msgstr "Locatie"
+
+msgid "Salary"
+msgstr "Salaris"
+
+msgid "Share"
+msgstr "Delen"
+
+msgid "Tweet"
+msgstr "Tweet"
+
+msgid "Pin"
+msgstr "Pin"
+
+msgid "No jobs found."
+msgstr "Geen vacatures gevonden."
+
+# --- User dashboard ---
+msgid "My applications"
+msgstr "Mijn sollicitaties"
+
+msgid "Applied jobs"
+msgstr "Gesolliciteerde vacatures"
+
+msgid "Submitted on"
+msgstr "Ingediend op"
+
+msgid "Hired"
+msgstr "Aangenomen"
+
+msgid "Reviewing"
+msgstr "In behandeling"
+
+msgid "Rejected"
+msgstr "Afgewezen"
+
+msgid "Pending"
+msgstr "In afwachting"
+
+# --- User/dashboard navigation extras ---
+msgid "Language"
+msgstr "Taal"
+
+msgid "Admin dashboard"
+msgstr "Beheerdersdashboard"
+
+msgid "User dashboard"
+msgstr "Gebruikersdashboard"
+
+msgid "Browse jobs"
+msgstr "Bekijk vacatures"
+
+msgid "API Docs"
+msgstr "API documentatie"
+
+msgid "Admin panel"
+msgstr "Beheerderspaneel"
+
+msgid "Frontend Home"
+msgstr "Naar website"
+
+msgid "My dashboard"
+msgstr "Mijn dashboard"
+
+msgid "View applied jobs"
+msgstr "Bekijk gesolliciteerde vacatures"
+
+# --- My Account page ---
+msgid "My Account"
+msgstr "Mijn account"
+
+msgid "Profile information"
+msgstr "Profielinformatie"
+
+msgid "First name"
+msgstr "Voornaam"
+
+msgid "Last name"
+msgstr "Achternaam"
+
+msgid "New password"
+msgstr "Nieuw wachtwoord"
+
+msgid "Confirm new password"
+msgstr "Bevestig nieuw wachtwoord"
+
+msgid "Save changes"
+msgstr "Wijzigingen opslaan"
+
+msgid "Profile updated successfully."
+msgstr "Profiel succesvol bijgewerkt."
+
+msgid "Passwords do not match."
+msgstr "Wachtwoorden komen niet overeen."
+
+msgid "That email is already in use by another account."
+msgstr "Dit e-mailadres is al in gebruik door een ander account."
+
+msgid "You haven't applied to any jobs yet."
+msgstr "U heeft zich nog niet aangemeld voor een vacature."
+
+msgid "Back to site"
+msgstr "Terug naar de site"
+
+msgid "Profile"
+msgstr "Profiel"
+
+msgid "Change password"
+msgstr "Wachtwoord wijzigen"
+
+msgid "leave blank to keep current"
+msgstr "leeg laten om huidig te behouden"
+
+msgid "Full name"
+msgstr "Volledige naam"
+
+msgid "Overview"
+msgstr "Overzicht"
+
+msgid "applications"
+msgstr "sollicitaties"
+
+msgid "View job"
+msgstr "Bekijk vacature"
+
+msgid "Browse more jobs"
+msgstr "Meer vacatures bekijken"
+
+msgid "Browse Jobs"
+msgstr "Vacatures bekijken"
+
+msgid "Inter Labour connects talent with international opportunities."
+msgstr "Inter Labour verbindt talent met internationale kansen."
+
+# --- CV / account page ---
+msgid "My CV / Resume"
+msgstr "Mijn CV / Cv"
+
+msgid "Upload CV"
+msgstr "CV uploaden"
+
+msgid "Drag & drop your CV here, or"
+msgstr "Sleep uw CV hierheen, of"
+
+msgid "browse to upload"
+msgstr "klik om te uploaden"
+
+msgid "Accepted formats: PDF, DOC, DOCX. Max 5 MB."
+msgstr "Toegestane formaten: PDF, DOC, DOCX. Max. 5 MB."
+
+msgid "Current CV:"
+msgstr "Huidig cv:"
+
+msgid "Download"
+msgstr "Downloaden"
+
+msgid "Quick links"
+msgstr "Snelle links"
+
+msgid "All Rights Reserved"
+msgstr "Alle rechten voorbehouden"
+
+msgid "Company"
+msgstr "Bedrijf"
+
+msgid "Apply"
+msgstr "Solliciteer"
+
+msgid "Apply for"
+msgstr "Solliciteer voor"
+
+msgid "Submit Application"
+msgstr "Sollicitatie indienen"
+
+# --- Job content section headings ---
+msgid "Benefits"
+msgstr "Voordelen"
+
+msgid "Key responsibilities"
+msgstr "Belangrijkste taken"
+
+msgid "KEY RESPONSIBILITIES"
+msgstr "BELANGRIJKSTE TAKEN"
+
+msgid "REQUIREMENTS"
+msgstr "VEREISTEN"
+
+msgid "BENEFITS"
+msgstr "VOORDELEN"
+
+# --- Job pages ---
+msgid "Our Jobs"
+msgstr "Onze Vacatures"
+
+msgid "Find Your Next Job"
+msgstr "Vind Uw Volgende Baan"
+
+msgid "Discover international vacancies and build your career with Inter Labour"
+msgstr "Ontdek internationale vacatures en bouw uw carrière met Inter Labour"
+
+msgid "Set a job alert"
+msgstr "Stel een vacatureherinnering in"
+
+msgid "Enter your email and receive job notifications."
+msgstr "Voer uw e-mailadres in en ontvang vacaturemeldingen."
+
+msgid "Enter your email address."
+msgstr "Voer uw e-mailadres in."
+
+msgid "Submit"
+msgstr "Indienen"
+
+msgid "Urgent"
+msgstr "Dringend"
+
+msgid "Apply now"
+msgstr "Solliciteer nu"
+
+msgid "Back to job"
+msgstr "Terug naar vacature"
+
+msgid "Job type"
+msgstr "Soort baan"
+
+msgid "Location"
+msgstr "Locatie"
+
+msgid "Deadline"
+msgstr "Deadline"
+
+msgid "Month"
+msgstr "Maand"
+
+msgid "Salary"
+msgstr "Salaris"
+
+msgid "Recent jobs"
+msgstr "Recente vacatures"
+
+msgid "Share"
+msgstr "Delen"
+
+msgid "Tweet"
+msgstr "Tweet"
+
+msgid "Pin"
+msgstr "Pin"
+
+msgid "Application submitted successfully."
+msgstr "Sollicitatie succesvol ingediend."
+
+msgid "You have already applied to this job."
+msgstr "U heeft al gesolliciteerd voor deze vacature."
+
+# --- Account page — footer & shared strings ---
+msgid "Inter Labour is an international recruitment and staffing company that helps organisations find the right employees, worldwide."
+msgstr "Inter Labour is een internationaal recruitment- en personeelsbedrijf dat organisaties helpt bij het vinden van de juiste medewerkers, wereldwijd."
+
+msgid "About us"
+msgstr "Over ons"
+
+msgid "Our Services"
+msgstr "Onze diensten"
+
+msgid "Contact Us"
+msgstr "Neem contact op"
+
+msgid "Logistics & Warehouse"
+msgstr "Logistiek & Magazijn"
+
+msgid "General Worker"
+msgstr "Algemene Arbeider"
+
+msgid "Construction Assistant"
+msgstr "Bouwassistent"
+
+msgid "Bricklayer Assistant"
+msgstr "Metselaar Assistent"
+
+msgid "Scaffolding Assistant"
+msgstr "Steigerbouw Assistent"
+
+msgid "Warehouse Worker"
+msgstr "Magazijnmedewerker"
+
+msgid "Packing & Sorting Employee"
+msgstr "Inpak- en Sorteermedewerker"
+
+msgid "Loading & Unloading Employee"
+msgstr "Laad- en Losmedewerker"
+
+msgid "Delivery Assistant"
+msgstr "Bezorg Assistent"
+
+msgid "Privacy Policy"
+msgstr "Privacybeleid"
+
+msgid "Help Desk"
+msgstr "Helpdesk"
+
+msgid "Terms & Conditions"
+msgstr "Algemene voorwaarden"
+
+msgid "FAQ"
+msgstr "Veelgestelde vragen"
+
+msgid "Search for items…"
+msgstr "Zoek naar items…"
+
+# --- Settings / password panel ---
+msgid "Settings"
+msgstr "Instellingen"
+
+msgid "Close"
+msgstr "Sluiten"
+
+msgid "Update password"
+msgstr "Wachtwoord bijwerken"
+
+msgid "Password changed successfully."
+msgstr "Wachtwoord succesvol gewijzigd."
+
+msgid "Enter new password"
+msgstr "Voer nieuw wachtwoord in"
+
+msgid "Repeat new password"
+msgstr "Herhaal nieuw wachtwoord"
+
+msgid "Passwords do not match."
+msgstr "Wachtwoorden komen niet overeen."
+
+# --- Form placeholder helpers ---
+msgid "Short description shown on the listing and detail pages."
+msgstr "Korte beschrijving die op de overzichts- en detailpagina's wordt getoond."
+
+msgid ""
+"One responsibility per line, e.g.\n"
+"Planten, verzorgen en oogsten van gewassen\n"
+"Sorteren en verpakken van producten"
+msgstr ""
+"Eén verantwoordelijkheid per regel, bijv.\n"
+"Planten, verzorgen en oogsten van gewassen\n"
+"Sorteren en verpakken van producten"
+
+msgid ""
+"One requirement per line, e.g.\n"
+"Goede fysieke conditie\n"
+"Flexibel en gemotiveerd"
+msgstr ""
+"Eén vereiste per regel, bijv.\n"
+"Goede fysieke conditie\n"
+"Flexibel en gemotiveerd"
+
+msgid ""
+"One benefit per line, e.g.\n"
+"Competitief salaris\n"
+"Huisvesting (indien van toepassing)"
+msgstr ""
+"Eén voordeel per regel, bijv.\n"
+"Competitief salaris\n"
+"Huisvesting (indien van toepassing)"
+
+# --- Admin application document modal ---
+msgid "Back"
+msgstr "Terug"
+
+msgid "Document preview"
+msgstr "Documentvoorbeeld"
+
+msgid "Open preview"
+msgstr "Voorbeeld openen"
+
+msgid "Inline preview isn't available for this file type. Use Download, or Back to return to the list."
+msgstr "Er is geen voorbeeldweergave voor dit bestandstype in de browser. Gebruik Downloaden om het bestand op te slaan, of Terug om naar de lijst te gaan."
+
+msgid "Aadhaar"
+msgstr "Aadhaar"
+
+msgid "PAN"
+msgstr "PAN"
+
+msgid "Passport"
+msgstr "Paspoort"
+
+msgid "Resume"
+msgstr "CV"
+
+msgid "Download all (ZIP)"
+msgstr "Alles downloaden (ZIP)"
+
+msgid "Download every uploaded file as a ZIP"
+msgstr "Download alle bijlagen als ZIP-bestand"
+
+# --- OTP verification email ---
+msgid "Your verification code - Inter Labour"
+msgstr "Je verificatiecode - Inter Labour"
+
+msgid "Inter Labour - your verification code"
+msgstr "Inter Labour - jouw verificatiecode"
+
+msgid "Inter Labour"
+msgstr "Inter Labour"
+
+msgid "INTER LABOUR"
+msgstr "INTER LABOUR"
+
+msgid "Recruitment & staffing agency"
+msgstr "Werving & uitzendbureau"
+
+msgid "Hello %(name)s,"
+msgstr "Hallo %(name)s,"
+
+msgid "Thank you for registering with"
+msgstr "Bedankt voor je registratie bij"
+
+msgid "To confirm your email address, enter the code below on the verification page."
+msgstr "Om je e-mailadres te bevestigen, voer je onderstaande code in op de verificatiepagina."
+
+msgid "Your verification code"
+msgstr "Je verificatiecode"
+
+msgid ""
+"This code is valid for %(minutes)s minutes. Never share the code with "
+"anyone - we never ask for it by phone or on social media."
+msgstr ""
+"Deze code is %(minutes)s minuten geldig. Deel de code nooit met anderen - "
+"wij vragen deze nooit telefonisch of via social media."
+
+msgid ""
+"If you did not start this registration yourself, you can ignore this email; "
+"no account will be activated without this step."
+msgstr ""
+"Heb je deze aanmelding niet zelf gestart? Dan kun je deze e-mail gewoon "
+"negeren; er wordt geen account geactiveerd zonder deze stap."
+
+msgid "Kind regards,"
+msgstr "Met vriendelijke groet,"
+
+msgid "The Inter Labour team"
+msgstr "Het team van Inter Labour"
+
+msgid "Visit website"
+msgstr "Website bezoeken"
+
+msgid ""
+"This email was sent automatically by Inter Labour. Replies to this message "
+"are not read."
+msgstr ""
+"Deze e-mail is automatisch verzonden door Inter Labour. Antwoorden op dit "
+"bericht worden niet gelezen."

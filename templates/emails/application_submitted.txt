@@ -1,0 +1,12 @@
+Hallo {{ recipient_name }},
+
+Bedankt! We hebben je sollicitatie goed ontvangen.
+
+Sollicitatie ID: #{{ application_id }}
+{% if job_title %}Vacature: {{ job_title }}{% endif %}
+{% if company_name %}Bedrijf: {{ company_name }}{% endif %}
+
+Ontvangen op: {{ submitted_at|date:"d-m-Y H:i" }}
+
+We nemen contact met je op zodra er een update is.
+

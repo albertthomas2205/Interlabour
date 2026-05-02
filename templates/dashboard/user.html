@@ -1,0 +1,62 @@
+﻿{% extends "dashboard/base.html" %}
+
+{% block content %}
+<section class="panel">
+    <h3>{{ text.quick_actions }}</h3>
+    <a class="btn" href="/dashboard/user/jobs/">{{ text.view_jobs }}</a>
+</section>
+
+<section class="panel">
+    <h3>{{ text.recent_jobs }}</h3>
+    {% if recent_jobs %}
+        <table>
+            <thead>
+                <tr>
+                    <th>{{ text.jobs }}</th>
+                    <th>{{ text.companies }}</th>
+                    <th>Location</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in recent_jobs %}
+                    <tr>
+                        <td>{{ job.title }}</td>
+                        <td>{{ job.company.name }}</td>
+                        <td>{{ job.location }}</td>
+                        <td><a class="btn" href="/dashboard/user/jobs/{{ job.id }}/apply/">{{ text.apply_now }}</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="muted">{{ text.no_records }}</p>
+    {% endif %}
+</section>
+
+<section class="panel">
+    <h3>{{ text.my_applications }}</h3>
+    {% if my_recent_applications %}
+        <table>
+            <thead>
+                <tr>
+                    <th>{{ text.jobs }}</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in my_recent_applications %}
+                    <tr>
+                        <td>{{ item.job.title }}</td>
+                        <td>{{ item.get_status_display }}</td>
+                        <td>{{ item.applied_at|date:"Y-m-d" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="muted">{{ text.no_records }}</p>
+    {% endif %}
+</section>
+{% endblock %}

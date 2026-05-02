@@ -1,0 +1,357 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html class="no-js" lang="{{ request.LANGUAGE_CODE|default:'nl' }}">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Inter Labour – {% trans "Apply for" %} {{ job.title_i18n }}</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'imgs/theme/favicon.svg' %}" />
+    <link rel="stylesheet" href="{% static 'css/plugins/animate.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/main.css@v=1.0.css' %}" />
+    <style>
+        .apply-form label { display: block; font-size: 13px; font-weight: 600; color: #384152; margin-bottom: 5px; }
+        .apply-form input[type=text],
+        .apply-form input[type=email],
+        .apply-form textarea {
+            width: 100%; border: 1px solid #e0e6f7; border-radius: 8px;
+            padding: 10px 14px; font-size: 14px; background: #fff; color: #384152;
+            margin-bottom: 6px;
+        }
+        .apply-form input:focus, .apply-form textarea:focus {
+            outline: none; border-color: #3c65f5; box-shadow: 0 0 0 3px rgba(60,101,245,.12);
+        }
+        .apply-form input[type=file] {
+            width: 100%; border: 1px dashed #c0c9e0; border-radius: 8px;
+            padding: 10px 14px; font-size: 13px; background: #f8f9ff; color: #384152;
+            margin-bottom: 6px; cursor: pointer;
+        }
+        .apply-form input[type=file]:hover { border-color: #3c65f5; background: #f0f4ff; }
+        .apply-form .form-group { margin-bottom: 18px; }
+        .apply-form .help-text { font-size: 11px; color: #8a9ab5; display: block; margin-top: 2px; }
+        .apply-form .field-err { font-size: 12px; color: #c0392b; margin-top: 4px; display: block; }
+        .apply-form .req::after { content: " *"; color: #ef4444; }
+        .docs-section { background: #f8f9ff; border: 1px solid #e0e6f7; border-radius: 12px; padding: 16px 18px; margin-bottom: 22px; }
+        .docs-section h6 { margin: 0 0 6px; font-size: 14px; color: #1e293b; font-weight: 700; }
+        .docs-section p { margin: 0 0 14px; font-size: 12px; color: #64748b; }
+        .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        @media (max-width: 600px) { .form-row-2 { grid-template-columns: 1fr; } }
+    </style>
+</head>
+
+<body>
+    <!-- Preloader -->
+    <div id="preloader-active">
+        <div class="preloader d-flex align-items-center justify-content-center">
+            <div class="preloader-inner position-relative">
+                <div class="text-center">
+                    <img src="{% static 'imgs/theme/loading.gif' %}" alt="" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header sticky-bar">
+        <div class="container">
+            <div class="main-header">
+                <div class="header-left">
+                    <div class="header-logo">
+                        <a href="/" class="d-flex"><img alt="Inter Labour" src="{% static 'imgs/theme/logo.svg' %}" /></a>
+                    </div>
+                    <div class="header-nav">
+                        <nav class="nav-main-menu d-none d-xl-block">
+                            <ul class="main-menu">
+                                <li class=""><a href="/">{% trans "Home" %}</a></li>
+                                <li class=""><a href="/page-about.html">{% trans "About Us" %}</a></li>
+                                <li class=""><a href="/page-service.html">{% trans "Services" %}</a></li>
+                                <li class="active"><a href="/jobs/">{% trans "Jobs" %}</a></li>
+                                <li class=""><a href="/page-contact.html">{% trans "Contact" %}</a></li>
+                            </ul>
+                        </nav>
+                        <div class="burger-icon burger-icon-white">
+                            <span class="burger-icon-top"></span>
+                            <span class="burger-icon-mid"></span>
+                            <span class="burger-icon-bottom"></span>
+                        </div>
+                    </div>
+                </div>
+                <div id="header-right" style="display:flex;align-items:center;gap:10px;margin-left:auto;">
+                    <div id="header-lang"></div>
+                    <div id="header-auth"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="mobile-header-active mobile-header-wrapper-style perfect-scrollbar">
+        <div class="mobile-header-wrapper-inner">
+            <div class="mobile-header-content-area">
+                <div class="perfect-scroll">
+                    <div class="mobile-search mobile-header-border mb-30">
+                        <form action="#">
+                            <input type="text" placeholder="{% trans "Search for items…" %}" />
+                            <i class="fi-rr-search"></i>
+                        </form>
+                    </div>
+                    <div class="mobile-menu-wrap mobile-header-border">
+                        <nav>
+                            <ul class="mobile-menu font-heading">
+                                <li class="has-children"><a href="/">{% trans "Home" %}</a></li>
+                                <li class="has-children"><a href="/page-about.html">{% trans "About Us" %}</a></li>
+                                <li class="has-children has-active"><a href="/jobs/">{% trans "Jobs" %}</a></li>
+                                <li class="has-children"><a href="/page-service.html">{% trans "Services" %}</a></li>
+                                <li class="has-children"><a href="/page-contact.html">{% trans "Contact" %}</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End header-->
+
+    <main class="main">
+        <!-- Page banner -->
+        <section class="section-box-2">
+            <div class="box-head-single none-bg">
+                <div class="container">
+                    <h4>{% trans "Apply for" %} {{ job.title_i18n }}</h4>
+                    <div class="row mt-15 mb-40">
+                        <div class="col-lg-7 col-md-9">
+                            <span class="text-mutted">{{ job.company.name }} — {{ job.location }}</span>
+                        </div>
+                        <div class="col-lg-5 col-md-3 text-lg-end text-start">
+                            <ul class="breadcrumbs mt-sm-15">
+                                <li><a href="/">{% trans "Home" %}</a></li>
+                                <li><a href="/jobs/">{% trans "Jobs" %}</a></li>
+                                <li><a href="/jobs/{{ job.slug }}/">{{ job.title_i18n }}</a></li>
+                                <li>{% trans "Apply" %}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-box mt-50 mb-80">
+            <div class="container">
+                <div class="row">
+                    <!-- Application form -->
+                    <div class="col-lg-8 col-md-12">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert {% if 'error' in message.tags %}alert-danger{% else %}alert-success{% endif %} mb-20">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <div class="box-white-style-icon">
+                            <h5 class="mb-20">{% trans "Submit Application" %}</h5>
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger mb-20">{{ form.non_field_errors|join:", " }}</div>
+                            {% endif %}
+                            <form method="post" enctype="multipart/form-data" class="apply-form" novalidate>
+                                {% csrf_token %}
+
+                                <h6 class="mb-15" style="color:#05264e;font-weight:700;">{% trans "Personal Details" %}</h6>
+                                <div class="form-row-2">
+                                    <div class="form-group">
+                                        <label class="req" for="{{ form.full_name.id_for_label }}">{{ form.full_name.label }}</label>
+                                        {{ form.full_name }}
+                                        {% if form.full_name.errors %}<span class="field-err">{{ form.full_name.errors|join:", " }}</span>{% endif %}
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="req" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                                        {{ form.email }}
+                                        {% if form.email.errors %}<span class="field-err">{{ form.email.errors|join:", " }}</span>{% endif %}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="req" for="{{ form.phone.id_for_label }}">{{ form.phone.label }}</label>
+                                    {{ form.phone }}
+                                    {% if form.phone.errors %}<span class="field-err">{{ form.phone.errors|join:", " }}</span>{% endif %}
+                                </div>
+
+                                <div class="docs-section">
+                                    <h6>{% trans "Mandatory Documents" %}</h6>
+                                    <p>{% trans "A resume/CV and all three identity documents are required to submit your application." %}</p>
+
+                                    <div class="form-group">
+                                        <label class="req" for="{{ form.resume.id_for_label }}">{{ form.resume.label }}</label>
+                                        {{ form.resume }}
+                                        <span class="help-text">{{ form.resume.help_text }}</span>
+                                        {% if form.resume.errors %}<span class="field-err">{{ form.resume.errors|join:", " }}</span>{% endif %}
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="req" for="{{ form.aadhaar_card.id_for_label }}">{{ form.aadhaar_card.label }}</label>
+                                        {{ form.aadhaar_card }}
+                                        <span class="help-text">{{ form.aadhaar_card.help_text }}</span>
+                                        {% if form.aadhaar_card.errors %}<span class="field-err">{{ form.aadhaar_card.errors|join:", " }}</span>{% endif %}
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="req" for="{{ form.pan_card.id_for_label }}">{{ form.pan_card.label }}</label>
+                                        {{ form.pan_card }}
+                                        <span class="help-text">{{ form.pan_card.help_text }}</span>
+                                        {% if form.pan_card.errors %}<span class="field-err">{{ form.pan_card.errors|join:", " }}</span>{% endif %}
+                                    </div>
+                                    <div class="form-group" style="margin-bottom:0;">
+                                        <label class="req" for="{{ form.passport.id_for_label }}">{{ form.passport.label }}</label>
+                                        {{ form.passport }}
+                                        <span class="help-text">{{ form.passport.help_text }}</span>
+                                        {% if form.passport.errors %}<span class="field-err">{{ form.passport.errors|join:", " }}</span>{% endif %}
+                                    </div>
+                                </div>
+
+                                <h6 class="mb-15" style="color:#05264e;font-weight:700;">{% trans "Optional" %}</h6>
+                                <div class="form-group">
+                                    <label for="{{ form.cover_letter.id_for_label }}">{{ form.cover_letter.label }}</label>
+                                    {{ form.cover_letter }}
+                                    {% if form.cover_letter.errors %}<span class="field-err">{{ form.cover_letter.errors|join:", " }}</span>{% endif %}
+                                </div>
+
+                                <div class="mt-10">
+                                    <button type="submit" class="btn btn-default btn-shadow hover-up">{% trans "Submit Application" %}</button>
+                                    <a href="/jobs/{{ job.slug }}/" class="btn btn-border ml-10">{% trans "Cancel" %}</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Job summary sidebar -->
+                    <div class="col-lg-4 col-md-12 mt-lg-30">
+                        <div class="sidebar-shadow">
+                            <div class="sidebar-heading">
+                                <div class="avatar-sidebar">
+                                    <figure>
+                                        {% if job.image_url %}
+                                            <img alt="{{ job.company.name }}" src="{{ job.image_url }}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;" />
+                                        {% else %}
+                                            <img alt="{{ job.company.name }}" src="{% static 'imgs/page/job-single/avatar-job.png' %}" />
+                                        {% endif %}
+                                    </figure>
+                                    <div class="sidebar-info">
+                                        <span class="sidebar-company">{{ job.company.name }}</span>
+                                        <span class="sidebar-website-text">{{ job.location }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sidebar-list-job mt-20">
+                                <ul>
+                                    <li>
+                                        <div class="sidebar-icon-item"><i class="fi-rr-briefcase"></i></div>
+                                        <div class="sidebar-text-info">
+                                            <span class="text-description">{% trans "Job type" %}</span>
+                                            <strong class="small-heading">{{ job.job_type_label }}</strong>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="sidebar-icon-item"><i class="fi-rr-marker"></i></div>
+                                        <div class="sidebar-text-info">
+                                            <span class="text-description">{% trans "Location" %}</span>
+                                            <strong class="small-heading">{{ job.location }}</strong>
+                                        </div>
+                                    </li>
+                                    {% if job.salary_min %}
+                                    <li>
+                                        <div class="sidebar-icon-item"><i class="fi-rr-euro"></i></div>
+                                        <div class="sidebar-text-info">
+                                            <span class="text-description">{% trans "Salary" %}</span>
+                                            <strong class="small-heading">{{ job.currency_symbol }}{{ job.salary_min }}{% if job.salary_max %} – {{ job.currency_symbol }}{{ job.salary_max }}{% endif %}</strong>
+                                        </div>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                            <div class="mt-15">
+                                <a href="/jobs/{{ job.slug }}/" class="btn btn-border btn-md w-100">← {% trans "Back to job" %}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer mt-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 col-sm-12" style="width: 300px">
+                    <a href="/"><img alt="Inter Labour" src="{% static 'imgs/theme/logo.svg' %}" style="width: 150px;" /></a>
+                    <div class="mt-20 mb-20">{% trans "Inter Labour is an international recruitment and staffing company that helps organisations find the right employees, worldwide." %}</div>
+                </div>
+                <div class="col-md-2 col-xs-6">
+                    <h6>{% trans "Company" %}</h6>
+                    <ul class="menu-footer mt-40">
+                        <li><a href="/page-about.html">{% trans "About us" %}</a></li>
+                        <li><a href="/page-service.html">{% trans "Our Services" %}</a></li>
+                        <li><a href="/jobs/">{% trans "Job List" %}</a></li>
+                        <li><a href="/page-contact.html">{% trans "Contact Us" %}</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 col-xs-6">
+                    <h6>{% trans "Job List" %}</h6>
+                    <ul class="menu-footer mt-40">
+                        <li><a href="/jobs/">{% trans "General Worker" %}</a></li>
+                        <li><a href="/jobs/">{% trans "Construction Assistant" %}</a></li>
+                        <li><a href="/jobs/">{% trans "Bricklayer Assistant" %}</a></li>
+                        <li><a href="/jobs/">{% trans "Scaffolding Assistant" %}</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 col-xs-6">
+                    <h6>{% trans "Logistics & Warehouse" %}</h6>
+                    <ul class="menu-footer mt-40">
+                        <li><a href="/jobs/">{% trans "Warehouse Worker" %}</a></li>
+                        <li><a href="/jobs/">{% trans "Packing & Sorting Employee" %}</a></li>
+                        <li><a href="/jobs/">{% trans "Loading & Unloading Employee" %}</a></li>
+                        <li><a href="/jobs/">{% trans "Delivery Assistant" %}</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 col-xs-6">
+                    <h6>{% trans "Support" %}</h6>
+                    <ul class="menu-footer mt-40">
+                        <li><a href="#">{% trans "Privacy Policy" %}</a></li>
+                        <li><a href="#">{% trans "Help Desk" %}</a></li>
+                        <li><a href="#">{% trans "Terms & Conditions" %}</a></li>
+                        <li><a href="#">{% trans "FAQ" %}</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom mt-50">
+                <div class="row">
+                    <div class="col-md-6">
+                        Copyright ©2026 <a href="#"><strong>Inter Labour</strong></a>. {% trans "All Rights Reserved" %}
+                    </div>
+                    <div class="col-md-6 text-md-end text-start">
+                        <div class="footer-social">
+                            <a href="#" class="icon-socials icon-facebook"></a>
+                            <a href="#" class="icon-socials icon-twitter"></a>
+                            <a href="#" class="icon-socials icon-instagram"></a>
+                            <a href="#" class="icon-socials icon-linkedin"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/vendor/modernizr-3.6.0.min.js' %}"></script>
+    <script src="{% static 'js/vendor/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'js/vendor/jquery-migrate-3.3.0.min.js' %}"></script>
+    <script src="{% static 'js/vendor/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/plugins/waypoints.js' %}"></script>
+    <script src="{% static 'js/plugins/wow.js' %}"></script>
+    <script src="{% static 'js/plugins/magnific-popup.js' %}"></script>
+    <script src="{% static 'js/plugins/perfect-scrollbar.min.js' %}"></script>
+    <script src="{% static 'js/plugins/select2.min.js' %}"></script>
+    <script src="{% static 'js/plugins/isotope.js' %}"></script>
+    <script src="{% static 'js/plugins/scrollup.js' %}"></script>
+    <script src="{% static 'js/plugins/swiper-bundle.min.js' %}"></script>
+    <script src="{% static 'js/main.js@v=1.0' %}"></script>
+    <script src="{% static 'js/auth-integration.js' %}"></script>
+</body>
+</html>

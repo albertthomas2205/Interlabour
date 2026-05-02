@@ -1,0 +1,61 @@
+{% extends "adminpanel/base.html" %}
+{% load i18n %}
+
+{% block page_title %}{% trans "Partners" %}{% endblock %}
+
+{% block top_actions %}
+    <a class="btn" href="{% url 'adminpanel-partner-create' %}">+ {% trans "Add partner" %}</a>
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="head"><h3>{% trans "Partner / Client Logos" %}</h3></div>
+    <div class="body">
+        {% if items %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>{% trans "Logo" %}</th>
+                        <th>{% trans "Name" %}</th>
+                        <th>{% trans "Website" %}</th>
+                        <th>{% trans "Order" %}</th>
+                        <th>{% trans "Status" %}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in items %}
+                        <tr>
+                            <td>
+                                {% if p.logo_image_url %}
+                                    <div style="background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px;display:inline-block;width:88px;height:42px;display:flex;align-items:center;justify-content:center;">
+                                        <img src="{{ p.logo_image_url }}" alt="{{ p.name }}" style="max-width:100%;max-height:30px;object-fit:contain;" />
+                                    </div>
+                                {% else %}
+                                    <span style="color:#94a3b8;">—</span>
+                                {% endif %}
+                            </td>
+                            <td><strong>{{ p.name }}</strong></td>
+                            <td>{% if p.website %}<a href="{{ p.website }}" target="_blank" rel="noopener">{{ p.website|truncatechars:32 }}</a>{% else %}—{% endif %}</td>
+                            <td>{{ p.display_order }}</td>
+                            <td>
+                                {% if p.is_active %}
+                                    <span class="badge success">{% trans "Active" %}</span>
+                                {% else %}
+                                    <span class="badge danger">{% trans "Inactive" %}</span>
+                                {% endif %}
+                            </td>
+                            <td style="text-align:right;white-space:nowrap;">
+                                <a class="btn ghost" href="{% url 'adminpanel-partner-edit' item_id=p.id %}">{% trans "Edit" %}</a>
+                                <a class="btn danger" href="{% url 'adminpanel-partner-delete' item_id=p.id %}">{% trans "Delete" %}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p style="padding:14px 18px;color:var(--muted);">{% trans "No partner logos yet. Click Add partner to upload your first logo." %}</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

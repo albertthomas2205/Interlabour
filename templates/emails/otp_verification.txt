@@ -1,0 +1,33 @@
+Hallo {{ recipient_name }},
+
+Bedankt voor je registratie bij Inter Labour. Om je e-mailadres te bevestigen, voer je onderstaande code in op de verificatiepagina.
+
+Je verificatiecode
+{{ otp_code }}
+
+Deze code is {{ expiry_minutes }} minuten geldig. Deel de code nooit met anderen - wij vragen deze nooit telefonisch of via social media.
+
+Heb je deze aanmelding niet zelf gestart? Dan kun je deze e-mail gewoon negeren; er wordt geen account geactiveerd zonder deze stap.
+
+Met vriendelijke groet,
+Het team van Inter Labour
+
+---
+
+Hello {{ recipient_name }},
+
+Thank you for registering with Inter Labour. To confirm your email address, enter the code below on the verification page.
+
+Your verification code
+{{ otp_code }}
+
+This code is valid for {{ expiry_minutes }} minutes. Never share the code with anyone - we never ask for it by phone or on social media.
+
+If you did not start this registration yourself, you can ignore this email; no account will be activated without this step.
+
+Kind regards,
+The Inter Labour team
+
+{% if site_url %}
+{{ site_url }}
+{% endif %}

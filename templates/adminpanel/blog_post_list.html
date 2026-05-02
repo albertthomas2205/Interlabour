@@ -1,0 +1,54 @@
+{% extends "adminpanel/base.html" %}
+{% load i18n %}
+
+{% block page_title %}{% trans "Blog Posts" %}{% endblock %}
+
+{% block top_actions %}
+    <a class="btn" href="{% url 'adminpanel-blog-post-create' %}">+ {% trans "New post" %}</a>
+{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <div class="head"><h3>{% trans "All Blog Posts" %}</h3></div>
+    <div class="body">
+        {% if posts %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>{% trans "Title" %}</th>
+                        <th>{% trans "Author" %}</th>
+                        <th>{% trans "Status" %}</th>
+                        <th>{% trans "Published" %}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in posts %}
+                        <tr>
+                            <td>
+                                <strong>{{ post.title_en|default:post.title }}</strong>
+                                {% if post.title_nl %}<div style="font-size:12px;color:var(--text-soft);">{{ post.title_nl }}</div>{% endif %}
+                            </td>
+                            <td>{{ post.author_name }}</td>
+                            <td>
+                                {% if post.is_published %}
+                                    <span class="badge success">{% trans "Published" %}</span>
+                                {% else %}
+                                    <span class="badge warn">{% trans "Draft" %}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ post.published_at|date:"Y-m-d" }}</td>
+                            <td style="text-align:right;white-space:nowrap;">
+                                <a class="btn ghost" href="{% url 'adminpanel-blog-post-edit' item_id=post.id %}">{% trans "Edit" %}</a>
+                                <a class="btn danger" href="{% url 'adminpanel-blog-post-delete' item_id=post.id %}">{% trans "Delete" %}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p style="padding:14px 18px;color:var(--muted);">{% trans "No blog posts yet." %}</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
