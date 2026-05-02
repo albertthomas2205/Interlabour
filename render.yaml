@@ -81,7 +81,7 @@ services:
       - key: BOOTSTRAP_USER_EMAIL
         value: "albert@gmail.com"
       - key: BOOTSTRAP_USER_PASSWORD
-        value: "albert 123"
+        value: "albert123"
 
 databases:
   - name: interlabour-db

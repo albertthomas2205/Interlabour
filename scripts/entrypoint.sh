@@ -75,7 +75,7 @@ upsert_user(
 upsert_user(
     username=os.getenv("BOOTSTRAP_USER_USERNAME", "albert"),
     email=os.getenv("BOOTSTRAP_USER_EMAIL", "albert@gmail.com"),
-    password=os.getenv("BOOTSTRAP_USER_PASSWORD", "albert 123"),
+    password=os.getenv("BOOTSTRAP_USER_PASSWORD", "albert123"),
     is_superuser=False,
     is_staff=False,
     user_type="normal",
