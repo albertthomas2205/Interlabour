@@ -7097,4 +7097,357 @@ label {
   .header-right {
     display: none;
   }
-}/*# sourceMappingURL=main.css.map */
+}
+
+/* ============================================================
+   RESPONSIVE FIXES (site-wide mobile/tablet improvements)
+   - Hero banner (banner-home-3) layout & decorative SVGs
+   - "Wie Wij Zijn" (block-job-bg) padding/overflow
+   - Job cards, testimonials, newsletter, partner logos, footer
+   - Generic typography & spacing utilities
+   ============================================================ */
+
+/* Global safety: prevent accidental horizontal overflow on small screens */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+img,
+figure img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ---------- HERO BANNER (banner-home-3) ---------- */
+
+/* The decorative SVGs at left/right of the hero overflow on tablets/phones. */
+@media (max-width: 1199.98px) {
+  .banner-home-3::before,
+  .banner-home-3::after {
+    display: none !important;
+  }
+  .banner-home-3 {
+    padding-bottom: 40px !important;
+  }
+  .bg-banner-about.banner-home-3 {
+    border-bottom-left-radius: 60px;
+    border-bottom-right-radius: 60px;
+  }
+}
+
+/* Reset huge fixed paddings on the inner block-banner for tablet/mobile. */
+@media (max-width: 1199.98px) {
+  .banner-hero {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  .banner-hero .block-banner,
+  .banner-home-3 .banner-hero .block-banner {
+    padding: 30px 16px !important;
+  }
+}
+
+/* Fluid hero heading so it never overflows or looks oversized. */
+.banner-hero .heading-banner {
+  font-size: clamp(28px, 6.5vw, 60px);
+  line-height: 1.18;
+  word-break: break-word;
+  hyphens: auto;
+}
+@media (max-width: 991.98px) {
+  .bg-banner-about.banner-home-3 .banner-hero .block-banner h2.heading-banner {
+    font-size: clamp(26px, 7vw, 40px);
+    line-height: 1.2;
+  }
+}
+
+/* Hero descriptive text stays readable; collapse manual <br> in description. */
+.banner-hero .block-banner .list-tags-banner a {
+  display: inline-block;
+  line-height: 1.55;
+}
+@media (max-width: 991.98px) {
+  .banner-hero .block-banner .list-tags-banner br {
+    display: none;
+  }
+  .banner-hero .block-banner .list-tags-banner a {
+    font-size: 15px;
+    padding: 0 6px;
+  }
+  .banner-hero .block-banner .list-tags-banner.mt-60 {
+    margin-top: 24px !important;
+  }
+}
+@media (max-width: 575.98px) {
+  .banner-hero .block-banner .list-tags-banner a {
+    font-size: 14px;
+  }
+}
+
+/* Hero CTA button — ensure it always centers correctly with its shadow. */
+.banner-hero .box-button-shadow {
+  display: flex !important;
+  justify-content: center;
+  width: 100%;
+}
+.banner-hero .box-button-shadow .btn {
+  white-space: nowrap;
+}
+.banner-hero .box-button-shadow::before {
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%);
+}
+
+/* Reduce hero top padding on mobile (the .pt-100 is too much there). */
+@media (max-width: 991.98px) {
+  .section-box.banner-home-3.pt-100,
+  .section-box.bg-banner-about.banner-home-3 {
+    padding-top: 30px !important;
+  }
+}
+
+/* ---------- "Wie Wij Zijn" (block-job-bg) ---------- */
+@media (max-width: 991.98px) {
+  .block-job-bg,
+  .block-job-bg.block-job-bg-homepage-2 {
+    padding: 30px 0 0 0 !important;
+  }
+  .block-job-bg::before {
+    right: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 30px;
+  }
+  .block-job-bg::after {
+    display: none;
+  }
+  .box-info-job,
+  .box-info-job.pl-90.pt-30.pr-90 {
+    padding: 30px 20px !important;
+  }
+  .box-image-findjob,
+  .box-image-findjob.findjob-homepage-2 {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  .box-image-findjob::before {
+    display: none;
+  }
+  .findjob-homepage-2::before {
+    display: none !important;
+  }
+}
+@media (max-width: 575.98px) {
+  .block-job-bg::before {
+    border-radius: 20px;
+  }
+  .box-info-job .text-blue {
+    font-size: 18px !important;
+  }
+}
+
+/* ---------- Featured job cards ---------- */
+@media (max-width: 575.98px) {
+  .card-job .card-job-top {
+    flex-wrap: wrap;
+  }
+  .card-job .card-job-top--info {
+    width: 100%;
+  }
+  .card-job .card-job-top--info-heading {
+    font-size: 18px;
+    line-height: 1.3;
+  }
+  .card-job .card-job-bottom .row > div {
+    margin-top: 6px;
+  }
+  .card-job .card-job-description {
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .list-recent-jobs .card-job {
+    padding: 18px;
+  }
+}
+
+/* ---------- Testimonials / Blog cards swiper ---------- */
+@media (max-width: 575.98px) {
+  .swiper-pagination {
+    margin-top: 5px;
+  }
+  .card-grid-3 {
+    padding: 16px;
+  }
+  .card-grid-3 p.text-lg {
+    font-size: 15px;
+    line-height: 1.55;
+  }
+}
+
+/* ---------- Partner logos ---------- */
+@media (max-width: 767.98px) {
+  .list-partners {
+    display: flex !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px 4px;
+  }
+  .list-partners li {
+    padding: 8px 10px !important;
+    flex: 0 0 calc(33.333% - 6px);
+    text-align: center;
+  }
+  .list-partners li figure img {
+    max-width: 90px;
+    margin: 0 auto;
+    display: block;
+  }
+}
+@media (max-width: 480px) {
+  .list-partners li {
+    flex: 0 0 calc(50% - 6px);
+  }
+}
+
+/* ---------- Newsletter ---------- */
+@media (max-width: 991.98px) {
+  .box-newsletter {
+    border-radius: 20px;
+    padding: 40px 24px !important;
+    text-align: center;
+  }
+  .box-newsletter .box-form-newsletter {
+    max-width: 100%;
+  }
+}
+@media (max-width: 575.98px) {
+  .box-newsletter .box-form-newsletter form {
+    display: block !important;
+  }
+  .box-newsletter .box-form-newsletter form .input-newsletter {
+    width: 100%;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  .box-newsletter .box-form-newsletter form .btn {
+    width: 100%;
+  }
+  .box-newsletter-bottom .newsletter-bottom {
+    max-width: calc(100% - 40px);
+  }
+}
+
+/* ---------- Footer ---------- */
+.footer .footer-brand-col {
+  max-width: 320px;
+}
+@media (max-width: 991.98px) {
+  .footer {
+    padding-top: 30px;
+  }
+  .footer .footer-brand-col,
+  .footer .col-md-4 {
+    max-width: 100%;
+    width: 100%;
+    margin-bottom: 25px;
+  }
+  .footer .col-md-2 {
+    margin-bottom: 25px;
+  }
+  .footer .col-md-2.col-xs-6 {
+    width: 50%;
+  }
+  .footer ul.menu-footer {
+    margin-top: 15px !important;
+  }
+}
+@media (max-width: 575.98px) {
+  .footer .footer-bottom .col-md-6 {
+    text-align: center !important;
+    margin-bottom: 10px;
+  }
+  .footer .footer-bottom .col-md-6.text-md-end {
+    text-align: center !important;
+  }
+  .footer .footer-bottom .footer-social {
+    display: flex;
+    justify-content: center;
+    margin-left: 0 !important;
+  }
+}
+
+/* ---------- Section spacing utilities for tablet/mobile ---------- */
+@media (max-width: 991.98px) {
+  .mt-100 {
+    margin-top: 50px !important;
+  }
+  .mt-90 {
+    margin-top: 45px !important;
+  }
+  .mt-80,
+  .mt-70 {
+    margin-top: 40px !important;
+  }
+  .mb-80 {
+    margin-bottom: 40px !important;
+  }
+  .mb-60 {
+    margin-bottom: 32px !important;
+  }
+  .pt-100 {
+    padding-top: 40px !important;
+  }
+  .pb-100 {
+    padding-bottom: 40px !important;
+  }
+  .pl-90,
+  .pl-80 {
+    padding-left: 16px !important;
+  }
+  .pr-90,
+  .pr-80 {
+    padding-right: 16px !important;
+  }
+}
+
+/* ---------- Container & typography on phones ---------- */
+@media (max-width: 575.98px) {
+  .container,
+  .container-fluid {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .text-md-lh28,
+  p.text-lg {
+    font-size: 15px;
+    line-height: 1.55;
+  }
+}
+
+/* ---------- Page-banner (about) on phones ---------- */
+@media (max-width: 575.98px) {
+  .bg-banner-about {
+    padding: 15px 12px 30px 12px;
+  }
+}
+
+/* ---------- Mobile menu trigger spacing safety ---------- */
+@media (max-width: 1199.98px) {
+  .header .main-header {
+    position: relative;
+    padding-right: 50px;
+  }
+}
+
+/* ---------- Auth / form pages ---------- */
+@media (max-width: 575.98px) {
+  .form-login,
+  .form-register,
+  .form-verify {
+    padding: 20px 14px !important;
+  }
+}
+/*# sourceMappingURL=main.css.map */

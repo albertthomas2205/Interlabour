@@ -41,6 +41,7 @@
         { en: "Logout", nl: "Uitloggen" },
         { en: "Create Account", nl: "Account Aanmaken" },
         { en: "Create account", nl: "Account aanmaken" },
+        { en: "Admin Panel", nl: "Beheerderspaneel" },
         { en: "Use your registered email and password.", nl: "Gebruik uw geregistreerde e-mail en wachtwoord." },
         { en: "Register with your email. We will send an OTP for verification.", nl: "Registreer met uw e-mail. We sturen een OTP ter verificatie." },
         { en: "Email address", nl: "E-mailadres" },
@@ -59,6 +60,53 @@
         { en: "Back to", nl: "Terug naar" },
         { en: "If SMTP is not configured, OTP appears in the Django server console.", nl: "Als SMTP niet is geconfigureerd, verschijnt de OTP in de Django-serverconsole." },
         { en: "Creating account...", nl: "Account aanmaken..." },
+
+        // Forgot / Reset password pages
+        { en: "Forgot Password", nl: "Wachtwoord vergeten" },
+        { en: "Forgot password?", nl: "Wachtwoord vergeten?" },
+        { en: "Reset Password", nl: "Wachtwoord opnieuw instellen" },
+        { en: "Enter your registered email address and we will send you a 6-digit code to reset your password.",
+          nl: "Voer uw geregistreerde e-mailadres in en wij sturen u een 6-cijferige code om uw wachtwoord opnieuw in te stellen." },
+        { en: "Enter the 6-digit code from your email and choose a new password.",
+          nl: "Voer de 6-cijferige code uit uw e-mail in en kies een nieuw wachtwoord." },
+        { en: "Send Reset Code", nl: "Resetcode versturen" },
+        { en: "Update Password", nl: "Wachtwoord bijwerken" },
+        { en: "Resend Code", nl: "Code opnieuw versturen" },
+        { en: "Remembered it?", nl: "Weet u het weer?" },
+        { en: "Wrong email?", nl: "Verkeerd e-mailadres?" },
+        { en: "Start over", nl: "Opnieuw beginnen" },
+        { en: "6-digit code", nl: "6-cijferige code" },
+        { en: "New password (min. 8 characters)", nl: "Nieuw wachtwoord (min. 8 tekens)" },
+        { en: "Note: If SMTP is not configured, the OTP will appear in the Django server console.",
+          nl: "Let op: Als SMTP niet is geconfigureerd, verschijnt de OTP in de Django-serverconsole." },
+
+        // Page titles
+        { en: "Inter Labour - Forgot Password", nl: "Inter Labour - Wachtwoord vergeten" },
+        { en: "Inter Labour - Reset Password", nl: "Inter Labour - Wachtwoord opnieuw instellen" },
+
+        // Dynamic auth-form messages (login / register / verify / forgot / reset)
+        { en: "Email and password are required.", nl: "E-mailadres en wachtwoord zijn verplicht." },
+        { en: "Passwords do not match.", nl: "Wachtwoorden komen niet overeen." },
+        { en: "Registration successful. OTP sent to your email.", nl: "Registratie geslaagd. OTP is naar uw e-mail verzonden." },
+        { en: "Email and OTP are required.", nl: "E-mailadres en OTP zijn verplicht." },
+        { en: "Verifying...", nl: "Verifiëren..." },
+        { en: "Email verified successfully. Redirecting to login...", nl: "E-mail succesvol geverifieerd. Doorverwijzen naar inloggen..." },
+        { en: "Enter your email first.", nl: "Voer eerst uw e-mailadres in." },
+        { en: "Sending...", nl: "Versturen..." },
+        { en: "OTP sent again. Please check your email.", nl: "OTP opnieuw verstuurd. Controleer uw e-mail." },
+        { en: "Please provide email and password.", nl: "Geef e-mailadres en wachtwoord op." },
+        { en: "Signing in...", nl: "Inloggen..." },
+        { en: "Login successful. Redirecting...", nl: "Inloggen geslaagd. Doorverwijzen..." },
+        { en: "Please enter your email address.", nl: "Voer uw e-mailadres in." },
+        { en: "Reset code sent. Redirecting...", nl: "Resetcode verzonden. Doorverwijzen..." },
+        { en: "Email is required.", nl: "E-mailadres is verplicht." },
+        { en: "Enter the 6-digit code from your email.", nl: "Voer de 6-cijferige code uit uw e-mail in." },
+        { en: "Password must be at least 8 characters.", nl: "Wachtwoord moet minimaal 8 tekens bevatten." },
+        { en: "Updating...", nl: "Bijwerken..." },
+        { en: "Password updated successfully. Redirecting to login...", nl: "Wachtwoord succesvol bijgewerkt. Doorverwijzen naar inloggen..." },
+        { en: "A new reset code has been sent.", nl: "Een nieuwe resetcode is verzonden." },
+        { en: "Something went wrong. Please try again.", nl: "Er is iets misgegaan. Probeer het opnieuw." },
+        { en: "Session expired. Please sign in again.", nl: "Sessie verlopen. Log opnieuw in." },
 
         // Hero / homepage
         { en: "Welcome to", nl: "Welkom bij" },
@@ -450,6 +498,7 @@
     // Expose for dynamic content loaders
     window.SiteI18n = {
         getLang: getLang,
-        apply: function (root) { reapply(root); }
+        apply: function (root) { reapply(root); },
+        translate: translateString
     };
 })();

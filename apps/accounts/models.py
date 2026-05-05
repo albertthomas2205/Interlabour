@@ -35,6 +35,7 @@ class User(AbstractUser):
 class EmailOTP(models.Model):
     class Purpose(models.TextChoices):
         REGISTRATION = "registration", "Registration"
+        PASSWORD_RESET = "password_reset", "Password reset"
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="email_otps")
     email = models.EmailField()

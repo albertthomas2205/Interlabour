@@ -14,10 +14,24 @@
             } catch (_e) {}
         }
         inject("/assets/js/i18n.js", "data-i18n-loader");
-        inject("/assets/js/dynamic-jobs.js", "data-dyn-jobs-loader");
+        inject("/assets/js/dynamic-jobs.js?v=3", "data-dyn-jobs-loader");
         inject("/assets/js/dynamic-services.js", "data-dyn-services-loader");
         inject("/assets/js/dynamic-blog.js", "data-dyn-blog-loader");
         inject("/assets/js/dynamic-home.js", "data-dyn-home-loader");
+    })();
+
+    // Auto-load the site-wide responsive overrides stylesheet on every page.
+    // Synchronous injection so the rules apply on first paint and we don't
+    // see a flash of unstyled mobile layout.
+    (function loadResponsiveCSS() {
+        try {
+            if (document.querySelector('link[data-responsive-overrides]')) return;
+            var link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = "/assets/css/responsive-overrides.css?v=11";
+            link.setAttribute("data-responsive-overrides", "1");
+            (document.head || document.documentElement).appendChild(link);
+        } catch (_e) {}
     })();
 
     // Inject responsive header CSS once
@@ -44,6 +58,8 @@
             "  #header-auth a{width:38px !important;height:38px !important;}",
             "  #header-auth a svg{width:18px !important;height:18px !important;}",
             "  .header .main-header .header-left .header-logo{margin-right:0 !important;}",
+            "  #header-auth a.il-login-btn{padding:0 !important;border-radius:50% !important;justify-content:center !important;gap:0 !important;}",
+            "  #header-auth a.il-login-btn .il-login-label{display:none !important;}",
             "}",
 
             "@media (max-width:767.98px){",
@@ -73,13 +89,49 @@
         (document.head || document.documentElement).appendChild(style);
     })();
 
+    // Defensive header normalizer.
+    //   - Guarantees that every page using `.header > .container > .main-header`
+    //     ends up with `<div id="header-right"><div id="header-lang"></div>
+    //     <div id="header-auth"></div></div>` as the last child of the main
+    //     header bar. This way Login/Profile + language toggle show up in the
+    //     top-right of EVERY page, regardless of whether the source HTML
+    //     remembers to include the slot.
+    function ensureHeaderSlots() {
+        var bars = document.querySelectorAll(".header .main-header");
+        for (var i = 0; i < bars.length; i += 1) {
+            var bar = bars[i];
+            var right = bar.querySelector("#header-right");
+            if (!right) {
+                right = document.createElement("div");
+                right.id = "header-right";
+                bar.appendChild(right);
+            }
+            if (!right.querySelector("#header-lang")) {
+                var lang = document.createElement("div");
+                lang.id = "header-lang";
+                right.appendChild(lang);
+            }
+            if (!right.querySelector("#header-auth")) {
+                var auth = document.createElement("div");
+                auth.id = "header-auth";
+                right.appendChild(auth);
+            }
+        }
+    }
+
+    // Run once as soon as the script body executes (before DOMContentLoaded
+    // when the script is at the bottom of <body>) so the right-corner slot
+    // appears on first paint with no layout thrash.
+    ensureHeaderSlots();
+
     var API_BASE = "/api";
 
     var STORAGE_KEYS = {
         access: "interlabour_access_token",
         refresh: "interlabour_refresh_token",
         user: "interlabour_user",
-        pendingEmail: "interlabour_pending_email"
+        pendingEmail: "interlabour_pending_email",
+        resetEmail: "interlabour_reset_email"
     };
 
     function getStoredUser() {
@@ -91,16 +143,153 @@
         }
     }
 
+    function getAccessToken() {
+        try { return localStorage.getItem(STORAGE_KEYS.access) || ""; } catch (_e) { return ""; }
+    }
+
+    function getRefreshToken() {
+        try { return localStorage.getItem(STORAGE_KEYS.refresh) || ""; } catch (_e) { return ""; }
+    }
+
+    // Update only the keys present on the response. After login we get
+    // { access, refresh, user }; after a token refresh we get { access, refresh? }
+    // and we must NOT wipe the cached user on a refresh round-trip.
     function setSession(data) {
-        localStorage.setItem(STORAGE_KEYS.access, data.access || "");
-        localStorage.setItem(STORAGE_KEYS.refresh, data.refresh || "");
-        localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(data.user || null));
+        if (!data) return;
+        if (typeof data.access === "string" && data.access) {
+            localStorage.setItem(STORAGE_KEYS.access, data.access);
+        }
+        if (typeof data.refresh === "string" && data.refresh) {
+            localStorage.setItem(STORAGE_KEYS.refresh, data.refresh);
+        }
+        if (data.user && typeof data.user === "object") {
+            localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(data.user));
+        }
+        scheduleProactiveRefresh();
     }
 
     function clearSession() {
         localStorage.removeItem(STORAGE_KEYS.access);
         localStorage.removeItem(STORAGE_KEYS.refresh);
         localStorage.removeItem(STORAGE_KEYS.user);
+        if (_refreshTimer) {
+            clearTimeout(_refreshTimer);
+            _refreshTimer = null;
+        }
+    }
+
+    // ---- JWT helpers (decode payload for `exp`; no signature verification) ----
+    function parseJwtPayload(token) {
+        if (!token || typeof token !== "string") return null;
+        var parts = token.split(".");
+        if (parts.length !== 3) return null;
+        try {
+            var b64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+            var pad = b64.length % 4;
+            if (pad) b64 += "=".repeat(4 - pad);
+            var raw = atob(b64);
+            // utf-8 decode
+            var json = decodeURIComponent(
+                raw.split("").map(function (c) {
+                    return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join("")
+            );
+            return JSON.parse(json);
+        } catch (_e) {
+            return null;
+        }
+    }
+
+    function getTokenExpiryMs(token) {
+        var p = parseJwtPayload(token);
+        return p && typeof p.exp === "number" ? p.exp * 1000 : 0;
+    }
+
+    function isTokenExpiringSoon(token, marginSec) {
+        var expMs = getTokenExpiryMs(token);
+        if (!expMs) return true; // unparseable -> treat as expired
+        var margin = (typeof marginSec === "number" ? marginSec : 30) * 1000;
+        return Date.now() >= expMs - margin;
+    }
+
+    // ---- Single-flight refresh + proactive scheduler ----
+    var _refreshPromise = null;
+    var _refreshTimer = null;
+
+    function refreshAccessToken() {
+        if (_refreshPromise) return _refreshPromise;
+        var refresh = getRefreshToken();
+        if (!refresh) {
+            return Promise.reject(new Error("No refresh token available."));
+        }
+
+        _refreshPromise = (async function () {
+            try {
+                var resp = await fetch(API_BASE + "/auth/refresh/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                    body: JSON.stringify({ refresh: refresh }),
+                    credentials: "same-origin"
+                });
+                var data = {};
+                try { data = await resp.json(); } catch (_e) { data = {}; }
+                if (!resp.ok || !data.access) {
+                    var msg = (data && (data.detail || data.message)) || "Session expired. Please sign in again.";
+                    var err = new Error(msg);
+                    err.status = resp.status;
+                    throw err;
+                }
+                setSession({ access: data.access, refresh: data.refresh });
+                return data.access;
+            } finally {
+                _refreshPromise = null;
+            }
+        })();
+        return _refreshPromise;
+    }
+
+    function scheduleProactiveRefresh() {
+        if (_refreshTimer) {
+            clearTimeout(_refreshTimer);
+            _refreshTimer = null;
+        }
+        var access = getAccessToken();
+        if (!access) return;
+        var expMs = getTokenExpiryMs(access);
+        if (!expMs) return;
+        // Refresh 60s before expiry; never wait more than ~23h.
+        var delay = expMs - Date.now() - 60 * 1000;
+        if (delay < 1000) delay = 1000;
+        if (delay > 23 * 60 * 60 * 1000) delay = 23 * 60 * 60 * 1000;
+        _refreshTimer = setTimeout(function () {
+            refreshAccessToken().catch(function () {
+                // swallow; the next authed request will surface it
+            });
+        }, delay);
+    }
+
+    async function getValidAccessToken(marginSec) {
+        var token = getAccessToken();
+        var refresh = getRefreshToken();
+        if (token && !isTokenExpiringSoon(token, marginSec)) {
+            return token;
+        }
+        if (!refresh) return "";
+        try {
+            return await refreshAccessToken();
+        } catch (_e) {
+            return "";
+        }
+    }
+
+    function redirectToLogin() {
+        var p = window.location.pathname || "";
+        var skip = ["login", "register", "forgot-password", "reset-password", "verify-otp"];
+        for (var i = 0; i < skip.length; i += 1) {
+            if (p.indexOf(skip[i]) !== -1) return;
+        }
+        var next = encodeURIComponent(p + (window.location.search || ""));
+        window.location.href = "/login.html?next=" + next;
     }
 
     function isAdminRole(user) {
@@ -137,37 +326,98 @@
         return String(value);
     }
 
-    async function request(path, options) {
+    // Centralized fetch helper with:
+    //  - JSON request/response handling
+    //  - Optional Authorization header (auth: true)
+    //  - Proactive access-token refresh (when about to expire)
+    //  - Single-flight refresh + transparent retry on 401
+    //  - Hard-fail to /login.html when refresh itself fails
+    //
+    // Options:
+    //   method, headers, body                  - standard fetch-ish
+    //   auth: bool                             - attach Bearer access token
+    //   redirectOnAuthFail: bool (default true) - redirect to login on 401 + refresh failure
+    //   skipAuthRefresh: bool (default false)  - do not try to refresh before sending
+    async function apiFetch(path, options) {
         var requestOptions = options || {};
-        var headers = requestOptions.headers || {};
-        headers["Content-Type"] = "application/json";
+        var headers = Object.assign(
+            { "Content-Type": "application/json", "Accept": "application/json" },
+            requestOptions.headers || {}
+        );
 
         if (requestOptions.auth) {
-            var accessToken = localStorage.getItem(STORAGE_KEYS.access);
-            if (accessToken) {
-                headers.Authorization = "Bearer " + accessToken;
+            var token = requestOptions.skipAuthRefresh
+                ? getAccessToken()
+                : await getValidAccessToken();
+            if (token) {
+                headers.Authorization = "Bearer " + token;
             }
         }
 
-        var response = await fetch(path, {
+        var fetchInit = {
             method: requestOptions.method || "GET",
             headers: headers,
-            body: requestOptions.body ? JSON.stringify(requestOptions.body) : undefined
-        });
-
-        var data = {};
-        try {
-            data = await response.json();
-        } catch (err) {
-            data = {};
+            credentials: requestOptions.credentials || "same-origin",
+            body: undefined
+        };
+        if (requestOptions.body !== undefined && requestOptions.body !== null) {
+            fetchInit.body = typeof requestOptions.body === "string"
+                ? requestOptions.body
+                : JSON.stringify(requestOptions.body);
         }
 
+        var response = await fetch(path, fetchInit);
+
+        // Auto-refresh + retry once on 401 for authed requests.
+        if (
+            response.status === 401 &&
+            requestOptions.auth &&
+            !requestOptions._retried &&
+            getRefreshToken()
+        ) {
+            try {
+                var newToken = await refreshAccessToken();
+                if (newToken) {
+                    headers.Authorization = "Bearer " + newToken;
+                    fetchInit.headers = headers;
+                    response = await fetch(path, fetchInit);
+                    requestOptions._retried = true;
+                }
+            } catch (_refreshErr) {
+                clearSession();
+                refreshAuthNav();
+                if (requestOptions.redirectOnAuthFail !== false) {
+                    redirectToLogin();
+                }
+                var err1 = new Error("Session expired. Please sign in again.");
+                err1.status = 401;
+                throw err1;
+            }
+        }
+
+        var data = {};
+        try { data = await response.json(); } catch (_e) { data = {}; }
+
         if (!response.ok) {
-            throw new Error(getMessageFromErrorPayload(data));
+            // Final 401 (after retry) - blow the session away.
+            if (response.status === 401 && requestOptions.auth) {
+                clearSession();
+                refreshAuthNav();
+                if (requestOptions.redirectOnAuthFail !== false) {
+                    redirectToLogin();
+                }
+            }
+            var err = new Error(getMessageFromErrorPayload(data));
+            err.status = response.status;
+            err.payload = data;
+            throw err;
         }
 
         return data;
     }
+
+    // Backwards-compatible alias.
+    var request = apiFetch;
 
     function createLinkItem(menu, href, label, className, isMobile) {
         var li = document.createElement("li");
@@ -216,7 +466,9 @@
         if (!user) {
             var loginBtn = document.createElement("a");
             loginBtn.href = "/login.html";
+            loginBtn.title = "Login";
             loginBtn.setAttribute("data-auth-el", "1");
+            loginBtn.className = "il-login-btn";
             loginBtn.style.cssText = [
                 "display:inline-flex", "align-items:center", "gap:6px",
                 "background:linear-gradient(135deg,#6366f1,#2563eb)",
@@ -230,7 +482,8 @@
                 " stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'>",
                 "<path d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'/>",
                 "<circle cx='12' cy='7' r='4'/>",
-                "</svg> Login"
+                "</svg>",
+                "<span class='il-login-label'>Login</span>"
             ].join("");
             loginBtn.addEventListener("mouseenter", function () { this.style.opacity = "0.88"; });
             loginBtn.addEventListener("mouseleave", function () { this.style.opacity = "1"; });
@@ -274,20 +527,21 @@
 
     function refreshAuthNav() {
         var headerAuth = document.getElementById("header-auth");
+        var desktopFallbackMenus = null;
         if (headerAuth) {
             renderDesktopAuth(headerAuth);
         } else {
-            var desktopMenus = document.querySelectorAll(".main-menu");
-            for (var i = 0; i < desktopMenus.length; i += 1) {
-                var existing = desktopMenus[i].querySelectorAll("[data-auth-links='1']");
+            desktopFallbackMenus = document.querySelectorAll(".main-menu");
+            for (var i = 0; i < desktopFallbackMenus.length; i += 1) {
+                var existing = desktopFallbackMenus[i].querySelectorAll("[data-auth-links='1']");
                 for (var k = 0; k < existing.length; k += 1) { existing[k].remove(); }
                 var user = getStoredUser();
                 if (!user) {
-                    createLinkItem(desktopMenus[i], "/login.html", "Login", "", false);
-                    createLinkItem(desktopMenus[i], "/register.html", "Register", "", false);
+                    createLinkItem(desktopFallbackMenus[i], "/login.html", "Login", "", false);
+                    createLinkItem(desktopFallbackMenus[i], "/register.html", "Register", "", false);
                 } else {
-                    createLinkItem(desktopMenus[i], getAccountPath(user), isAdminRole(user) ? "Admin Panel" : "My Account", "", false);
-                    createLinkItem(desktopMenus[i], "#", "Logout", "js-auth-logout", false);
+                    createLinkItem(desktopFallbackMenus[i], getAccountPath(user), isAdminRole(user) ? "Admin Panel" : "My Account", "", false);
+                    createLinkItem(desktopFallbackMenus[i], "#", "Logout", "js-auth-logout", false);
                 }
             }
         }
@@ -295,20 +549,41 @@
         for (var j = 0; j < mobileMenus.length; j += 1) {
             applyMobileAuthNav(mobileMenus[j]);
         }
+
+        // Re-apply translations to every subtree we just touched. This makes
+        // navbar localisation deterministic regardless of whether i18n.js
+        // has loaded before this call (it auto-loads async). When SiteI18n
+        // isn't ready yet, its own init() will translate the whole body
+        // shortly after - so this is purely an optimisation.
+        try {
+            if (window.SiteI18n && typeof window.SiteI18n.apply === "function") {
+                if (headerAuth) window.SiteI18n.apply(headerAuth);
+                if (desktopFallbackMenus) {
+                    for (var dm = 0; dm < desktopFallbackMenus.length; dm += 1) {
+                        window.SiteI18n.apply(desktopFallbackMenus[dm]);
+                    }
+                }
+                for (var m = 0; m < mobileMenus.length; m += 1) {
+                    window.SiteI18n.apply(mobileMenus[m]);
+                }
+            }
+        } catch (_e) {}
     }
 
     async function logoutUser() {
-        var refresh = localStorage.getItem(STORAGE_KEYS.refresh);
+        var refresh = getRefreshToken();
         try {
-            await request(API_BASE + "/auth/logout/", {
+            await apiFetch(API_BASE + "/auth/logout/", {
                 method: "POST",
                 auth: true,
-                body: { refresh: refresh || "" }
+                body: { refresh: refresh || "" },
+                redirectOnAuthFail: false
             });
-        } catch (err) {
-            // Ignore backend logout errors and clear local session anyway.
+        } catch (_err) {
+            // Backend may already consider the token invalid - clear locally regardless.
         }
         clearSession();
+        refreshAuthNav();
         window.location.href = "/login.html";
     }
 
@@ -323,16 +598,28 @@
         });
     }
 
+    // Translate a string through the global i18n helper if it is loaded.
+    // Falls back to the original text when the helper isn't ready yet
+    // (e.g. very first render before i18n.js has initialised).
+    function tr(text) {
+        try {
+            if (window.SiteI18n && typeof window.SiteI18n.translate === "function") {
+                return window.SiteI18n.translate(text);
+            }
+        } catch (_e) {}
+        return text;
+    }
+
     function setMessage(element, message, type) {
         if (!element) return;
-        element.textContent = message;
+        element.textContent = tr(message);
         element.style.color = type === "error" ? "#e11d48" : "#0f766e";
     }
 
     function setButtonLoading(button, isLoading, loadingText, defaultText) {
         if (!button) return;
         button.disabled = isLoading;
-        button.textContent = isLoading ? loadingText : defaultText;
+        button.textContent = tr(isLoading ? loadingText : defaultText);
     }
 
     function bindRegisterForm() {
@@ -498,6 +785,17 @@
                 setMessage(msg, "Login successful. Redirecting...", "success");
                 setTimeout(function () {
                     var user = getStoredUser();
+                    var nextUrl = params.get("next");
+                    if (nextUrl) {
+                        try {
+                            var decoded = decodeURIComponent(nextUrl);
+                            // Allow only same-origin redirects for safety.
+                            if (decoded.indexOf("/") === 0 && decoded.indexOf("//") !== 0) {
+                                window.location.href = decoded;
+                                return;
+                            }
+                        } catch (_e) {}
+                    }
                     window.location.href = getDashboardPath(user);
                 }, 600);
             } catch (err) {
@@ -508,10 +806,152 @@
         });
     }
 
+    function bindForgotPasswordForm() {
+        var form = document.getElementById("forgot-password-form");
+        if (!form) return;
+
+        var msg = document.getElementById("forgot-message");
+        var button = form.querySelector("button[type='submit']");
+
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            setMessage(msg, "", "success");
+
+            var email = document.getElementById("email").value.trim().toLowerCase();
+            if (!email) {
+                setMessage(msg, "Please enter your email address.", "error");
+                return;
+            }
+
+            setButtonLoading(button, true, "Sending...", "Send Reset Code");
+            try {
+                await request(API_BASE + "/auth/forgot-password/", {
+                    method: "POST",
+                    body: { email: email }
+                });
+                localStorage.setItem(STORAGE_KEYS.resetEmail, email);
+                setMessage(msg, "Reset code sent. Redirecting...", "success");
+                setTimeout(function () {
+                    window.location.href = "/reset-password.html?email=" + encodeURIComponent(email);
+                }, 900);
+            } catch (err) {
+                setMessage(msg, err.message, "error");
+            } finally {
+                setButtonLoading(button, false, "Sending...", "Send Reset Code");
+            }
+        });
+    }
+
+    function bindResetPasswordForm() {
+        var form = document.getElementById("reset-password-form");
+        if (!form) return;
+
+        var msg = document.getElementById("reset-message");
+        var button = form.querySelector("button[type='submit']");
+        var resendBtn = document.getElementById("resend-reset-btn");
+        var emailInput = document.getElementById("email");
+        var otpInput = document.getElementById("otp");
+        var newPasswordInput = document.getElementById("new_password");
+        var confirmPasswordInput = document.getElementById("confirm_password");
+
+        var params = new URLSearchParams(window.location.search);
+        var emailFromParams = params.get("email");
+        var savedEmail = localStorage.getItem(STORAGE_KEYS.resetEmail);
+        if (emailInput) {
+            emailInput.value = (emailFromParams || savedEmail || "").trim();
+        }
+
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            setMessage(msg, "", "success");
+
+            var email = (emailInput.value || "").trim().toLowerCase();
+            var otp = (otpInput.value || "").trim();
+            var newPassword = newPasswordInput.value;
+            var confirmPassword = confirmPasswordInput.value;
+
+            if (!email) {
+                setMessage(msg, "Email is required.", "error");
+                return;
+            }
+            if (!otp || otp.length !== 6) {
+                setMessage(msg, "Enter the 6-digit code from your email.", "error");
+                return;
+            }
+            if (!newPassword || newPassword.length < 8) {
+                setMessage(msg, "Password must be at least 8 characters.", "error");
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                setMessage(msg, "Passwords do not match.", "error");
+                return;
+            }
+
+            setButtonLoading(button, true, "Updating...", "Update Password");
+            try {
+                await request(API_BASE + "/auth/reset-password/", {
+                    method: "POST",
+                    body: {
+                        email: email,
+                        otp: otp,
+                        new_password: newPassword,
+                        confirm_password: confirmPassword
+                    }
+                });
+                localStorage.removeItem(STORAGE_KEYS.resetEmail);
+                setMessage(
+                    msg,
+                    "Password updated successfully. Redirecting to login...",
+                    "success"
+                );
+                setTimeout(function () {
+                    window.location.href = "/login.html?email=" + encodeURIComponent(email);
+                }, 1100);
+            } catch (err) {
+                setMessage(msg, err.message, "error");
+            } finally {
+                setButtonLoading(button, false, "Updating...", "Update Password");
+            }
+        });
+
+        if (resendBtn) {
+            resendBtn.addEventListener("click", async function () {
+                var email = (emailInput.value || "").trim().toLowerCase();
+                if (!email) {
+                    setMessage(msg, "Enter your email first.", "error");
+                    return;
+                }
+                setButtonLoading(resendBtn, true, "Sending...", "Resend Code");
+                try {
+                    await request(API_BASE + "/auth/forgot-password/", {
+                        method: "POST",
+                        body: { email: email }
+                    });
+                    setMessage(msg, "A new reset code has been sent.", "success");
+                } catch (err) {
+                    setMessage(msg, err.message, "error");
+                } finally {
+                    setButtonLoading(resendBtn, false, "Sending...", "Resend Code");
+                }
+            });
+        }
+    }
+
     window.InterLabourAuth = {
+        // HTTP helpers
+        apiFetch: apiFetch,
         request: request,
+        // Token helpers
+        getAccessToken: getAccessToken,
+        getRefreshToken: getRefreshToken,
+        getValidAccessToken: getValidAccessToken,
+        refreshAccessToken: refreshAccessToken,
+        isAuthenticated: function () { return !!getRefreshToken(); },
+        // Session helpers
         getUser: getStoredUser,
+        setSession: setSession,
         clearSession: clearSession,
+        logout: logoutUser,
         refreshAuthNav: refreshAuthNav
     };
 
@@ -529,12 +969,222 @@
         }
     }
 
+    // If the access token is missing/expired but we still have a refresh token,
+    // exchange it for a fresh access token in the background so that the very
+    // first authed request on this page doesn't pay the latency of a 401+retry.
+    function bootstrapSession() {
+        var access = getAccessToken();
+        var refresh = getRefreshToken();
+        if (!refresh) return;
+        if (!access || isTokenExpiringSoon(access, 30)) {
+            refreshAccessToken()
+                .then(function () { refreshAuthNav(); })
+                .catch(function () {
+                    clearSession();
+                    refreshAuthNav();
+                });
+        } else {
+            scheduleProactiveRefresh();
+        }
+    }
+
+    // -----------------------------------------------------------------
+    // Mobile off-canvas menu UX hardening
+    // -----------------------------------------------------------------
+    //
+    // The theme (main.js) already wires the burger to toggle
+    // body.mobile-menu-active and .mobile-header-active.sidebar-visible.
+    // We piggy-back on those state classes to:
+    //   - lock body scroll while the menu is open (and restore scroll
+    //     position on close - critical on iOS Safari)
+    //   - close the menu when the user taps Escape
+    //   - inject a discoverable close (x) button into pages whose source
+    //     HTML doesn't include one.
+    // No jQuery dependency: we use plain DOM APIs and a MutationObserver.
+    var _menuOpenScrollY = 0;
+
+    function closeMobileMenu() {
+        var container = document.querySelector(".mobile-header-active");
+        var burger = document.querySelector(".burger-icon");
+        if (container) container.classList.remove("sidebar-visible");
+        if (burger) burger.classList.remove("burger-close");
+        document.body.classList.remove("mobile-menu-active");
+    }
+
+    function lockBodyScroll() {
+        if (document.body.classList.contains("il-menu-open")) return;
+        _menuOpenScrollY = window.scrollY || window.pageYOffset || 0;
+        document.body.style.top = "-" + _menuOpenScrollY + "px";
+        document.body.style.position = "fixed";
+        document.body.style.width = "100%";
+        document.body.classList.add("il-menu-open");
+    }
+
+    function unlockBodyScroll() {
+        if (!document.body.classList.contains("il-menu-open")) return;
+        document.body.classList.remove("il-menu-open");
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.width = "";
+        window.scrollTo(0, _menuOpenScrollY || 0);
+    }
+
+    function injectMobileMenuClose() {
+        var wrappers = document.querySelectorAll(".mobile-header-wrapper-style .mobile-header-wrapper-inner");
+        for (var i = 0; i < wrappers.length; i += 1) {
+            var inner = wrappers[i];
+            if (inner.querySelector(".il-mobile-menu-close")) continue;
+            var btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "il-mobile-menu-close mobile-menu-close";
+            btn.setAttribute("aria-label", "Close menu");
+            btn.setAttribute("data-i18n-skip", "1");
+            btn.innerHTML = "&times;";
+            btn.addEventListener("click", function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeMobileMenu();
+            });
+            // Make the wrapper-inner a positioning context so the absolute
+            // close button anchors to the panel.
+            if (getComputedStyle(inner).position === "static") {
+                inner.style.position = "relative";
+            }
+            inner.appendChild(btn);
+        }
+    }
+
+    function watchMobileMenuState() {
+        if (!("MutationObserver" in window)) return;
+        var observer = new MutationObserver(function () {
+            if (document.body.classList.contains("mobile-menu-active")) {
+                lockBodyScroll();
+            } else {
+                unlockBodyScroll();
+            }
+        });
+        observer.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+    }
+
+    function bindMobileMenuKeys() {
+        document.addEventListener("keydown", function (e) {
+            if ((e.key === "Escape" || e.key === "Esc") &&
+                document.body.classList.contains("mobile-menu-active")) {
+                closeMobileMenu();
+            }
+        });
+    }
+
+    function setupMobileMenuUX() {
+        injectMobileMenuClose();
+        watchMobileMenuState();
+        bindMobileMenuKeys();
+        // If the page loads while the menu is somehow open (rare), make
+        // sure the lock state is consistent.
+        if (document.body.classList.contains("mobile-menu-active")) {
+            lockBodyScroll();
+        }
+    }
+
+    // -----------------------------------------------------------------
+    // Image performance: lazy-load + async decode for every <img> that
+    // isn't critical above-the-fold (header logo, hero banner). This is
+    // additive and entirely non-destructive: we never touch images that
+    // already declare `loading` or `decoding`, so explicit page-level
+    // overrides remain authoritative.
+    // -----------------------------------------------------------------
+    function isCriticalImage(img) {
+        // Walk up to a small depth and bail if the image lives inside
+        // the header or the hero banner: those need to render asap.
+        var node = img;
+        var depth = 0;
+        while (node && depth < 8) {
+            if (node.classList && (
+                node.classList.contains("header") ||
+                node.classList.contains("banner-hero") ||
+                node.classList.contains("banner-home-3") ||
+                node.classList.contains("header-logo") ||
+                node.classList.contains("mobile-header-active")
+            )) {
+                return true;
+            }
+            node = node.parentNode;
+            depth += 1;
+        }
+        return false;
+    }
+
+    function optimiseImages(root) {
+        var scope = root || document;
+        if (!scope.querySelectorAll) return;
+        var imgs = scope.querySelectorAll("img");
+        for (var i = 0; i < imgs.length; i += 1) {
+            var img = imgs[i];
+            if (!img || img.tagName !== "IMG") continue;
+            if (!img.hasAttribute("decoding")) {
+                img.setAttribute("decoding", "async");
+            }
+            if (!img.hasAttribute("loading") && !isCriticalImage(img)) {
+                img.setAttribute("loading", "lazy");
+            }
+        }
+    }
+
+    // Re-run when dynamic loaders inject new content (jobs / services /
+    // blog list etc.). They don't notify us, so we observe the body for
+    // added <img> nodes and patch them in place.
+    function watchDynamicImages() {
+        if (!("MutationObserver" in window)) return;
+        var observer = new MutationObserver(function (mutations) {
+            for (var i = 0; i < mutations.length; i += 1) {
+                var added = mutations[i].addedNodes || [];
+                for (var j = 0; j < added.length; j += 1) {
+                    var node = added[j];
+                    if (node && node.nodeType === 1) {
+                        if (node.tagName === "IMG") {
+                            if (!node.hasAttribute("decoding")) node.setAttribute("decoding", "async");
+                            if (!node.hasAttribute("loading") && !isCriticalImage(node)) {
+                                node.setAttribute("loading", "lazy");
+                            }
+                        } else if (node.querySelectorAll) {
+                            optimiseImages(node);
+                        }
+                    }
+                }
+            }
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
         clearSessionIfLogoutFlag();
+        ensureHeaderSlots();
         refreshAuthNav();
+        bootstrapSession();
         bindLogoutEvents();
         bindRegisterForm();
         bindVerifyOtpForm();
         bindLoginForm();
+        bindForgotPasswordForm();
+        bindResetPasswordForm();
+        setupMobileMenuUX();
+        optimiseImages(document);
+        watchDynamicImages();
+    });
+
+    // When the tab becomes visible again after being hidden for a while, the
+    // access token may have expired - top it up before any user interaction.
+    document.addEventListener("visibilitychange", function () {
+        if (document.visibilityState === "visible") {
+            var refresh = getRefreshToken();
+            if (!refresh) return;
+            var access = getAccessToken();
+            if (!access || isTokenExpiringSoon(access, 60)) {
+                refreshAccessToken().catch(function () {
+                    clearSession();
+                    refreshAuthNav();
+                });
+            }
+        }
     });
 })();

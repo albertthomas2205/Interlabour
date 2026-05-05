@@ -2,13 +2,19 @@ import os
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import EmailOTP, PendingRegistration
-from .services import send_pending_registration_otp, send_registration_otp
+from .services import (
+    send_password_reset_otp,
+    send_pending_registration_otp,
+    send_registration_otp,
+)
 
 User = get_user_model()
 
@@ -226,3 +232,113 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "email_verified",
             "is_active",
         )
+
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    """Step 1 of the password-reset flow: user submits their email."""
+
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+        try:
+            user = User.objects.get(email__iexact=value)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("No account is registered with this email.")
+        if not user.is_active:
+            raise serializers.ValidationError("This account is inactive. Please contact support.")
+        self.context["user"] = user
+        return value.lower()
+
+    def save(self):
+        user = self.context["user"]
+        from django.conf import settings as _settings  # local import for clarity
+        try:
+            send_password_reset_otp(user, language_code=_request_language(self))
+        except Exception as exc:
+            detail = str(exc) if getattr(_settings, "DEBUG", False) else "Failed to send password-reset email. Please try again later."
+            raise serializers.ValidationError({"email": detail})
+        return {"email": user.email}
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    """Single-step password reset: email + OTP + new password, validated and applied atomically."""
+
+    email = serializers.EmailField()
+    otp = serializers.CharField(max_length=6, min_length=6)
+    new_password = serializers.CharField(write_only=True, min_length=8)
+    confirm_password = serializers.CharField(write_only=True, min_length=8)
+
+    def validate(self, attrs):
+        email = attrs["email"].lower()
+        otp = attrs["otp"].strip()
+        new_password = attrs["new_password"]
+        confirm_password = attrs["confirm_password"]
+        max_attempts = int(os.getenv("OTP_MAX_ATTEMPTS", "5"))
+
+        if new_password != confirm_password:
+            raise serializers.ValidationError({"confirm_password": "Passwords do not match."})
+
+        try:
+            user = User.objects.get(email__iexact=email)
+        except User.DoesNotExist:
+            raise serializers.ValidationError({"email": "No account is registered with this email."})
+        if not user.is_active:
+            raise serializers.ValidationError({"email": "This account is inactive. Please contact support."})
+
+        otp_record = (
+            EmailOTP.objects.filter(
+                user=user,
+                email__iexact=email,
+                purpose=EmailOTP.Purpose.PASSWORD_RESET,
+                is_used=False,
+            )
+            .order_by("-created_at")
+            .first()
+        )
+        if not otp_record:
+            raise serializers.ValidationError(
+                {"otp": "No active reset code found. Please request a new code."}
+            )
+        if otp_record.is_expired():
+            raise serializers.ValidationError({"otp": "Reset code expired. Please request a new code."})
+        if otp_record.attempts >= max_attempts:
+            otp_record.is_used = True
+            otp_record.save(update_fields=["is_used"])
+            raise serializers.ValidationError(
+                {"otp": "Too many attempts. Please request a new code."}
+            )
+        if not otp_record.verify_code(otp):
+            otp_record.attempts += 1
+            if otp_record.attempts >= max_attempts:
+                otp_record.is_used = True
+            otp_record.save(update_fields=["attempts", "is_used"])
+            raise serializers.ValidationError({"otp": "Invalid reset code."})
+
+        try:
+            validate_password(new_password, user=user)
+        except DjangoValidationError as exc:
+            raise serializers.ValidationError({"new_password": list(exc.messages)})
+
+        attrs["user"] = user
+        attrs["otp_record"] = otp_record
+        return attrs
+
+    def save(self):
+        user = self.validated_data["user"]
+        otp_record = self.validated_data["otp_record"]
+        new_password = self.validated_data["new_password"]
+
+        with transaction.atomic():
+            user.set_password(new_password)
+            user.save(update_fields=["password"])
+
+            otp_record.is_used = True
+            otp_record.save(update_fields=["is_used"])
+
+            EmailOTP.objects.filter(
+                user=user,
+                purpose=EmailOTP.Purpose.PASSWORD_RESET,
+                is_used=False,
+            ).update(is_used=True)
+
+        return {"email": user.email}

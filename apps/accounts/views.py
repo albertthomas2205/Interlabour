@@ -8,8 +8,10 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .serializers import (
     CustomTokenObtainPairSerializer,
+    ForgotPasswordSerializer,
     RegisterSerializer,
     ResendEmailOTPSerializer,
+    ResetPasswordSerializer,
     UserProfileSerializer,
     VerifyEmailOTPSerializer,
 )
@@ -110,3 +112,35 @@ class MeAPIView(APIView):
     def get(self, request):
         serializer = UserProfileSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ForgotPasswordAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = ForgotPasswordSerializer(data=request.data, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        result = serializer.save()
+        return Response(
+            {
+                "message": "Password reset code sent to your email.",
+                "email": result.get("email", ""),
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class ResetPasswordAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = ResetPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        result = serializer.save()
+        return Response(
+            {
+                "message": "Password has been reset successfully. You can now sign in.",
+                "email": result.get("email", ""),
+            },
+            status=status.HTTP_200_OK,
+        )

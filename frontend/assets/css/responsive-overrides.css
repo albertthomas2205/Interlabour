@@ -1,0 +1,917 @@
+/* ============================================================
+   Inter Labour - Responsive overrides
+   Layered on top of the theme's main.css. Mobile-first; uses
+   clamp() so most fixes scale fluidly between phone and desktop
+   without requiring extra breakpoints.
+   - Eliminates horizontal scroll
+   - Fluid hero / heading typography
+   - Touch-friendly nav, buttons, inputs (>=44px tap targets)
+   - Hardens mobile off-canvas menu (backdrop, scroll-lock helpers,
+     close button styling)
+   - Stops images / iframes / embeds overflowing
+   - Tames section padding & footer spacing on small screens
+   - Defensive: never uses !important except where the theme's own
+     rules require it to win the cascade
+   ============================================================ */
+
+/* ---------- 1. Universal stability ---------- */
+
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+img,
+svg,
+video,
+iframe,
+embed,
+object,
+canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+iframe,
+video {
+    max-width: 100%;
+}
+
+/* Long unbroken strings (URLs, emails, IDs) shouldn't blow out the layout. */
+p,
+li,
+td,
+th,
+a,
+span,
+small,
+blockquote,
+.text-md,
+.text-sm,
+.card-job-description,
+.card-job-top--info-heading,
+.card-job-top--location,
+.card-job-top--type-job {
+    overflow-wrap: anywhere;
+    word-wrap: break-word;
+}
+
+/* Bootstrap rows occasionally overflow when child cols add negative
+   margins past the container. Belt and braces: */
+.container,
+.container-fluid {
+    max-width: 100%;
+}
+
+/* ---------- 2. Fluid typography ---------- */
+
+/* Theme heading sizes are large; on phones they overflow / push the page
+   wider than 100vw. clamp() keeps them readable at every width. */
+h1,
+.h1 {
+    font-size: clamp(28px, 5vw, 56px);
+    line-height: 1.15;
+}
+
+h2,
+.h2,
+.section-title {
+    font-size: clamp(24px, 4vw, 42px);
+    line-height: 1.2;
+}
+
+h3,
+.h3 {
+    font-size: clamp(20px, 3vw, 30px);
+    line-height: 1.25;
+}
+
+h4,
+.h4 {
+    font-size: clamp(18px, 2.4vw, 24px);
+    line-height: 1.3;
+}
+
+h5,
+.h5 {
+    font-size: clamp(16px, 2vw, 20px);
+    line-height: 1.35;
+}
+
+/* Hero on the homepage uses a custom class, force a fluid value. */
+.heading-banner,
+.banner-hero .heading-banner {
+    font-size: clamp(28px, 5.4vw, 64px);
+    line-height: 1.15;
+    word-break: break-word;
+}
+
+/* Very small phones (<=359px): tighten further. */
+@media (max-width: 359.98px) {
+    body {
+        font-size: 14px;
+    }
+}
+
+/* ---------- 3. Section spacing on small screens ---------- */
+
+@media (max-width: 991.98px) {
+    .section-box {
+        padding-left: 0;
+        padding-right: 0;
+    }
+    .pt-100 { padding-top: 60px !important; }
+    .pb-100 { padding-bottom: 60px !important; }
+    .mt-100 { margin-top: 60px !important; }
+    .mb-100 { margin-bottom: 60px !important; }
+    .mt-90  { margin-top: 50px !important; }
+    .mb-90  { margin-bottom: 50px !important; }
+    .mt-80  { margin-top: 48px !important; }
+    .mb-80  { margin-bottom: 48px !important; }
+    .mt-60  { margin-top: 32px !important; }
+    .mb-60  { margin-bottom: 32px !important; }
+}
+
+@media (max-width: 575.98px) {
+    .pt-100 { padding-top: 40px !important; }
+    .pb-100 { padding-bottom: 40px !important; }
+    .mt-100 { margin-top: 40px !important; }
+    .mb-100 { margin-bottom: 40px !important; }
+    .mt-90  { margin-top: 36px !important; }
+    .mb-90  { margin-bottom: 36px !important; }
+    .mt-80  { margin-top: 32px !important; }
+    .mb-80  { margin-bottom: 32px !important; }
+    .container,
+    .container-fluid {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
+
+/* ---------- 4. Hero / banner safety ---------- */
+
+/* The theme uses #fff9f3 (a very pale cream) as the hero card background.
+   At narrow viewports the band gets so thin that the cream visually
+   disappears against the pure white page. Slightly deepen it so the
+   hero "card" stays clearly visible at every size, while keeping the
+   theme's warm cream tone. */
+.bg-banner-about,
+.section-box.bg-banner-about {
+    background-color: #fdf3e8 !important;
+}
+
+@media (max-width: 991.98px) {
+    .banner-hero {
+        padding: 0 16px !important;
+    }
+    .banner-hero .block-banner,
+    .bg-banner-about.banner-home-3 .banner-hero .block-banner {
+        padding: 30px 12px !important;
+        text-align: center;
+    }
+    .banner-hero .heading-banner br {
+        display: none;
+    }
+    .list-tags-banner {
+        margin-top: 20px !important;
+    }
+    .list-tags-banner a {
+        display: inline-block;
+        font-size: clamp(13px, 2.2vw, 16px);
+        line-height: 1.55;
+    }
+    .list-tags-banner br {
+        display: none;
+    }
+    /* Decorative background SVGs of the hero already hidden on <=1199px
+       in main.css. We only want to hide the SVG-style decorations
+       (banner-home-3::before / ::after, which are 351x400 SVG shapes),
+       NOT the parent's solid cream background. */
+    .banner-home-3::before,
+    .banner-home-3::after {
+        display: none !important;
+    }
+}
+
+/* ---------- 4b. "Who we are" gray card — white text only ---------- */
+/* The gray rounded panel is drawn by the theme on .block-job-bg::before
+   (semi-transparent slate + SVG). We do NOT touch that background —
+   only typography inside .box-info-job so it stays readable on desktop
+   and mobile (index + page-about use the same markup). */
+.block-job-bg .box-info-job,
+.block-job-bg .box-info-job p,
+.block-job-bg .box-info-job .text-lg,
+.block-job-bg .box-info-job .text-md,
+.block-job-bg .box-info-job .text-blue,
+.block-job-bg .box-info-job strong {
+    color: #ffffff !important;
+}
+
+/* Subtle emphasis for the small heading line (was .text-blue accent). */
+.block-job-bg .box-info-job .text-blue {
+    opacity: 1;
+    font-weight: 700;
+}
+
+/* CTA inside the gray card (page-about): keep a solid light button so it
+   does not inherit white text from the parent. */
+.block-job-bg .box-info-job .btn,
+.block-job-bg .box-info-job .btn-default {
+    background: #ffffff !important;
+    color: #19263f !important;
+    border-color: transparent !important;
+}
+
+/* Content always paints above the ::before panel (theme sets .row z-index: 2;
+   this guards the column itself on edge cases). */
+.block-job-bg > .row > [class*="col-"] {
+    position: relative;
+    z-index: 2;
+}
+
+/* Mobile: extra bottom padding so the full-height ::before doesn't clip
+   the last line of text against the rounded corners. */
+@media (max-width: 991.98px) {
+    .block-job-bg.block-job-bg-homepage-2 {
+        padding-bottom: 12px !important;
+    }
+}
+
+/* Gray panel + white text: NEVER clip this block horizontally.
+   The theme draws the gray card on .block-job-bg::before with
+   right:-50px and width:88%; overflow-x:clip on the parent was cutting
+   the pseudo off — white text stayed but the gray "card" vanished. */
+.block-job-bg,
+.block-job-bg.block-job-bg-homepage-2 {
+    overflow-x: visible !important;
+    overflow: visible !important;
+}
+
+/* WOW.js sets visibility:hidden on .wow until scroll; after resize the
+   "Who we are" lines can stay hidden while our CSS forces white — user
+   sees blank/white-on-white. Disable WOW's hide for this block only. */
+.block-job-bg .wow,
+.block-job-bg .animate__animated {
+    visibility: visible !important;
+    opacity: 1 !important;
+    animation: none !important;
+    -webkit-animation: none !important;
+    animation-name: none !important;
+    -webkit-animation-name: none !important;
+}
+
+/* Solid fallback behind the semi-transparent ::before so text always has
+   a gray backing (same hue as theme rgb(63,74,94), full opacity). */
+.block-job-bg.block-job-bg-homepage-2 {
+    background-color: #3f4a5e;
+    border-radius: 24px;
+    position: relative;
+}
+@media (min-width: 992px) {
+    .block-job-bg.block-job-bg-homepage-2 {
+        border-radius: 80px;
+    }
+}
+
+/* ---------- 5. Header & navbar (works with auth-integration.js CSS) ---------- */
+
+/* The desktop menu hides at <=1199.98px and the burger appears. Make sure
+   the whole header bar can never overflow horizontally. */
+.header .main-header {
+    flex-wrap: nowrap;
+    min-width: 0;
+}
+
+.header .header-left {
+    min-width: 0;
+}
+
+.header .header-logo img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Burger icon styling.
+   Keep the theme's 24x20 geometry intact (the .burger-icon-top/mid/bottom
+   spans rely on it for the X-transform when .burger-close is set), but:
+     - Thicker, darker, rounded lines for clear visibility on any header.
+     - Invisible 44x44 hit zone via ::after so taps register comfortably
+       (WCAG / iOS HIG minimum) without distorting the icon.            */
+.header .burger-icon {
+    cursor: pointer;
+}
+
+.header .burger-icon > span {
+    height: 3px !important;
+    border-radius: 2px;
+}
+
+.header .burger-icon > span::before,
+.header .burger-icon > span::after,
+.header .burger-icon.burger-icon-white > span::before,
+.header .burger-icon.burger-icon-white > span::after {
+    background-color: #0f172a !important;
+    border-radius: 2px;
+}
+
+/* Clean transition into and out of the X state. */
+.header .burger-icon > span,
+.header .burger-icon.burger-close > span {
+    transition: transform 0.25s ease,
+                top 0.25s ease,
+                bottom 0.25s ease,
+                opacity 0.2s ease;
+}
+
+/* Bigger tap target without changing the icon's visible 24x20 footprint. */
+.header .burger-icon::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+    background: transparent;
+    z-index: 0;
+}
+
+@media (min-width: 1200px) {
+    .header .burger-icon { display: none !important; }
+}
+
+/* ---------- 6. Off-canvas mobile menu polish ---------- */
+
+/* Lock background scroll while the off-canvas menu is open
+   (toggled by the JS helper in auth-integration.js). */
+body.il-menu-open {
+    overflow: hidden;
+    /* iOS safari needs position fixed to fully prevent rubber-band scroll.
+       The JS sets top:-<scrollY>px so we restore on close. */
+}
+
+/* Smooth, predictable open/close even though the theme already animates. */
+.mobile-header-wrapper-style {
+    transition: transform 0.3s ease, opacity 0.25s ease, visibility 0.25s ease;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Make the off-canvas a sensible width on small phones so the close (×)
+   button is reachable with a thumb. The theme uses 380px which is wider
+   than some viewports (<=380px phones). */
+@media (max-width: 400px) {
+    .mobile-header-wrapper-style {
+        width: 86vw !important;
+        max-width: 360px;
+    }
+}
+
+/* Make the overlay slightly darker and blur the page behind it for a more
+   modern feel - falls back to the theme overlay on browsers without
+   backdrop-filter. */
+.body-overlay-1 {
+    background: rgba(15, 23, 42, 0.45) !important;
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    transition: opacity 0.25s ease;
+}
+
+/* Bigger tap targets in the off-canvas nav. */
+.mobile-header-wrapper-style .mobile-menu li a {
+    padding: 14px 0 !important;
+    min-height: 44px;
+    line-height: 1.4 !important;
+    display: block;
+}
+
+/* The mobile menu's parent <li> has a bottom border in the theme; on very
+   narrow widths the right side of the link text touches the close button.
+   Add safe right padding so the close (×) can sit inside the panel. */
+.mobile-header-wrapper-style .mobile-header-content-area {
+    padding: 24px 24px 24px !important;
+}
+
+/* Defensively-injected close button styling (rendered by the JS helper). */
+.il-mobile-menu-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.06);
+    color: #0f172a;
+    font-size: 20px;
+    line-height: 1;
+    z-index: 10;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+}
+.il-mobile-menu-close:hover,
+.il-mobile-menu-close:focus {
+    background: rgba(15, 23, 42, 0.12);
+    transform: scale(1.04);
+    outline: none;
+}
+
+/* ---------- 7. Cards (minimal, non-invasive) ---------- */
+/* Job cards keep the theme's original look. We only:
+   - tighten internal padding on phones for the non-job grid cards
+   - keep badge labels from wrapping awkwardly
+   No equal-height flex, no hover shadow, no flex display on .card-job
+   (those were too aggressive for the theme's float-based layout). */
+
+@media (max-width: 991.98px) {
+    .card-grid-3,
+    .card-grid-news {
+        padding: 18px !important;
+    }
+    .card-job-bottom .row {
+        row-gap: 10px;
+    }
+}
+
+/* Job badges ("Spoedig", "Full time"...) - keep them on a single line. */
+.card-job-bottom .btn-small {
+    display: inline-block;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    line-height: 1.2;
+}
+
+/* ---------- 8. Card images (testimonial / blog / services / partners) ---------- */
+/* The job card's .card-job-top--image keeps its theme styling (52x52 round
+   avatar, float:left). We only normalise the OTHER card-image patterns
+   below, which were not constrained at all. */
+
+/* Testimonial / blog card thumbnails on .card-grid-3 (used on index +
+   page-about). Square testimonial avatar circles, 16:9 blog covers. */
+.card-grid-3 .card-grid-3-image-circle figure {
+    margin: 0 auto;
+    display: block;
+}
+.card-grid-3 .card-grid-3-image-circle figure img {
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    object-position: center;
+}
+
+.card-grid-3 .card-grid-3-image:not(.card-grid-3-image-circle) figure {
+    margin: 0;
+    border-radius: 15px;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    background: #f1f5f9;
+}
+.card-grid-3 .card-grid-3-image:not(.card-grid-3-image-circle) figure img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 15px;
+}
+
+/* Service tiles (.card-grid-news on page-service.html). 4:3 cover. */
+.card-grid-news .block-image-rd {
+    overflow: hidden;
+    border-radius: 15px;
+    background: #f1f5f9;
+    margin-bottom: 14px;
+}
+.card-grid-news .block-image-rd figure {
+    margin: 0;
+    aspect-ratio: 4 / 3;
+}
+.card-grid-news .block-image-rd figure img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: transform 0.4s ease;
+}
+.card-grid-news:hover .block-image-rd figure img {
+    transform: scale(1.04);
+}
+
+/* Partner logos: prevent stretching, keep them visually balanced. */
+.list-partners li figure {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.list-partners li figure img {
+    max-height: 60px;
+    width: auto;
+    object-fit: contain;
+    filter: grayscale(20%);
+    opacity: 0.92;
+    transition: filter 0.25s ease, opacity 0.25s ease, transform 0.25s ease;
+}
+.list-partners li figure img:hover {
+    filter: grayscale(0%);
+    opacity: 1;
+    transform: scale(1.04);
+}
+
+/* Universal: any <img> inside a card never overflows its frame. */
+.card-job img,
+.card-grid-3 img,
+.card-grid-news img,
+.sidebar-shadow img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ---------- 9. Job card salary: clean, never breaks, more attractive ---------- */
+/*
+   Two problems were visible on dynamic salary ranges
+   ("€5000.00 – €8000.00"):
+     1. The theme's 22px bold value didn't fit inside the 25%-wide
+        col-md-3, so the range broke onto two lines.
+     2. The plain text didn't visually balance the rest of the card.
+
+   Fix:
+     - Salary column auto-sizes to its content on >=768px (the col-md-9
+       text column flexes to take the remainder).
+     - The salary itself becomes a soft accent pill with the existing
+       theme navy on a faint blue tint, smaller fluid font, single line.
+     - On mobile (<768px) the theme already stacks the price below the
+       meta - we just style the pill the same way for consistency.
+   No theme colors changed; the pill background uses a 8% alpha of the
+   site's existing blue accent (#2563eb).
+*/
+
+/* 9a. Auto-size the price column on tablet/desktop so long ranges fit. */
+@media (min-width: 768px) {
+    .card-job .card-job-top--info > .row {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .card-job .card-job-top--info > .row > .col-md-9,
+    .card-job .card-job-top--info > .row > .col-lg-7 {
+        flex: 1 1 auto;
+        width: auto;
+        max-width: none;
+        min-width: 0;
+    }
+    .card-job .card-job-top--info > .row > .col-md-3,
+    .card-job .card-job-top--info > .row > .col-lg-5 {
+        flex: 0 0 auto;
+        width: auto;
+        max-width: 60%;
+        min-width: 0;
+        margin-left: auto;
+        text-align: right;
+    }
+}
+
+/* 9b. The salary pill itself. Subtle accent, theme-friendly, never breaks. */
+.card-job-top--price {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 2px;
+    max-width: 100%;
+    white-space: nowrap;
+    line-height: 1.2;
+
+    /* Visual: soft blue tint pill with the theme's deep navy text. */
+    background: rgba(37, 99, 235, 0.08);
+    color: #1e3a8a !important;
+    border-radius: 999px;
+    padding: 6px 14px;
+
+    /* Smaller, fluid font so a range like "€5000.00 – €8000.00" stays
+       on one line at every breakpoint without dwarfing the title.    */
+    font-size: clamp(13px, 1.3vw, 16px) !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.005em;
+    font-feature-settings: "tnum" 1;
+
+    /* Defensive: the parent column can never push out the card. */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Inner unit ("/Day", "/Maand") on static job cards - subordinate. */
+.card-job-top--price > span {
+    margin-left: 2px;
+    opacity: 0.85;
+    font-weight: 600 !important;
+    font-size: 0.82em !important;
+    color: inherit !important;
+}
+
+/* On <=767px the theme already stacks the price below the meta block.
+   Make sure it left-aligns inside its column so it sits flush with the
+   title instead of floating mid-line.                                  */
+@media (max-width: 767.98px) {
+    .card-job .card-job-top--info > .row > .col-md-3,
+    .card-job .card-job-top--info > .row > .col-lg-5 {
+        text-align: left;
+    }
+    .card-job-top--price {
+        margin-top: 8px;
+    }
+}
+
+/* ---------- 9c. Card itself: subtle modern polish ---------- */
+/* Just enough lift + radius to feel current, without altering the
+   theme's color palette or typography.                                 */
+
+.card-job {
+    border-radius: 14px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card-job:hover {
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.07);
+}
+
+/* ---------- 11. Sidebar (job-single) polish ---------- */
+.sidebar-shadow {
+    border-radius: 16px;
+}
+
+.sidebar-shadow .avatar-sidebar figure {
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+}
+
+.sidebar-shadow .avatar-sidebar figure img {
+    max-width: 110px;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 50%;
+    background: #f8fafc;
+}
+
+@media (max-width: 991.98px) {
+    .sidebar-shadow {
+        margin-top: 30px;
+    }
+}
+
+/* ---------- 12. Footer polish ---------- */
+/* Some pages include inline `style="width:300px"` on the brand column
+   and `style="width:150px"` on the logo, which fights the fluid grid on
+   tablet. Use stronger selectors to reclaim it. */
+
+.footer .col-md-4[style*="width: 300px"],
+.footer .col-md-4[style*="width:300px"] {
+    width: auto !important;
+    max-width: 320px;
+}
+
+.footer img[style*="width: 150px"],
+.footer img[style*="width:150px"] {
+    max-width: 150px;
+    width: 100%;
+    height: auto;
+}
+
+.footer .menu-footer {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer .menu-footer li {
+    padding: 5px 0;
+}
+
+.footer .menu-footer li a {
+    transition: color 0.2s ease, padding-left 0.2s ease;
+    display: inline-block;
+}
+
+.footer .menu-footer li a:hover {
+    padding-left: 4px;
+}
+
+.footer .footer-social {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.footer .footer-social a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.06);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.footer .footer-social a:hover {
+    background: rgba(37, 99, 235, 0.12);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 991.98px) {
+    .footer .col-md-4,
+    .footer .col-md-2 {
+        margin-bottom: 28px;
+    }
+    .footer .footer-bottom {
+        text-align: center;
+    }
+    .footer .footer-bottom .col-md-6 {
+        text-align: center !important;
+    }
+    .footer .footer-social {
+        margin-top: 10px;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .footer {
+        padding-top: 40px;
+        text-align: center;
+    }
+    .footer .menu-footer li {
+        padding: 4px 0;
+    }
+}
+
+/* ---------- 13. Buttons / actions polish ---------- */
+.btn,
+.btn-default,
+.btn-shadow {
+    font-feature-settings: "ss01" 1;
+    letter-spacing: 0.01em;
+}
+
+.btn:focus-visible,
+.btn-default:focus-visible,
+.btn-shadow:focus-visible,
+.btn-border-brand-2:focus-visible,
+a:focus-visible,
+button:focus-visible {
+    outline: 2px solid rgba(37, 99, 235, 0.55);
+    outline-offset: 2px;
+}
+
+/* ---------- 14. Generic body & text rhythm ---------- */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+p {
+    line-height: 1.6;
+}
+
+main p {
+    margin-bottom: 1em;
+}
+
+/* ---------- 15. Loading placeholders (blog list / detail) ---------- */
+#blog-list > .col-12,
+#blog-detail > div[style*="padding"] {
+    text-align: center;
+    color: #64748b;
+}
+
+/* ---------- 8. Forms / inputs (auth + contact + newsletter) ---------- */
+
+@media (max-width: 575.98px) {
+    .input-style-1 input,
+    .input-style-1 textarea,
+    .input-style-1 select,
+    input[type='text'],
+    input[type='email'],
+    input[type='password'],
+    input[type='tel'],
+    input[type='number'],
+    input[type='search'],
+    textarea,
+    select {
+        font-size: 16px !important; /* prevents iOS zoom on focus */
+    }
+    .btn,
+    .btn-default,
+    .btn-border,
+    .btn-border-brand-2 {
+        min-height: 44px;
+        padding: 12px 18px !important;
+        font-size: 14px !important;
+    }
+    .box-white-style-icon {
+        padding: 24px 18px !important;
+        border-radius: 14px !important;
+    }
+}
+
+/* ---------- 9. Tables (job listings, applications) ---------- */
+
+.table-responsive,
+.table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+table {
+    max-width: 100%;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* ---------- 10. Footer ---------- */
+
+@media (max-width: 991.98px) {
+    .footer .footer-col,
+    footer .footer-col {
+        margin-bottom: 30px;
+    }
+    .footer .footer-row,
+    footer .footer-row {
+        row-gap: 18px;
+    }
+    .footer-bottom,
+    .footer .footer-bottom {
+        text-align: center;
+        flex-direction: column;
+        row-gap: 8px;
+    }
+}
+
+/* ---------- 11. Misc safety ---------- */
+
+/* Clip only the top hero banner where needed. Do NOT clip .block-job-bg —
+   see section 4b above (gray ::before extends past the box edge). */
+.banner-hero {
+    overflow-x: clip;
+}
+
+@supports not (overflow: clip) {
+    .banner-hero {
+        overflow-x: hidden;
+    }
+}
+
+.list-recent-jobs,
+.list-recent-jobs .row {
+    overflow: visible;
+}
+
+/* Job cards: always visible + dark body copy (never inherit stray light
+   colours). Featured section titles may still use WOW separately. */
+.list-recent-jobs .card-job,
+.list-recent-jobs .card-job.il-dynamic-job-card {
+    visibility: visible !important;
+    opacity: 1 !important;
+    background-color: #ffffff !important;
+    color: #37404e !important;
+}
+
+.list-recent-jobs .card-job .card-job-top--info-heading a,
+.list-recent-jobs .card-job .card-job-top--company {
+    color: #1f2938 !important;
+}
+
+.list-recent-jobs .card-job .card-job-description {
+    color: #727272 !important;
+}
+
+.list-recent-jobs .card-job .card-job-top--location,
+.list-recent-jobs .card-job .card-job-top--type-job {
+    color: #88929b !important;
+}
+
+/* Buttons in inline groups should never break their pill shape on narrow
+   widths. */
+.btn,
+.btn-default,
+.btn-shadow {
+    white-space: normal;
+    word-break: keep-all;
+}
+
+/* Lang toggle (NL/EN) on extremely narrow phones still readable. */
+@media (max-width: 359.98px) {
+    #site-lang-toggle button {
+        padding: 4px 6px !important;
+        font-size: 10px !important;
+    }
+}

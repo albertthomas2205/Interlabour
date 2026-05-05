@@ -32,8 +32,14 @@
                         <td style="padding:32px 40px 8px 40px;">
                             <p style="margin:0 0 18px 0;font-size:16px;color:#1e293b;">Hallo {{ recipient_name }},</p>
                             <p style="margin:0 0 24px 0;font-size:15px;color:#475569;">
+                                {% if purpose == 'password_reset' %}
+                                Je hebt een <strong style="color:#19263F;">wachtwoordherstel</strong> aangevraagd voor je
+                                Inter Labour account. Voer onderstaande code in op de verificatiepagina om je wachtwoord
+                                opnieuw in te stellen.
+                                {% else %}
                                 Bedankt voor je registratie bij <strong style="color:#19263F;">Inter Labour</strong>.
                                 Om je e-mailadres te bevestigen, voer je onderstaande code in op de verificatiepagina.
+                                {% endif %}
                             </p>
                             <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
                                 <tr>
@@ -47,15 +53,24 @@
                                 Deze code is <strong style="color:#334155;">{{ expiry_minutes }} minuten</strong> geldig. Deel de code nooit met anderen - wij vragen deze nooit telefonisch of via social media.
                             </p>
                             <p style="margin:20px 0 0 0;font-size:14px;color:#64748b;">
+                                {% if purpose == 'password_reset' %}
+                                Heb je geen wachtwoordherstel aangevraagd? Dan kun je deze e-mail gewoon negeren; je wachtwoord blijft ongewijzigd.
+                                {% else %}
                                 Heb je deze aanmelding niet zelf gestart? Dan kun je deze e-mail gewoon negeren; er wordt geen account geactiveerd zonder deze stap.
+                                {% endif %}
                             </p>
 
                             <div style="margin:28px 0 0 0;padding-top:22px;border-top:1px solid #eef1f6;"></div>
 
                             <p style="margin:0 0 18px 0;font-size:16px;color:#1e293b;">Hello {{ recipient_name }},</p>
                             <p style="margin:0 0 24px 0;font-size:15px;color:#475569;">
+                                {% if purpose == 'password_reset' %}
+                                You requested a <strong style="color:#19263F;">password reset</strong> for your
+                                Inter Labour account. Enter the code below on the verification page to set a new password.
+                                {% else %}
                                 Thank you for registering with <strong style="color:#19263F;">Inter Labour</strong>.
                                 To confirm your email address, enter the code below on the verification page.
+                                {% endif %}
                             </p>
                             <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
                                 <tr>
@@ -69,7 +84,11 @@
                                 This code is <strong style="color:#334155;">{{ expiry_minutes }} minutes</strong> valid. Never share the code with anyone - we never ask for it by phone or on social media.
                             </p>
                             <p style="margin:20px 0 0 0;font-size:14px;color:#64748b;">
+                                {% if purpose == 'password_reset' %}
+                                If you did not request a password reset, you can ignore this email; your password will not be changed.
+                                {% else %}
                                 If you did not start this registration yourself, you can ignore this email; no account will be activated without this step.
+                                {% endif %}
                             </p>
                         </td>
                     </tr>

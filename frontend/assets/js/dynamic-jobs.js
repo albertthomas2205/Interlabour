@@ -6,6 +6,9 @@
  * answers, so the home page never shows stale demo data.
  *
  * Triggers re-translation via window.SiteI18n.apply() after rendering.
+ * Job cards intentionally omit WOW.js scroll classes — WOW sets
+ * visibility:hidden until isVisible(); narrow viewports / resize often
+ * left cards invisible while still in DOM.
  */
 (function () {
     "use strict";
@@ -55,7 +58,7 @@
 
         return (
             '<div class="col-lg-6 col-md-12 col-sm-12 col-12">' +
-                '<div class="card-job hover-up wow animate__animated animate__fadeInUp">' +
+                '<div class="card-job hover-up il-dynamic-job-card">' +
                     '<div class="card-job-top">' +
                         '<div class="card-job-top--image">' +
                             '<a href="' + href + '"><figure><img alt="Inter Labour" src="' + escapeHtml(image) + '" /></figure></a>' +
