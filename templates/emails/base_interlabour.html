@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="color-scheme" content="light" />
+    <meta name="supported-color-schemes" content="light" />
+    <title>{% block email_title %}Inter Labour{% endblock %}</title>
+    {% block email_extra_head %}{% endblock %}
+</head>
+<body style="margin:0;padding:0;background-color:#e8ecf4;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-family:'Segoe UI',Roboto,'Helvetica Neue',Helvetica,Arial,sans-serif;color:#1e293b;line-height:1.65;">
+    <span style="display:none !important;visibility:hidden;mso-hide:all;font-size:1px;color:#ffffff;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">
+        {% block email_preheader %}{% endblock %}
+    </span>
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#e8ecf4;padding:36px 16px;">
+        <tr>
+            <td align="center">
+                <!--[if mso]>
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600"><tr><td>
+                <![endif]-->
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:600px;background-color:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 14px 44px rgba(25,38,63,0.12),0 2px 8px rgba(25,38,63,0.06);border:1px solid rgba(25,38,63,0.07);">
+                    <tr>
+                        <td style="height:7px;line-height:7px;font-size:0;background:#19263F;background:linear-gradient(90deg,#19263F 0%,#2D467A 28%,#902D3A 62%,#B19357 100%);">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:0;background-color:#f8fafc;border-bottom:1px solid #e8ecf4;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td align="center" style="padding:28px 28px 12px 28px;">
+                                        {% if logo_cid %}
+                                        <img src="cid:{{ logo_cid }}" width="200" alt="Inter Labour" style="display:block;margin:0 auto;max-width:200px;height:auto;border:0;outline:none;text-decoration:none;" />
+                                        {% elif logo_url %}
+                                        <img src="{{ logo_url }}" width="200" alt="Inter Labour" style="display:block;margin:0 auto;max-width:200px;height:auto;border:0;outline:none;text-decoration:none;" />
+                                        {% else %}
+                                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
+                                            <tr>
+                                                <td align="center" style="padding:14px 22px;border-radius:14px;background-color:#f1f5f9;border:1px solid #e2e8f0;">
+                                                    <div style="font-size:19px;font-weight:800;letter-spacing:0.14em;color:#19263F;line-height:1.2;">INTER LABOUR</div>
+                                                    <div style="font-size:11px;color:#64748b;margin-top:8px;letter-spacing:0.12em;text-transform:uppercase;">Werving &amp; uitzendbureau</div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center" style="padding:0 28px 22px 28px;">
+                                        {% block email_headline %}{% endblock %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:28px 28px 8px 28px;">
+                            {% block email_body %}{% endblock %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:0 28px 28px 28px;">
+                            {% block email_signature %}{% endblock %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:22px 24px;background-color:#19263F;text-align:center;">
+                            <div style="font-size:13px;font-weight:800;color:#B19357;letter-spacing:0.08em;">INTER LABOUR</div>
+                            <div style="margin-top:8px;font-size:11px;color:#94a3b8;line-height:1.55;">
+                                {% block email_footer_note %}
+                                Deze e-mail is automatisch verzonden door Inter Labour. Antwoorden op dit bericht worden niet altijd gelezen.
+                                {% endblock %}
+                                {% if site_url %}
+                                <br /><a href="{{ site_url }}" style="color:#B19357;text-decoration:none;font-weight:700;">Website bezoeken</a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <!--[if mso]>
+                </td></tr></table>
+                <![endif]-->
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

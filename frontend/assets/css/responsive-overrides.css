@@ -205,6 +205,18 @@ h5,
    (semi-transparent slate + SVG). We do NOT touch that background —
    only typography inside .box-info-job so it stays readable on desktop
    and mobile (index + page-about use the same markup). */
+:root {
+    /* Single source of truth: used for both desktop (::before panel)
+       and mobile (solid fallback background). */
+    --il-gray-panel: #3f4a5e;
+    /* Primary actions — navy (aligned with theme .btn-default) */
+    --il-navy: #19263f;
+    --il-navy-hover: #2d467a;
+    --il-navy-rgb: 25, 38, 63;
+    --bs-primary: #19263f;
+    --bs-blue: #19263f;
+}
+
 .block-job-bg .box-info-job,
 .block-job-bg .box-info-job p,
 .block-job-bg .box-info-job .text-lg,
@@ -267,17 +279,45 @@ h5,
     -webkit-animation-name: none !important;
 }
 
-/* Solid fallback behind the semi-transparent ::before so text always has
-   a gray backing (same hue as theme rgb(63,74,94), full opacity). */
-.block-job-bg.block-job-bg-homepage-2 {
-    background-color: #3f4a5e;
-    border-radius: 24px;
-    position: relative;
+/* Solid fallback only on smaller screens — ::before can read as clipped/small there.
+   Desktop: transparent so the theme's large asymmetric ::before panel (width ~88%,
+   right offset, radius 80px) shows like the original design. */
+@media (max-width: 991.98px) {
+    .block-job-bg.block-job-bg-homepage-2 {
+        background-color: var(--il-gray-panel);
+        border-radius: 24px;
+        position: relative;
+    }
 }
 @media (min-width: 992px) {
     .block-job-bg.block-job-bg-homepage-2 {
-        border-radius: 80px;
+        background-color: transparent;
+        border-radius: 0;
     }
+}
+
+/* Homepage + about use `.block-job-bg-homepage-2`; main.css pulls ::before flush
+   to `right: 0`, which reads as a smaller card on desktop vs the theme default.
+   Restore the asymmetric panel (extended right, tall wide shape). */
+@media (min-width: 992px) {
+    .block-job-bg-homepage-2::before {
+        display: block !important;
+        top: 0 !important;
+        right: -50px !important;
+        left: auto !important;
+        width: 88% !important;
+        height: 84% !important;
+        border-radius: 80px !important;
+    }
+}
+
+/* Force the same gray hue on desktop and mobile.
+   Desktop draws the panel via ::before; mobile uses the solid fallback above. */
+.block-job-bg::before {
+    background-color: var(--il-gray-panel) !important;
+    background-image: url(../imgs/page/about/bg-inner-job.svg) !important;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
 }
 
 /* ---------- 5. Header & navbar (works with auth-integration.js CSS) ---------- */
@@ -767,7 +807,7 @@ body.il-menu-open {
 .btn-border-brand-2:focus-visible,
 a:focus-visible,
 button:focus-visible {
-    outline: 2px solid rgba(37, 99, 235, 0.55);
+    outline: 2px solid rgba(var(--il-navy-rgb), 0.55);
     outline-offset: 2px;
 }
 
@@ -914,4 +954,91 @@ table {
         padding: 4px 6px !important;
         font-size: 10px !important;
     }
+}
+
+/* ---------- 16. Brand: navy for primary / action buttons ---------- */
+/* Layered after main.css — replaces purple (#9777fa) accents on controls
+   that read as buttons (CTAs, outline buttons, filters, Bootstrap primary). */
+
+.btn.btn-default:hover {
+    background-color: var(--il-navy-hover) !important;
+}
+
+/* Gray info card: CTA stays light; do not apply navy hover */
+.block-job-bg .box-info-job .btn.btn-default:hover {
+    background: #e8eaef !important;
+    color: var(--il-navy) !important;
+}
+
+.btn-border:hover {
+    background-color: var(--il-navy) !important;
+    color: #ffffff !important;
+}
+
+.nav-right li button:hover,
+.nav-right li button.active {
+    background-color: var(--il-navy) !important;
+    color: #ffffff !important;
+}
+
+.nav-style-homepage-3 li button.active,
+.nav-style-homepage-3 li button:hover {
+    color: var(--il-navy) !important;
+}
+
+.header .block-signin .btn-shadow {
+    box-shadow: 0px 3px 10px rgba(var(--il-navy-rgb), 0.35);
+}
+
+.btn-primary,
+.btn-primary:focus {
+    background-color: var(--il-navy) !important;
+    border-color: var(--il-navy) !important;
+    color: #fff !important;
+}
+
+.btn-primary:hover,
+.btn-primary:active {
+    background-color: var(--il-navy-hover) !important;
+    border-color: var(--il-navy-hover) !important;
+    color: #fff !important;
+}
+
+.btn-check:focus + .btn-primary,
+.btn-primary:focus {
+    box-shadow: 0 0 0 0.25rem rgba(var(--il-navy-rgb), 0.35) !important;
+}
+
+.contact-from-area .contact-form-style button:hover {
+    background-color: var(--il-navy-hover) !important;
+}
+
+.block-pricing .box-pricing-item .btn-border {
+    border-color: var(--il-navy) !important;
+}
+
+.block-pricing .most-popular .btn-border,
+.block-pricing .most-popular .btn-white-sm {
+    color: var(--il-navy) !important;
+}
+
+/* Injected homepage / auth UI (.il-btn-primary, #il-open-review-modal) */
+.il-btn-primary {
+    background: linear-gradient(135deg, var(--il-navy), var(--il-navy-hover)) !important;
+    color: #fff !important;
+}
+
+.il-btn-primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--il-navy-hover), #355693) !important;
+}
+
+.il-login-btn,
+.il-header-auth-brand {
+    background: linear-gradient(135deg, var(--il-navy), var(--il-navy-hover)) !important;
+    box-shadow: 0 4px 14px rgba(var(--il-navy-rgb), 0.32) !important;
+}
+
+#il-open-review-modal {
+    background: linear-gradient(135deg, var(--il-navy), var(--il-navy-hover)) !important;
+    box-shadow: 0 6px 20px rgba(var(--il-navy-rgb), 0.32) !important;
 }

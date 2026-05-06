@@ -225,10 +225,12 @@
                 <div class="box-newsletter">
                     <h5 class="text-md-newsletter">Meld je aan om</h5>
                     <h6 class="text-lg-newsletter">de nieuwste vacatures te ontvangen</h6>
+                    <div id="il-newsletter-feedback" style="display:none;margin-bottom:16px;padding:12px 14px;border-radius:10px;font-size:14px;line-height:1.5;"></div>
                     <div class="box-form-newsletter mt-30">
-                        <form class="form-newsletter">
-                            <input type="text" class="input-newsletter" value="" placeholder="info@interlabour.nl" />
-                            <button class="btn btn-default font-heading icon-send-letter">Abonneren</button>
+                        <form class="form-newsletter" method="post" action="/jobs/alerts/subscribe/">
+                            <input type="hidden" name="next" value="/page-contact.html" />
+                            <input type="email" name="email" required class="input-newsletter" autocomplete="email" placeholder="info@interlabour.nl" />
+                            <button class="btn btn-default font-heading icon-send-letter" type="submit">Abonneren</button>
                         </form>
                     </div>
                 </div>
@@ -319,6 +321,26 @@
     <!-- Template  JS -->
     <script src="assets/js/main.js@v=1.0"></script>
     <script src="/assets/js/auth-integration.js?v=15"></script>
+    <script>
+        (function () {
+            var p = new URLSearchParams(window.location.search || "");
+            var el = document.getElementById("il-newsletter-feedback");
+            if (!el) return;
+            if (p.get("subscribed") === "1") {
+                el.style.display = "block";
+                el.style.background = "#ecfdf5";
+                el.style.color = "#065f46";
+                el.style.border = "1px solid #a7f3d0";
+                el.innerHTML = "<strong>NL:</strong> Bedankt! Je bent ingeschreven voor vacaturemeldingen. Je ontvangt ook een bevestigingsmail.<br/><strong>EN:</strong> Thank you! You’re subscribed to job notifications. A confirmation email has been sent.";
+            } else if (p.get("subscribed") === "0") {
+                el.style.display = "block";
+                el.style.background = "#fef2f2";
+                el.style.color = "#991b1b";
+                el.style.border = "1px solid #fecaca";
+                el.innerHTML = "<strong>NL:</strong> Voer een geldig e-mailadres in.<br/><strong>EN:</strong> Please enter a valid email address.";
+            }
+        })();
+    </script>
 </body>
 
 </html>

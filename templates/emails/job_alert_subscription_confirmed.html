@@ -1,0 +1,35 @@
+{% extends "emails/base_interlabour.html" %}
+{% block email_title %}Bevestiging vacaturemeldingen - Inter Labour{% endblock %}
+{% block email_preheader %}Je bent ingeschreven voor vacaturemeldingen van Inter Labour.{% endblock %}
+{% block email_headline %}
+<div style="font-size:11px;font-weight:800;color:#2D467A;letter-spacing:0.14em;text-transform:uppercase;">Vacaturemeldingen</div>
+<div style="margin-top:8px;font-size:18px;font-weight:900;color:#19263F;line-height:1.25;">Inschrijving bevestigd</div>
+{% endblock %}
+{% block email_body %}
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-radius:14px;background-color:#eff6ff;border:1px solid #93c5fd;">
+    <tr>
+        <td style="padding:18px 18px;">
+            <p style="margin:0 0 16px 0;font-size:15px;color:#1e293b;line-height:1.65;">
+                Hallo,<br />Je inschrijving voor vacaturemeldingen is gelukt voor:
+            </p>
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-radius:12px;background-color:#ffffff;border:1px solid #dbeafe;">
+                <tr>
+                    <td style="padding:14px 16px;">
+                        <div style="font-size:11px;color:#64748b;letter-spacing:0.08em;text-transform:uppercase;font-weight:800;">E-mailadres</div>
+                        <div style="margin-top:6px;font-size:17px;font-weight:900;color:#19263F;word-break:break-all;">{{ email }}</div>
+                    </td>
+                </tr>
+            </table>
+            <p style="margin:16px 0 20px 0;font-size:14px;color:#475569;line-height:1.65;">
+                Je ontvangt een bericht zodra er nieuwe vacatures worden geplaatst.
+            </p>
+            <a href="{{ jobs_url }}" style="display:inline-block;background:linear-gradient(180deg,#2D467A 0%,#19263F 100%);color:#ffffff;text-decoration:none;padding:12px 22px;border-radius:12px;font-weight:900;font-size:14px;border:1px solid #19263F;">Bekijk vacatures</a>
+            {% if confirm_url %}
+            <p style="margin:18px 0 0 0;font-size:12px;color:#64748b;line-height:1.5;">
+                Bevestigingspagina: <a href="{{ confirm_url }}" style="color:#2D467A;font-weight:700;text-decoration:none;">link openen</a>
+            </p>
+            {% endif %}
+        </td>
+    </tr>
+</table>
+{% endblock %}

@@ -1,4 +1,6 @@
 from django.db import models
+from django.core.exceptions import ValidationError
+from django.core.validators import FileExtensionValidator
 from django.utils.text import slugify
 from django.utils import timezone
 from django.utils.translation import get_language
@@ -7,6 +9,27 @@ from django.utils.translation import get_language
 def _current_lang() -> str:
     return (get_language() or "en").split("-")[0]
 
+
+def _validate_partner_logo_file(upload) -> None:
+    """
+    Allow common raster images + SVG for partner logos.
+
+    We intentionally do NOT use ImageField here because Pillow does not support SVG.
+    """
+    if not upload:
+        return
+
+    name = (getattr(upload, "name", "") or "").lower()
+    ext = name.rsplit(".", 1)[-1] if "." in name else ""
+    ctype = (getattr(upload, "content_type", "") or "").lower()
+
+    # SVG: browsers often send image/svg+xml; some setups may omit content_type.
+    if ext == "svg" or ctype == "image/svg+xml":
+        return
+
+    # For everything else, require image/* MIME when available.
+    if ctype and not ctype.startswith("image/"):
+        raise ValidationError("Please upload an image file.")
 
 class BlogCategory(models.Model):
     name = models.CharField(max_length=120, unique=True)
@@ -211,7 +234,30 @@ class Partner(models.Model):
     """A partner / client logo shown in the homepage logo strip."""
 
     name = models.CharField(max_length=180)
-    logo = models.ImageField(upload_to="partners/", null=True, blank=True)
+    logo = models.FileField(
+        upload_to="partners/",
+        null=True,
+        blank=True,
+        validators=[
+            FileExtensionValidator(
+                allowed_extensions=[
+                    # Raster
+                    "jpg",
+                    "jpeg",
+                    "png",
+                    "gif",
+                    "webp",
+                    "bmp",
+                    "tif",
+                    "tiff",
+                    "ico",
+                    # Vector
+                    "svg",
+                ]
+            ),
+            _validate_partner_logo_file,
+        ],
+    )
     logo_url = models.URLField(blank=True, help_text="Optional URL to a logo image hosted elsewhere")
     website = models.URLField(blank=True)
     display_order = models.PositiveIntegerField(default=0)

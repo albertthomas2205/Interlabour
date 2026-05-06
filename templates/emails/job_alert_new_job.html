@@ -1,0 +1,38 @@
+{% extends "emails/base_interlabour.html" %}
+{% block email_title %}Nieuwe vacature - Inter Labour{% endblock %}
+{% block email_preheader %}{{ title_nl|default:title_en }} — nieuwe vacature bij Inter Labour.{% endblock %}
+{% block email_headline %}
+<div style="font-size:11px;font-weight:800;color:#902D3A;letter-spacing:0.14em;text-transform:uppercase;">Nieuwe vacature</div>
+{% endblock %}
+{% block email_body %}
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-radius:14px;border:1px solid #bfdbfe;background-color:#eff6ff;">
+    <tr>
+        <td style="padding:20px 18px;">
+            <p style="margin:0 0 14px 0;font-size:15px;color:#1e293b;line-height:1.65;">
+                Beste kandidaat,<br />Er is een nieuwe vacature geplaatst die voor jou interessant kan zijn:
+            </p>
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-radius:14px;background-color:#ffffff;border:1px solid #e2e8f0;">
+                <tr>
+                    <td style="padding:18px 16px;">
+                        <div style="font-size:18px;font-weight:900;color:#19263F;line-height:1.3;">{{ title_nl|default:title_en }}</div>
+                        {% if company_name %}<div style="margin-top:8px;font-size:14px;color:#475569;"><span style="color:#64748b;font-weight:700;">Bedrijf</span> · {{ company_name }}</div>{% endif %}
+                        {% if location %}<div style="margin-top:4px;font-size:14px;color:#475569;"><span style="color:#64748b;font-weight:700;">Locatie</span> · {{ location }}</div>{% endif %}
+                        {% if excerpt_nl or excerpt_en %}
+                        <div style="margin-top:14px;padding-top:14px;border-top:1px solid #f1f5f9;font-size:13px;color:#64748b;line-height:1.55;">
+                            {{ excerpt_nl|default:excerpt_en|truncatewords:42 }}
+                        </div>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:18px;">
+                <tr>
+                    <td>
+                        <a href="{{ job_url }}" style="display:inline-block;background:linear-gradient(180deg,#2D467A 0%,#19263F 100%);color:#ffffff;text-decoration:none;padding:13px 24px;border-radius:12px;font-weight:900;font-size:14px;border:1px solid #19263F;">Bekijk vacature</a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+{% endblock %}

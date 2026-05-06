@@ -4,6 +4,57 @@ from django.utils.translation import get_language
 from django.utils.text import slugify
 
 
+def _generate_unique_slug_for_instance(*, instance: models.Model, base: str, slug_field_name: str = "slug") -> str:
+    """
+    Generate a unique slug for the instance's model (foo, foo-2, foo-3, ...).
+    """
+    base_slug = slugify(base) or instance.__class__.__name__.lower()
+
+    field = instance._meta.get_field(slug_field_name)
+    max_len = getattr(field, "max_length", None) or 220
+
+    def _truncate(s: str, suffix: str = "") -> str:
+        # Ensure final slug (s + suffix) fits max_len
+        allowed = max_len - len(suffix)
+        if allowed < 1:
+            return suffix[-max_len:] or "x"
+        return (s[:allowed]).rstrip("-") + suffix
+
+    base_slug = _truncate(base_slug)
+    slug = base_slug
+
+    qs = instance.__class__.objects.all()
+    if instance.pk:
+        qs = qs.exclude(pk=instance.pk)
+
+    i = 2
+    while qs.filter(**{slug_field_name: slug}).exists():
+        suffix = f"-{i}"
+        slug = _truncate(base_slug, suffix)
+        i += 1
+    return slug
+
+
+class JobAlertSubscription(models.Model):
+    """Email-only job alerts when a new job is published."""
+
+    class Language(models.TextChoices):
+        NL = "nl", "Dutch"
+        EN = "en", "English"
+
+    email = models.EmailField(max_length=254, unique=True)
+    language = models.CharField(max_length=5, choices=Language.choices, default=Language.NL)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return self.email
+
+
 class JobCategory(models.Model):
     # Legacy fields (kept for backwards compatibility / existing data)
     name = models.CharField(max_length=120, unique=True)
@@ -200,7 +251,11 @@ class Job(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title_en or self.title_nl or self.title)
+            self.slug = _generate_unique_slug_for_instance(
+                instance=self,
+                base=(self.title_en or self.title_nl or self.title or "job"),
+                slug_field_name="slug",
+            )
         super().save(*args, **kwargs)
 
     def __str__(self) -> str:

@@ -15,7 +15,7 @@
         }
         inject("/assets/js/i18n.js", "data-i18n-loader");
         inject("/assets/js/dynamic-jobs.js?v=3", "data-dyn-jobs-loader");
-        inject("/assets/js/dynamic-services.js", "data-dyn-services-loader");
+        inject("/assets/js/dynamic-services.js?v=13", "data-dyn-services-loader");
         inject("/assets/js/dynamic-blog.js", "data-dyn-blog-loader");
         inject("/assets/js/dynamic-home.js", "data-dyn-home-loader");
     })();
@@ -28,7 +28,7 @@
             if (document.querySelector('link[data-responsive-overrides]')) return;
             var link = document.createElement("link");
             link.rel = "stylesheet";
-            link.href = "/assets/css/responsive-overrides.css?v=11";
+            link.href = "/assets/css/responsive-overrides.css?v=13";
             link.setAttribute("data-responsive-overrides", "1");
             (document.head || document.documentElement).appendChild(link);
         } catch (_e) {}
@@ -471,10 +471,10 @@
             loginBtn.className = "il-login-btn";
             loginBtn.style.cssText = [
                 "display:inline-flex", "align-items:center", "gap:6px",
-                "background:linear-gradient(135deg,#6366f1,#2563eb)",
+                "background:linear-gradient(135deg,#19263f,#2d467a)",
                 "color:#fff", "padding:8px 20px", "border-radius:999px",
                 "font-size:13px", "font-weight:600", "text-decoration:none",
-                "box-shadow:0 4px 14px rgba(37,99,235,0.32)", "white-space:nowrap",
+                "box-shadow:0 4px 14px rgba(25,38,63,0.32)", "white-space:nowrap",
                 "transition:opacity 0.2s"
             ].join(";");
             loginBtn.innerHTML = [
@@ -498,12 +498,13 @@
             ? (user.email ? user.email + " — Admin Panel" : "Admin Panel")
             : (user.email || "My Account");
         profileLink.setAttribute("data-auth-el", "1");
+        profileLink.className = "il-header-auth-brand";
         profileLink.style.cssText = [
             "display:inline-flex", "align-items:center", "justify-content:center",
             "width:42px", "height:42px", "border-radius:50%",
-            "background:linear-gradient(135deg,#6366f1,#2563eb)",
+            "background:linear-gradient(135deg,#19263f,#2d467a)",
             "color:#fff", "text-decoration:none",
-            "box-shadow:0 4px 14px rgba(37,99,235,0.32)",
+            "box-shadow:0 4px 14px rgba(25,38,63,0.32)",
             "transition:transform 0.15s,box-shadow 0.15s",
             "flex-shrink:0"
         ].join(";");
@@ -516,11 +517,11 @@
         ].join("");
         profileLink.addEventListener("mouseenter", function () {
             this.style.transform = "scale(1.06)";
-            this.style.boxShadow = "0 6px 18px rgba(37,99,235,0.42)";
+            this.style.boxShadow = "0 6px 18px rgba(25,38,63,0.42)";
         });
         profileLink.addEventListener("mouseleave", function () {
             this.style.transform = "scale(1)";
-            this.style.boxShadow = "0 4px 14px rgba(37,99,235,0.32)";
+            this.style.boxShadow = "0 4px 14px rgba(25,38,63,0.32)";
         });
         container.appendChild(profileLink);
     }
@@ -1156,6 +1157,42 @@
         observer.observe(document.body, { childList: true, subtree: true });
     }
 
+    // Newsletter forms exist across many static pages. Point them at the backend
+    // subscribe endpoint so a confirmation email is sent.
+    function wireNewsletterForms() {
+        var forms = document.querySelectorAll("form.form-newsletter");
+        for (var i = 0; i < forms.length; i += 1) {
+            var form = forms[i];
+            try {
+                if (form.getAttribute("data-il-wired") === "1") continue;
+                form.setAttribute("data-il-wired", "1");
+
+                form.method = "post";
+                form.action = "/jobs/alerts/subscribe/";
+
+                var input =
+                    form.querySelector('input[name="email"]') ||
+                    form.querySelector('input[type="email"]') ||
+                    form.querySelector("input");
+                if (input) {
+                    input.setAttribute("name", "email");
+                    input.setAttribute("type", "email");
+                    input.setAttribute("required", "required");
+                    input.setAttribute("autocomplete", "email");
+                }
+
+                var next = form.querySelector('input[name="next"]');
+                if (!next) {
+                    next = document.createElement("input");
+                    next.type = "hidden";
+                    next.name = "next";
+                    form.appendChild(next);
+                }
+                next.value = window.location.pathname || "/jobs/";
+            } catch (_e) {}
+        }
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
         clearSessionIfLogoutFlag();
         ensureHeaderSlots();
@@ -1168,6 +1205,7 @@
         bindForgotPasswordForm();
         bindResetPasswordForm();
         setupMobileMenuUX();
+        wireNewsletterForms();
         optimiseImages(document);
         watchDynamicImages();
     });

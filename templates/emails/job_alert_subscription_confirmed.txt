@@ -1,0 +1,16 @@
+Bevestiging vacaturemeldingen — Inter Labour
+
+Hallo,
+
+Je inschrijving voor vacaturemeldingen is gelukt voor dit e-mailadres:
+{{ email }}
+
+Je ontvangt een e-mail zodra er nieuwe vacatures beschikbaar zijn.
+
+Bekijk vacatures:
+{{ jobs_url }}
+
+{% if site_url %}Website: {{ site_url }}{% endif %}
+
+---
+Inter Labour — Werving & uitzendbureau

@@ -10,3 +10,7 @@ Ontvangen op: {{ submitted_at|date:"d-m-Y H:i" }}
 
 We nemen contact met je op zodra er een update is.
 
+---
+Inter Labour — Werving & uitzendbureau
+{% if site_url %}{{ site_url }}{% endif %}
+

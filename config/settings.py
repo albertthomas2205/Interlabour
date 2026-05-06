@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "drf_spectacular",
     "apps.accounts",
-    "apps.jobs",
+    "apps.jobs.apps.JobsConfig",
     "apps.applications",
     "apps.adminpanel",
     "apps.people",

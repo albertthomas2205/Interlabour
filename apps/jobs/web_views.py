@@ -1,13 +1,48 @@
+import logging
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 from django.utils.translation import gettext as _
 
 from apps.applications.models import Application
 from apps.applications.emailing import send_application_submitted_email
 
+from .emailing import send_job_alert_subscription_confirmation_email
 from .forms import JobApplicationForm
-from .models import ExperienceLevel, Job, JobCategory, JobType
+from .models import ExperienceLevel, Job, JobAlertSubscription, JobCategory, JobType
+
+logger = logging.getLogger(__name__)
+
+_ALLOWED_SUBSCRIBE_NEXT = frozenset({"/jobs/", "/page-contact.html", "/pages/page-contact.html"})
+
+
+def job_alert_confirmed(request):
+    """Public landing page for the 'Translate' button in email clients."""
+    email = (request.GET.get("email") or "").strip().lower()
+    lang = (request.GET.get("lang") or "nl").split("-")[0].lower()
+    if lang not in ("nl", "en"):
+        lang = "nl"
+
+    # Keep this page non-sensitive; we don't expose subscription state here.
+    site = (getattr(request, "build_absolute_uri", None) and request.build_absolute_uri("/")) or ""
+    site = site.rstrip("/")
+    jobs_url = f"{site}/jobs/" if site else "/jobs/"
+
+    toggle_lang = "en" if lang == "nl" else "nl"
+    base = "/jobs/alerts/confirmed/"
+    toggle_url = f"{base}?email={email}&lang={toggle_lang}" if email else f"{base}?lang={toggle_lang}"
+    context = {
+        "email": email,
+        "lang": lang,
+        "toggle_url": toggle_url,
+        "jobs_url": jobs_url,
+        "site_url": site,
+    }
+    return render(request, "frontend/job_alert_subscription_confirmed.html", context)
 
 
 def job_list(request):
@@ -33,6 +68,48 @@ def job_list(request):
         "job_types":         JobType.objects.all().order_by("name_en"),
         "experience_levels": ExperienceLevel.objects.all().order_by("name_en"),
     })
+
+
+@csrf_exempt
+@require_POST
+def job_alert_subscribe(request):
+    email = (request.POST.get("email") or "").strip().lower()
+    next_path = (request.POST.get("next") or "").strip()
+    if next_path not in _ALLOWED_SUBSCRIBE_NEXT:
+        next_path = "/jobs/"
+
+    if not email or "@" not in email:
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse({"ok": False, "error": _("Please enter a valid email address.")}, status=400)
+        return redirect(f"{next_path}?subscribed=0")
+
+    lang = (getattr(request, "LANGUAGE_CODE", None) or "nl").split("-")[0].lower()
+    if lang not in ("nl", "en"):
+        lang = "nl"
+
+    sub, created = JobAlertSubscription.objects.get_or_create(
+        email=email,
+        defaults={"language": lang, "is_active": True},
+    )
+    if not created:
+        changed = False
+        if not sub.is_active:
+            sub.is_active = True
+            changed = True
+        if sub.language != lang:
+            sub.language = lang
+            changed = True
+        if changed:
+            sub.save(update_fields=["language", "is_active", "updated_at"])
+
+    try:
+        send_job_alert_subscription_confirmation_email(email, language_code=lang)
+    except Exception:
+        logger.exception("Job alert subscribe saved but confirmation email failed for %s", email)
+
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        return JsonResponse({"ok": True})
+    return redirect(f"{next_path}?subscribed=1")
 
 
 def job_detail(request, slug: str):

@@ -1,66 +1,17 @@
 import logging
-from email.mime.image import MIMEImage
 from email.utils import formataddr, parseaddr
-from pathlib import Path
 
 from django.conf import settings
 from django.core.mail import get_connection
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils import translation
-from django.utils.translation import gettext as _
 
-from config.i18n import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES
+from config.email_branding import attach_interlabour_logo_png, interlabour_branding_for_message
 
 from .models import EmailOTP, PendingRegistration
 
 logger = logging.getLogger(__name__)
-
-OTP_EMAIL_LOGO_CID = "il_otp_logo"
-
-
-def _normalize_email_language(language_code: str | None) -> str:
-    if not language_code:
-        code = DEFAULT_LANGUAGE if DEFAULT_LANGUAGE in SUPPORTED_LANGUAGES else "nl"
-        return code
-    c = language_code.strip().lower()
-    return c if c in SUPPORTED_LANGUAGES else (DEFAULT_LANGUAGE if DEFAULT_LANGUAGE in SUPPORTED_LANGUAGES else "nl")
-
-
-def _otp_inline_logo_png_path() -> Path:
-    return settings.BASE_DIR / "frontend" / "assets" / "imgs" / "theme" / "logo-email.png"
-
-
-def _otp_logo_remote_url() -> str:
-    if getattr(settings, "EMAIL_LOGO_URL", ""):
-        return settings.EMAIL_LOGO_URL.strip()
-    base = getattr(settings, "PUBLIC_SITE_URL", "").strip().rstrip("/")
-    if not base:
-        return ""
-    prefix = getattr(settings, "STATIC_URL", "/assets/").strip("/")
-    return f"{base}/{prefix}/imgs/theme/logo-email.png"
-
-
-def _otp_branding_for_message() -> tuple[dict, Path | None]:
-    """Logo for template plus optional PNG path for inline CID attachment."""
-    explicit = (getattr(settings, "EMAIL_LOGO_URL", None) or "").strip()
-    if explicit:
-        return {"logo_cid": None, "logo_url": explicit}, None
-
-    use_inline = getattr(settings, "EMAIL_INLINE_LOGO", True)
-    png = _otp_inline_logo_png_path()
-    if use_inline and png.is_file():
-        return {"logo_cid": OTP_EMAIL_LOGO_CID, "logo_url": ""}, png
-
-    return {"logo_cid": None, "logo_url": _otp_logo_remote_url()}, None
-
-
-def _attach_inline_logo_png(message: EmailMultiAlternatives, path: Path) -> None:
-    with path.open("rb") as f:
-        img = MIMEImage(f.read(), _subtype="png")
-    img.add_header("Content-ID", f"<{OTP_EMAIL_LOGO_CID}>")
-    img.add_header("Content-Disposition", "inline", filename="logo-email.png")
-    message.attach(img)
 
 
 def _otp_from_email_header() -> str:
@@ -101,7 +52,7 @@ def _otp_from_email_header() -> str:
 
 
 def _otp_subject() -> str:
-    return _("Inter Labour - your verification code")
+    return "Inter Labour — jouw verificatiecode"
 
 
 def _otp_email_context(
@@ -135,8 +86,7 @@ def _send_otp_email(
     language_code: str | None = None,
     purpose: str = "registration",
 ) -> None:
-    lang = _normalize_email_language(language_code)
-    branding, attach_png = _otp_branding_for_message()
+    branding, attach_png = interlabour_branding_for_message()
 
     support_user = (getattr(settings, "SUPPORT_EMAIL_HOST_USER", "") or "").strip()
     support_pass = (getattr(settings, "SUPPORT_EMAIL_HOST_PASSWORD", "") or "").strip()
@@ -146,11 +96,12 @@ def _send_otp_email(
         else None
     )
 
-    with translation.override(lang):
+    # Transactional e-mails are Dutch-only regardless of UI language.
+    with translation.override("nl"):
         context = _otp_email_context(
             recipient_first_line,
             otp_code,
-            language_code=lang,
+            language_code="nl",
             logo_cid=branding.get("logo_cid"),
             logo_url=branding.get("logo_url") or "",
             purpose=purpose,
@@ -169,11 +120,7 @@ def _send_otp_email(
     )
     msg.attach_alternative(html_body, "text/html")
 
-    if attach_png:
-        try:
-            _attach_inline_logo_png(msg, attach_png)
-        except OSError:
-            logger.exception("Could not attach inline OTP logo from %s", attach_png)
+    attach_interlabour_logo_png(msg, attach_png)
 
     # In DEBUG mode, always echo the code to the runserver console so a developer
     # can finish the flow even if the email is delayed or filtered as spam.

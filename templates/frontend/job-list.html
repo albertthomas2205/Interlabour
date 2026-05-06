@@ -175,9 +175,21 @@
                             <h5 class="font-semibold mb-10">{% trans "Set a job alert" %}</h5>
                             <p class="text-body-999">{% trans "Enter your email and receive job notifications." %}</p>
                             <div class="box-email-reminder">
-                                <form>
+                                {% if request.GET.subscribed == "1" %}
+                                    <div class="alert alert-success" style="padding:10px 12px;border-radius:10px;margin-top:10px;background:#ecfdf5;color:#065f46;">
+                                        {% trans "Subscribed! You'll receive new job alerts by email." %}
+                                        <br />
+                                        {% trans "A confirmation email has been sent." %}
+                                    </div>
+                                {% elif request.GET.subscribed == "0" %}
+                                    <div class="alert alert-danger" style="padding:10px 12px;border-radius:10px;margin-top:10px;background:#fef2f2;color:#991b1b;">
+                                        {% trans "Please enter a valid email address." %}
+                                    </div>
+                                {% endif %}
+                                <form method="post" action="{% url 'jobs-alert-subscribe' %}">
+                                    {% csrf_token %}
                                     <div class="form-group mt-15">
-                                        <input type="text" class="form-control input-bg-white form-icons"
+                                        <input type="email" name="email" required class="form-control input-bg-white form-icons"
                                                placeholder="{% trans "Enter your email address." %}" />
                                         <i class="fi-rr-envelope"></i>
                                     </div>

@@ -1,79 +1,56 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Sollicitatie ontvangen - Inter Labour</title>
-</head>
-<body style="margin:0;padding:0;background-color:#eef1f6;-webkit-font-smoothing:antialiased;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1e293b;line-height:1.6;">
-    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#eef1f6;padding:32px 16px;">
-        <tr>
-            <td align="center">
-                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:620px;background-color:#ffffff;border-radius:18px;overflow:hidden;box-shadow:0 10px 40px rgba(25,38,63,0.10);">
-                    <tr>
-                        <td style="height:5px;background:linear-gradient(90deg,#19263F 0%,#2D467A 42%,#902D3A 72%,#B19357 100%);"></td>
-                    </tr>
-                    <tr>
-                        <td style="padding:30px 36px 22px 36px;text-align:center;border-bottom:1px solid #eef1f6;">
-                            <img src="cid:{{ logo_cid }}" alt="Inter Labour" width="190" height="auto" style="display:block;margin:0 auto;max-width:190px;height:auto;" />
-                            <div style="margin-top:14px;font-size:12px;color:#64748b;letter-spacing:0.08em;text-transform:uppercase;">
-                                Sollicitatie ontvangen
-                            </div>
-                        </td>
-                    </tr>
+{% extends "emails/base_interlabour.html" %}
+{% block email_title %}Sollicitatie ontvangen - Inter Labour{% endblock %}
+{% block email_preheader %}We hebben je sollicitatie goed ontvangen.{% endblock %}
+{% block email_headline %}
+<div style="font-size:11px;font-weight:800;color:#902D3A;letter-spacing:0.14em;text-transform:uppercase;">Sollicitatie ontvangen</div>
+{% endblock %}
+{% block email_body %}
+<p style="margin:0 0 14px 0;font-size:17px;color:#19263F;font-weight:700;">Hallo {{ recipient_name }},</p>
+<p style="margin:0 0 22px 0;font-size:15px;color:#475569;">
+    Bedankt! We hebben je sollicitatie goed ontvangen. Hieronder vind je de belangrijkste details.
+</p>
 
-                    <tr>
-                        <td style="padding:26px 36px 6px 36px;">
-                            <p style="margin:0 0 12px 0;font-size:16px;color:#1e293b;">Hallo {{ recipient_name }},</p>
-                            <p style="margin:0 0 18px 0;font-size:15px;color:#475569;">
-                                Bedankt! We hebben je sollicitatie goed ontvangen. Hieronder vind je de details.
-                            </p>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-radius:16px;overflow:hidden;border:1px solid #e2e8f0;">
+    <tr>
+        <td style="padding:4px 0 0 0;background:linear-gradient(90deg,#19263F 0%,#2D467A 50%,#B19357 100%);line-height:4px;font-size:0;">&nbsp;</td>
+    </tr>
+    <tr>
+        <td style="padding:20px 18px 18px 18px;background-color:#ffffff;">
+            <div style="font-size:11px;color:#64748b;letter-spacing:0.1em;text-transform:uppercase;font-weight:800;margin-bottom:8px;">Jouw sollicitatie</div>
+            <div style="font-size:18px;font-weight:800;color:#19263F;line-height:1.3;">{% if job_title %}{{ job_title }}{% else %}Vacature{% endif %}</div>
+            {% if company_name %}
+            <div style="font-size:14px;color:#64748b;margin-top:6px;">{{ company_name }}</div>
+            {% endif %}
 
-                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:18px 0 0 0;">
-                                <tr>
-                                    <td style="padding:18px 16px;background:linear-gradient(180deg,#f8fafc 0%,#ffffff 100%);border-radius:14px;border:1px solid #e5e7eb;">
-                                        <div style="font-size:12px;color:#64748b;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px;">Sollicitatie</div>
-                                        <div style="font-size:16px;font-weight:800;color:#19263F;">{% if job_title %}{{ job_title }}{% else %}Vacature{% endif %}</div>
-                                        {% if company_name %}
-                                        <div style="font-size:13px;color:#64748b;margin-top:2px;">{{ company_name }}</div>
-                                        {% endif %}
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:18px;">
+                <tr>
+                    <td width="50%" valign="top" style="padding:4px 8px 4px 0;">
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#f0f9ff;border:1px solid #bae6fd;border-radius:12px;">
+                            <tr>
+                                <td style="padding:12px 14px;">
+                                    <div style="font-size:10px;font-weight:800;color:#0369a1;letter-spacing:0.08em;text-transform:uppercase;">Sollicitatie-ID</div>
+                                    <div style="margin-top:8px;font-size:16px;font-weight:900;color:#0c4a6e;">#{{ application_id }}</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td width="50%" valign="top" style="padding:4px 0 4px 8px;">
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#fffbeb;border:1px solid #fde68a;border-radius:12px;">
+                            <tr>
+                                <td style="padding:12px 14px;">
+                                    <div style="font-size:10px;font-weight:800;color:#b45309;letter-spacing:0.08em;text-transform:uppercase;">Ontvangen</div>
+                                    <div style="margin-top:8px;font-size:15px;font-weight:800;color:#92400e;">{{ submitted_at|date:"d-m-Y H:i" }}</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
 
-                                        <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;">
-                                            <div style="padding:10px 12px;border-radius:12px;background-color:#fff;border:1px dashed #cbd5e1;">
-                                                <div style="font-size:11px;font-weight:800;color:#64748b;letter-spacing:0.08em;text-transform:uppercase;">ID</div>
-                                                <div style="margin-top:6px;font-size:14px;font-weight:800;color:#334155;">#{{ application_id }}</div>
-                                            </div>
-                                            <div style="padding:10px 12px;border-radius:12px;background-color:#ecfeff;border:1px solid #a5f3fc;">
-                                                <div style="font-size:11px;font-weight:800;color:#155e75;letter-spacing:0.08em;text-transform:uppercase;">Ontvangen</div>
-                                                <div style="margin-top:6px;font-size:14px;font-weight:800;color:#0e7490;">{{ submitted_at|date:\"d-m-Y H:i\" }}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-
-                            <p style="margin:18px 0 0 0;font-size:13px;color:#64748b;">
-                                We nemen contact met je op zodra er een update is. Je ontvangt updates per e-mail vanuit <strong style="color:#334155;">HR</strong>.
-                            </p>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td style="padding:0 36px 30px 36px;">
-                            <div style="margin-top:18px;padding-top:18px;border-top:1px solid #eef1f6;"></div>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td style="padding:16px 26px;background-color:#f1f5f9;text-align:center;font-size:11px;color:#94a3b8;line-height:1.5;">
-                            Deze e-mail is automatisch verzonden door Inter Labour. Antwoorden op dit bericht worden niet gelezen.
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-</body>
-</html>
-
+<p style="margin:22px 0 0 0;font-size:14px;color:#64748b;line-height:1.6;">
+    We nemen contact met je op zodra er een update is. Updates ontvang je per e-mail vanuit <strong style="color:#334155;">HR</strong>.
+</p>
+{% endblock %}

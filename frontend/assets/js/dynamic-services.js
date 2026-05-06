@@ -43,7 +43,14 @@
 
     function isServicesPage() {
         var p = window.location.pathname.toLowerCase();
-        return p === "/page-service.html" || p === "/page-services.html" || p.endsWith("/services") || p.endsWith("/services/");
+        // Accept common static routes + any path containing page-service
+        // (e.g. /page-service.html, /pages/page-service.html).
+        return (
+            p.indexOf("page-service") !== -1 ||
+            p === "/page-services.html" ||
+            p.endsWith("/services") ||
+            p.endsWith("/services/")
+        );
     }
 
     async function loadServices() {
@@ -58,6 +65,9 @@
     }
 
     function findContainer() {
+        var explicit = document.getElementById("services-grid");
+        if (explicit) return explicit;
+
         var rows = document.querySelectorAll(".section-box .row.mt-100");
         for (var i = 0; i < rows.length; i += 1) {
             if (rows[i].querySelectorAll(".card-grid-news").length >= 2) {
@@ -68,20 +78,47 @@
     }
 
     function init() {
-        if (!isServicesPage()) return;
         var container = findContainer();
         if (!container) return;
+        // If the explicit container is present, render regardless of path.
+        if (!isServicesPage() && container.id !== "services-grid") return;
 
-        loadServices().then(function (services) {
-            if (!services.length) return;
-            var html = "";
-            services.forEach(function (s, i) { html += buildCard(s, i); });
-            container.innerHTML = html;
+        // Avoid duplicate fetch/render when both auth-integration injection and an explicit script tag load this file.
+        if (window.__ilServicesHydrated === "1") return;
+        window.__ilServicesHydrated = "1";
 
-            if (window.SiteI18n && typeof window.SiteI18n.apply === "function") {
-                window.SiteI18n.apply(container);
-            }
-        });
+        loadServices()
+            .then(function (services) {
+                var html = "";
+                if (!services.length) {
+                    html =
+                        '<div class="col-12">' +
+                            '<div class="text-center" style="padding:24px 0;color:#6b7280;">' +
+                                '<p>No services available.</p>' +
+                            '</div>' +
+                        '</div>';
+                } else {
+                    services.forEach(function (s, i) {
+                        html += buildCard(s, i);
+                    });
+                }
+                container.innerHTML = html;
+
+                if (window.SiteI18n && typeof window.SiteI18n.apply === "function") {
+                    window.SiteI18n.apply(container);
+                }
+            })
+            .catch(function () {
+                container.innerHTML =
+                    '<div class="col-12">' +
+                        '<div class="text-center" style="padding:24px 0;color:#6b7280;">' +
+                            '<p>No services available.</p>' +
+                        '</div>' +
+                    '</div>';
+                if (window.SiteI18n && typeof window.SiteI18n.apply === "function") {
+                    window.SiteI18n.apply(container);
+                }
+            });
     }
 
     if (document.readyState === "loading") {

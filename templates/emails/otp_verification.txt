@@ -1,33 +1,15 @@
 Hallo {{ recipient_name }},
 
-{% if purpose == 'password_reset' %}Je hebt een wachtwoordherstel aangevraagd voor je Inter Labour account. Voer onderstaande code in op de verificatiepagina om je wachtwoord opnieuw in te stellen.{% else %}Bedankt voor je registratie bij Inter Labour. Om je e-mailadres te bevestigen, voer je onderstaande code in op de verificatiepagina.{% endif %}
+{% if purpose == 'password_reset' %}Je hebt een wachtwoordherstel aangevraagd voor je Inter Labour-account. Voer onderstaande code in op de verificatiepagina om je wachtwoord opnieuw in te stellen.{% else %}Bedankt voor je registratie bij Inter Labour. Om je e-mailadres te bevestigen, voer je onderstaande code in op de verificatiepagina.{% endif %}
 
 Je verificatiecode
 {{ otp_code }}
 
-Deze code is {{ expiry_minutes }} minuten geldig. Deel de code nooit met anderen - wij vragen deze nooit telefonisch of via social media.
+Deze code is {{ expiry_minutes }} minuten geldig. Deel de code nooit met anderen — wij vragen deze nooit telefonisch of via social media.
 
-{% if purpose == 'password_reset' %}Heb je geen wachtwoordherstel aangevraagd? Dan kun je deze e-mail gewoon negeren; je wachtwoord blijft ongewijzigd.{% else %}Heb je deze aanmelding niet zelf gestart? Dan kun je deze e-mail gewoon negeren; er wordt geen account geactiveerd zonder deze stap.{% endif %}
+{% if purpose == 'password_reset' %}Heb je geen wachtwoordherstel aangevraagd? Dan kun je deze e-mail negeren; je wachtwoord blijft ongewijzigd.{% else %}Heb je deze aanmelding niet zelf gestart? Dan kun je deze e-mail negeren; er wordt geen account geactiveerd zonder deze stap.{% endif %}
 
 Met vriendelijke groet,
 Het team van Inter Labour
 
----
-
-Hello {{ recipient_name }},
-
-{% if purpose == 'password_reset' %}You requested a password reset for your Inter Labour account. Enter the code below on the verification page to set a new password.{% else %}Thank you for registering with Inter Labour. To confirm your email address, enter the code below on the verification page.{% endif %}
-
-Your verification code
-{{ otp_code }}
-
-This code is valid for {{ expiry_minutes }} minutes. Never share the code with anyone - we never ask for it by phone or on social media.
-
-{% if purpose == 'password_reset' %}If you did not request a password reset, you can ignore this email; your password will not be changed.{% else %}If you did not start this registration yourself, you can ignore this email; no account will be activated without this step.{% endif %}
-
-Kind regards,
-The Inter Labour team
-
-{% if site_url %}
-{{ site_url }}
-{% endif %}
+{% if site_url %}{{ site_url }}{% endif %}

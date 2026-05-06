@@ -1,0 +1,65 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ lang|default:'nl' }}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inter Labour - Job alerts</title>
+  <style>
+    body{margin:0;background:#eef1f6;font-family:'Segoe UI',Roboto,Arial,sans-serif;color:#0f172a;}
+    .wrap{max-width:760px;margin:0 auto;padding:28px 16px;}
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:18px;overflow:hidden;box-shadow:0 10px 40px rgba(25,38,63,0.10);}
+    .bar{height:6px;background:linear-gradient(90deg,#19263F 0%,#2D467A 42%,#902D3A 72%,#B19357 100%);}
+    .head{padding:22px 22px 18px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #eef1f6;}
+    .brand{font-size:12px;color:#64748b;letter-spacing:.08em;text-transform:uppercase;font-weight:700;}
+    .title{margin-top:6px;font-size:18px;font-weight:900;color:#19263F;}
+    .btn{display:inline-block;text-decoration:none;font-weight:800;font-size:12px;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:8px 10px;}
+    .btn-dark{background:#19263F;color:#fff;}
+    .btn-light{background:#f1f5f9;color:#0f172a;border:1px solid #e2e8f0;}
+    .body{padding:22px;}
+    .pill{display:inline-block;background:#f8fafc;border:1px solid #e5e7eb;padding:10px 12px;border-radius:14px;font-weight:900;color:#19263F;}
+    .muted{color:#475569;}
+    .cta{display:inline-block;margin-top:14px;background:#19263F;color:#fff;text-decoration:none;padding:10px 14px;border-radius:12px;font-weight:900;font-size:13px;}
+    .foot{padding:16px 22px 20px 22px;border-top:1px solid #eef1f6;color:#64748b;font-size:12px;text-align:center;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="bar"></div>
+      <div class="head">
+        <div>
+          <div class="brand">Inter Labour</div>
+          {% if lang == "en" %}
+            <div class="title">Job alerts confirmed</div>
+          {% else %}
+            <div class="title">Vacaturemeldingen bevestigd</div>
+          {% endif %}
+        </div>
+        {% if lang == "en" %}
+          <a class="btn btn-light" href="{{ toggle_url }}">Translate to Dutch</a>
+        {% else %}
+          <a class="btn btn-light" href="{{ toggle_url }}">Translate to English</a>
+        {% endif %}
+      </div>
+      <div class="body">
+        {% if lang == "en" %}
+          <p style="margin:0 0 12px 0;">Hello,</p>
+          <p class="muted" style="margin:0 0 14px 0;">Your subscription for job alerts is confirmed for:</p>
+          <div class="pill">{{ email|default:"" }}</div>
+          <p class="muted" style="margin:14px 0 0 0;">You will be notified when new jobs are posted.</p>
+          <a class="cta" href="{{ jobs_url }}">Browse jobs</a>
+        {% else %}
+          <p style="margin:0 0 12px 0;">Hallo,</p>
+          <p class="muted" style="margin:0 0 14px 0;">Je inschrijving voor vacaturemeldingen is gelukt voor:</p>
+          <div class="pill">{{ email|default:"" }}</div>
+          <p class="muted" style="margin:14px 0 0 0;">Je ontvangt een bericht zodra er nieuwe vacatures worden geplaatst.</p>
+          <a class="cta" href="{{ jobs_url }}">Bekijk vacatures</a>
+        {% endif %}
+      </div>
+      <div class="foot">{% if site_url %}{{ site_url }}{% else %}Inter Labour{% endif %}</div>
+    </div>
+  </div>
+</body>
+</html>
+

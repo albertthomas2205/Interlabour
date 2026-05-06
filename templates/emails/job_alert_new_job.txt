@@ -1,0 +1,15 @@
+Nieuwe vacature — Inter Labour
+
+Beste kandidaat,
+
+Er is een nieuwe vacature geplaatst:
+{{ title_nl|default:title_en }}
+{% if company_name %}Bedrijf: {{ company_name }}{% endif %}
+{% if location %}Locatie: {{ location }}{% endif %}
+
+Bekijk de vacature:
+{{ job_url }}
+
+---
+Inter Labour — Werving & uitzendbureau
+{% if site_url %}{{ site_url }}{% endif %}

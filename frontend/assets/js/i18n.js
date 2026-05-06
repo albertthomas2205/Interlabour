@@ -244,6 +244,7 @@
         { en: "Search", nl: "Zoeken" },
         { en: "Search jobs", nl: "Zoek vacatures" },
         { en: "No jobs found.", nl: "Geen vacatures gevonden." },
+        { en: "No services available.", nl: "Geen diensten beschikbaar." },
 
         // My Account page
         { en: "My Account", nl: "Mijn Account" },
@@ -425,9 +426,9 @@
             var current = getLang();
             [nlBtn, enBtn].forEach(function (btn) {
                 if (btn.dataset.lang === current) {
-                    btn.style.background = "linear-gradient(135deg,#6366f1,#2563eb 60%,#0ea5e9)";
+                    btn.style.background = "linear-gradient(135deg,#19263f,#2d467a)";
                     btn.style.color = "#fff";
-                    btn.style.boxShadow = "0 4px 12px rgba(37,99,235,0.35)";
+                    btn.style.boxShadow = "0 4px 12px rgba(25,38,63,0.35)";
                 } else {
                     btn.style.background = "transparent";
                     btn.style.color = "#475569";

@@ -17,8 +17,9 @@
     }
 
     function isHomePage() {
-        var p = window.location.pathname;
-        return p === "/" || p === "/index.html" || p === "/index";
+        // Works for both deployed routes and local/static paths
+        var p = (window.location.pathname || "").toLowerCase();
+        return p === "/" || p === "/index" || p.endsWith("/index.html") || p.endsWith("index.html");
     }
 
     /* ────────────────────────────────────────────────────────────────────── */
@@ -85,23 +86,17 @@
     function renderTestimonials(section, items) {
         var wrapper = section.querySelector(".swiper-wrapper");
 
-        // Always inject the "Leave a review" CTA, even if no testimonials yet
-        injectReviewCta(section);
-
         if (!wrapper) return;
         if (!items.length) {
-            // Show empty state but keep the section visible so the CTA still shows
-            wrapper.innerHTML = (
-                '<div class="swiper-slide" style="width:100%;">' +
-                    '<div style="text-align:center;padding:40px 20px;color:#94a3b8;font-size:0.95rem;">' +
-                        '<p>' + (currentLang() === "en"
-                            ? "Be the first to share your experience!"
-                            : "Wees de eerste om je ervaring te delen!") + '</p>' +
-                    '</div>' +
-                '</div>'
-            );
+            // No testimonials yet: hide the entire section (including heading)
+            section.style.display = "none";
             return;
         }
+
+        // Testimonials exist: ensure section is visible and inject CTA
+        section.style.display = "";
+        injectReviewCta(section);
+
         var html = "";
         items.forEach(function (t) { html += buildTestimonialCard(t); });
         wrapper.innerHTML = html;
@@ -149,9 +144,9 @@
         cta.innerHTML = (
             '<button type="button" id="il-open-review-modal" ' +
             'style="display:inline-flex;align-items:center;gap:8px;' +
-            'background:linear-gradient(135deg,#6366f1,#2563eb);color:#fff;' +
+            'background:linear-gradient(135deg,#19263f,#2d467a);color:#fff;' +
             'border:none;padding:12px 28px;border-radius:999px;font-weight:600;' +
-            'font-size:0.95rem;cursor:pointer;box-shadow:0 6px 20px rgba(37,99,235,0.32);' +
+            'font-size:0.95rem;cursor:pointer;box-shadow:0 6px 20px rgba(25,38,63,0.32);' +
             'transition:transform .15s,box-shadow .15s;">' +
                 '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">' +
                     '<path d="M12 .587l3.668 7.568L24 9.748l-6 5.852L19.336 24 12 19.897 4.664 24 6 15.6 0 9.748l8.332-1.593z"/>' +
@@ -164,11 +159,11 @@
         cta.querySelector("#il-open-review-modal").addEventListener("click", openReviewModal);
         cta.querySelector("#il-open-review-modal").addEventListener("mouseenter", function () {
             this.style.transform = "translateY(-2px)";
-            this.style.boxShadow = "0 10px 26px rgba(37,99,235,0.42)";
+            this.style.boxShadow = "0 10px 26px rgba(25,38,63,0.42)";
         });
         cta.querySelector("#il-open-review-modal").addEventListener("mouseleave", function () {
             this.style.transform = "translateY(0)";
-            this.style.boxShadow = "0 6px 20px rgba(37,99,235,0.32)";
+            this.style.boxShadow = "0 6px 20px rgba(25,38,63,0.32)";
         });
     }
 
@@ -188,14 +183,14 @@
             ".il-modal-body{padding:22px 26px;}",
             ".il-modal-body label{display:block;font-size:13px;font-weight:600;color:#384152;margin-bottom:6px;}",
             ".il-modal-body input,.il-modal-body textarea{width:100%;border:1px solid #e0e6f7;border-radius:8px;padding:10px 14px;font-size:14px;background:#fff;color:#384152;font-family:inherit;}",
-            ".il-modal-body input:focus,.il-modal-body textarea:focus{outline:none;border-color:#3c65f5;box-shadow:0 0 0 3px rgba(60,101,245,.12);}",
+            ".il-modal-body input:focus,.il-modal-body textarea:focus{outline:none;border-color:#19263f;box-shadow:0 0 0 3px rgba(25,38,63,.12);}",
             ".il-modal-body .form-row{margin-bottom:14px;}",
             ".il-rating-stars{display:inline-flex;gap:4px;font-size:28px;cursor:pointer;}",
             ".il-rating-stars span{color:#e2e8f0;transition:color .1s;}",
             ".il-rating-stars span.active{color:#f59e0b;}",
             ".il-modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:16px 26px 22px;border-top:1px solid #f1f5f9;}",
             ".il-btn{padding:10px 22px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:inherit;}",
-            ".il-btn-primary{background:linear-gradient(135deg,#6366f1,#2563eb);color:#fff;}",
+            ".il-btn-primary{background:linear-gradient(135deg,#19263f,#2d467a);color:#fff;}",
             ".il-btn-primary:disabled{opacity:0.6;cursor:wait;}",
             ".il-btn-ghost{background:#f1f5f9;color:#475569;}",
             ".il-msg{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;}",
@@ -472,6 +467,132 @@
     }
 
     /* ────────────────────────────────────────────────────────────────────── */
+    /* BLOGS (home "Onze blogs" slider)                                       */
+    /* ────────────────────────────────────────────────────────────────────── */
+
+    function findBlogSection() {
+        // Locate by heading text — "Onze blogs" / "From blog"
+        var headings = document.querySelectorAll("h2.section-title");
+        for (var i = 0; i < headings.length; i += 1) {
+            var t = (headings[i].textContent || "").trim().toLowerCase();
+            if (t.indexOf("blogs") !== -1 || t.indexOf("from blog") !== -1) {
+                var section = headings[i].closest("section.section-box");
+                if (section) return section;
+            }
+        }
+        return null;
+    }
+
+    function formatDate(iso) {
+        if (!iso) return "";
+        try {
+            var d = new Date(iso);
+            return d.toLocaleDateString();
+        } catch (_e) {
+            return String(iso).slice(0, 10);
+        }
+    }
+
+    function buildBlogSlide(post) {
+        var title = post.title || "";
+        var excerpt = post.excerpt || "";
+        if (!excerpt && post.content) {
+            excerpt = String(post.content).replace(/<[^>]+>/g, "").slice(0, 160);
+            if (String(post.content).length > 160) excerpt += "…";
+        }
+        var image = post.image_url || post.featured_image_url || "/assets/imgs/blog/blog-thumb-1.png";
+        var date = formatDate(post.published_at);
+        var detailUrl = "/blog-detail.html?slug=" + encodeURIComponent(post.slug || "");
+
+        return (
+            '<div class="swiper-slide">' +
+                '<div class="card-grid-3 hover-up" style="height:100%;">' +
+                    '<div class="text-center card-grid-3-image">' +
+                        '<a href="' + detailUrl + '">' +
+                            '<figure><img alt="' + escapeHtml(title) + '" src="' + escapeHtml(image) + '" /></figure>' +
+                        "</a>" +
+                    "</div>" +
+                    '<div class="card-block-info" style="padding:18px 16px;">' +
+                        (post.category_name ? (
+                            '<span style="font-size:11px;color:#3c65f5;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">' +
+                                escapeHtml(post.category_name) +
+                            "</span>"
+                        ) : "") +
+                        '<h5 class="mt-10 heading-md" style="margin-bottom:10px;">' +
+                            '<a href="' + detailUrl + '" style="color:#05264e;">' + escapeHtml(title) + "</a>" +
+                        "</h5>" +
+                        '<p class="text-gray-200" style="font-size:0.9rem;line-height:1.55;min-height:70px;">' + escapeHtml(excerpt) + "</p>" +
+                        '<div class="card-2-bottom mt-30" style="margin-top:18px;">' +
+                            '<div class="row align-items-center">' +
+                                '<div class="col-7">' +
+                                    '<a href="' + detailUrl + '" class="btn btn-border btn-brand-hover">' +
+                                        (currentLang() === "en" ? "Keep reading" : "Lees verder") +
+                                    "</a>" +
+                                "</div>" +
+                                '<div class="col-5 text-end">' +
+                                    '<span style="font-size:12px;color:#94a3b8;">' + escapeHtml(date) + "</span>" +
+                                "</div>" +
+                            "</div>" +
+                        "</div>" +
+                    "</div>" +
+                "</div>" +
+            "</div>"
+        );
+    }
+
+    async function loadLatestBlogPosts() {
+        try {
+            var resp = await fetch("/api/blog-posts/?is_published=true&page_size=12", {
+                headers: { Accept: "application/json" }
+            });
+            if (!resp.ok) return [];
+            var data = await resp.json();
+            return Array.isArray(data) ? data : (data.results || []);
+        } catch (_e) {
+            return [];
+        }
+    }
+
+    function renderBlogs(section, posts) {
+        var wrapper = section.querySelector(".swiper-wrapper");
+        if (!wrapper) return;
+
+        if (!posts.length) {
+            // No blog posts: hide the entire section (including heading)
+            section.style.display = "none";
+            return;
+        }
+
+        section.style.display = "";
+        var html = "";
+        posts.slice(0, 6).forEach(function (p) { html += buildBlogSlide(p); });
+        wrapper.innerHTML = html;
+
+        // Re-init swiper if available
+        try {
+            var container = section.querySelector(".swiper-container");
+            if (container && window.Swiper) {
+                /* eslint-disable no-new */
+                new window.Swiper(container, {
+                    slidesPerView: 3,
+                    spaceBetween: 30,
+                    autoplay: { delay: 4500, disableOnInteraction: false },
+                    pagination: { el: section.querySelector(".swiper-pagination"), clickable: true },
+                    breakpoints: {
+                        0: { slidesPerView: 1 },
+                        768: { slidesPerView: 2 },
+                        1024: { slidesPerView: 3 }
+                    }
+                });
+            }
+        } catch (_e) {}
+
+        if (window.SiteI18n && typeof window.SiteI18n.apply === "function") {
+            window.SiteI18n.apply(section);
+        }
+    }
+
+    /* ────────────────────────────────────────────────────────────────────── */
 
     function init() {
         if (!isHomePage()) return;
@@ -484,6 +605,11 @@
         var strip = findPartnerStrip();
         if (strip) {
             loadPartners().then(function (partners) { renderPartners(strip, partners); });
+        }
+
+        var blogSection = findBlogSection();
+        if (blogSection) {
+            loadLatestBlogPosts().then(function (posts) { renderBlogs(blogSection, posts); });
         }
     }
 

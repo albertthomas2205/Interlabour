@@ -1,90 +1,45 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Update sollicitatie - Inter Labour</title>
-</head>
-<body style="margin:0;padding:0;background-color:#eef1f6;-webkit-font-smoothing:antialiased;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1e293b;line-height:1.6;">
-    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#eef1f6;padding:32px 16px;">
-        <tr>
-            <td align="center">
-                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:620px;background-color:#ffffff;border-radius:18px;overflow:hidden;box-shadow:0 10px 40px rgba(25,38,63,0.10);">
-                    <tr>
-                        <td style="height:5px;background:linear-gradient(90deg,#19263F 0%,#2D467A 42%,#902D3A 72%,#B19357 100%);"></td>
-                    </tr>
-                    <tr>
-                        <td style="padding:30px 36px 22px 36px;text-align:center;border-bottom:1px solid #eef1f6;">
-                            <img src="cid:{{ logo_cid }}" alt="Inter Labour" width="190" height="auto" style="display:block;margin:0 auto;max-width:190px;height:auto;" />
-                            <div style="margin-top:14px;font-size:12px;color:#64748b;letter-spacing:0.08em;text-transform:uppercase;">
-                                Update sollicitatie
-                            </div>
-                        </td>
-                    </tr>
+{% extends "emails/base_interlabour.html" %}
+{% block email_title %}Update sollicitatie - Inter Labour{% endblock %}
+{% block email_preheader %}Je sollicitatiestatus is bijgewerkt.{% endblock %}
+{% block email_headline %}
+<div style="font-size:11px;font-weight:800;color:#2D467A;letter-spacing:0.14em;text-transform:uppercase;">Update sollicitatie</div>
+{% endblock %}
+{% block email_body %}
+<p style="margin:0 0 14px 0;font-size:17px;color:#19263F;font-weight:700;">Hallo {{ recipient_name }},</p>
+<p style="margin:0 0 22px 0;font-size:15px;color:#475569;">
+    Er is een update voor je sollicitatie. Hieronder zie je de nieuwste status.
+</p>
 
-                    <tr>
-                        <td style="padding:26px 36px 10px 36px;">
-                            <p style="margin:0 0 12px 0;font-size:16px;color:#1e293b;">Hallo {{ recipient_name }},</p>
-                            <p style="margin:0 0 18px 0;font-size:15px;color:#475569;">
-                                Er is een update voor je sollicitatie. Hieronder zie je de nieuwste status.
-                            </p>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-radius:16px;overflow:hidden;border:1px solid #e2e8f0;">
+    <tr>
+        <td style="padding:18px 18px 16px 18px;background:linear-gradient(180deg,#f8fafc 0%,#ffffff 100%);">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                    <td valign="top" style="padding:0 8px 14px 0;">
+                        <div style="font-size:11px;color:#64748b;letter-spacing:0.08em;text-transform:uppercase;font-weight:800;margin-bottom:8px;">Vacature</div>
+                        <div style="font-size:17px;font-weight:800;color:#19263F;line-height:1.3;">{% if job_title %}{{ job_title }}{% else %}Vacature{% endif %}</div>
+                        {% if company_name %}
+                        <div style="font-size:13px;color:#64748b;margin-top:4px;">{{ company_name }}</div>
+                        {% endif %}
+                        <div style="font-size:12px;color:#94a3b8;margin-top:12px;">Ref. #{{ application_id }} · {{ updated_at|date:"d-m-Y H:i" }}</div>
+                    </td>
+                    <td valign="top" align="right" style="padding:0 0 14px 8px;">
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="background:linear-gradient(135deg,#ecfdf5 0%,#d1fae5 100%);border:1px solid #6ee7b7;border-radius:14px;">
+                            <tr>
+                                <td style="padding:14px 18px;text-align:center;">
+                                    <div style="font-size:10px;font-weight:800;color:#047857;letter-spacing:0.1em;text-transform:uppercase;">Huidige status</div>
+                                    <div style="margin-top:10px;font-size:17px;font-weight:900;color:#065f46;">{{ new_status_nl }}</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
 
-                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:18px 0 0 0;">
-                                <tr>
-                                    <td style="padding:18px 16px;background:linear-gradient(180deg,#f8fafc 0%,#ffffff 100%);border-radius:14px;border:1px solid #e5e7eb;">
-                                        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;">
-                                            <div style="min-width:240px;">
-                                                <div style="font-size:12px;color:#64748b;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px;">Sollicitatie</div>
-                                                <div style="font-size:16px;font-weight:700;color:#19263F;">
-                                                    {% if job_title %}{{ job_title }}{% else %}Vacature{% endif %}
-                                                </div>
-                                                {% if company_name %}
-                                                <div style="font-size:13px;color:#64748b;margin-top:2px;">{{ company_name }}</div>
-                                                {% endif %}
-                                                <div style="font-size:12px;color:#94a3b8;margin-top:10px;">ID: #{{ application_id }} • {{ updated_at|date:"d-m-Y H:i" }}</div>
-                                            </div>
-
-                                            <div style="min-width:240px;">
-                                                <div style="display:flex;gap:12px;align-items:stretch;">
-                                                    <div style="flex:1;padding:12px 12px;border-radius:12px;background:linear-gradient(135deg,#f0f9ff 0%,#ecfeff 100%);border:1px solid #a5f3fc;">
-                                                        <div style="font-size:11px;font-weight:800;color:#0369a1;letter-spacing:0.08em;text-transform:uppercase;">Huidige status</div>
-                                                        <div style="margin-top:8px;font-size:15px;font-weight:900;color:#0c4a6e;">{{ new_status_nl }}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-
-                            <p style="margin:18px 0 0 0;font-size:13px;color:#64748b;">
-                                Tip: voeg <strong style="color:#334155;">Inter Labour</strong> toe aan je contactpersonen om updates sneller terug te vinden.
-                            </p>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td style="padding:0 36px 30px 36px;">
-                            <div style="margin-top:18px;padding:16px;border-radius:14px;background-color:#fff7ed;border:1px solid #fed7aa;">
-                                <div style="font-size:12px;font-weight:800;color:#9a3412;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">English</div>
-                                <div style="font-size:14px;color:#7c2d12;">
-                                    Your application status has been updated.<br />
-                                    Current status: <strong>{{ new_status_en }}</strong>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td style="padding:16px 26px;background-color:#f1f5f9;text-align:center;font-size:11px;color:#94a3b8;line-height:1.5;">
-                            Deze e-mail is automatisch verzonden door Inter Labour. Antwoorden op dit bericht worden niet gelezen.
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-</body>
-</html>
-
+<p style="margin:18px 0 0 0;font-size:14px;color:#64748b;">
+    Tip: voeg <strong style="color:#334155;">Inter Labour</strong> toe aan je contacten zodat onze e-mails makkelijk te vinden zijn.
+</p>
+{% endblock %}

@@ -2,7 +2,7 @@ Hallo {{ recipient_name }},
 
 Er is een update voor je sollicitatie.
 
-Sollicitatie ID: #{{ application_id }}
+Sollicitatie-ID: #{{ application_id }}
 {% if job_title %}Vacature: {{ job_title }}{% endif %}
 {% if company_name %}Bedrijf: {{ company_name }}{% endif %}
 
@@ -11,8 +11,5 @@ Huidige status: {{ new_status_nl }}
 Bijgewerkt op: {{ updated_at|date:"d-m-Y H:i" }}
 
 ---
-
-English:
-Your application status has been updated.
-Current status: {{ new_status_en }}
-
+Inter Labour — Werving & uitzendbureau
+{% if site_url %}{{ site_url }}{% endif %}
