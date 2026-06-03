@@ -103,18 +103,35 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
+# def _sqlite_database():
+#     return {
+#         "default": {
+#             "ENGINE": "django.db.backends.sqlite3",
+#             "NAME": BASE_DIR / "db.sqlite3",
+#         }
+#     }
+
+
+def _local_postgres_database():
+    return {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("POSTGRES_DB", "interlabour_db"),
+            "USER": os.getenv("POSTGRES_USER", "interlabour_user"),
+            "PASSWORD": os.getenv("POSTGRES_PASSWORD", "interlabour_2026"),
+            "HOST": os.getenv("POSTGRES_HOST", "localhost"),
+            "PORT": os.getenv("POSTGRES_PORT", "5432"),
+        }
+    }
+
+
 database_url = os.getenv("DATABASE_URL")
 if database_url and dj_database_url:
     DATABASES = {
         "default": dj_database_url.parse(database_url, conn_max_age=600, ssl_require=False),
     }
 else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
+    DATABASES = _local_postgres_database()
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},

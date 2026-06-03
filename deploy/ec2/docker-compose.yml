@@ -1,0 +1,17 @@
+# Run from repo root on EC2:
+#   docker compose -f deploy/ec2/docker-compose.yml up -d --build
+
+services:
+  app:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    container_name: interlabour
+    env_file:
+      - /var/www/interlabour/.env
+    ports:
+      - "127.0.0.1:8000:10000"
+    volumes:
+      - /var/www/interlabour/media:/app/media
+      - /var/www/interlabour/staticfiles:/app/staticfiles
+    restart: unless-stopped
