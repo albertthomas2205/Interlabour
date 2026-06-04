@@ -374,6 +374,14 @@
         applyTo(root || document.body, DICT[getLang()] || DICT.nl);
     }
 
+    /** Translate a single string using the active language dictionary. */
+    function translateString(text) {
+        if (!text || typeof text !== "string") return text;
+        var dict = DICT[getLang()] || DICT.nl;
+        var tr = lookup(text, dict);
+        return tr !== null ? tr : text;
+    }
+
     function injectToggle() {
         var nav =
             document.querySelector(".main-header .header-left .header-nav .main-menu") ||
