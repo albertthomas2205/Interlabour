@@ -1,6 +1,11 @@
+import mimetypes
 import os
 from datetime import timedelta
 from pathlib import Path
+
+# Theme uses cache-busted names like main.js@v=1.0 (last extension is ".0", not ".js").
+mimetypes.add_type("application/javascript", ".js", strict=True)
+mimetypes.add_type("text/css", ".css", strict=True)
 
 try:
     import dj_database_url
@@ -161,6 +166,14 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+# Whitenoise keys MIME by extension; @v=1.0 filenames fall back to octet-stream without this.
+WHITENOISE_MIMETYPES = {
+    ".js": "application/javascript",
+    ".css": "text/css",
+    ".svg": "image/svg+xml",
+    ".woff2": "font/woff2",
+    ".woff": "font/woff",
+}
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -174,11 +187,14 @@ CORS_ALLOWED_ORIGINS = [origin.strip() for origin in cors_allowed.split(",") if 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 USE_X_FORWARDED_HOST = True
 
+_public_site_url_early = os.getenv("PUBLIC_SITE_URL", DEFAULT_RENDER_PUBLIC_SITE_URL).strip().rstrip("/")
+_http_public_site = _public_site_url_early.lower().startswith("http://")
+
 if not DEBUG:
     SECURE_SSL_REDIRECT = env_bool("DJANGO_SECURE_SSL_REDIRECT", False)
-    # Set False when testing on http://EC2_PUBLIC_IP only; use True after HTTPS + domain.
-    SESSION_COOKIE_SECURE = env_bool("SESSION_COOKIE_SECURE", True)
-    CSRF_COOKIE_SECURE = env_bool("CSRF_COOKIE_SECURE", True)
+    # Default False on http://PUBLIC_SITE_URL (EC2 IP testing); True when using HTTPS domain.
+    SESSION_COOKIE_SECURE = env_bool("SESSION_COOKIE_SECURE", not _http_public_site)
+    CSRF_COOKIE_SECURE = env_bool("CSRF_COOKIE_SECURE", not _http_public_site)
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_REFERRER_POLICY = os.getenv("DJANGO_SECURE_REFERRER_POLICY", "same-origin")
@@ -237,7 +253,7 @@ OTP_FROM_MAILBOX = _OTP_MB
 
 # Public site URL used to build absolute image URLs in HTML emails (fallback logo).
 # Example: https://www.interlabour.nl — no trailing slash. Prefer inline PNG or EMAIL_LOGO_URL.
-PUBLIC_SITE_URL = os.getenv("PUBLIC_SITE_URL", DEFAULT_RENDER_PUBLIC_SITE_URL).strip().rstrip("/")
+PUBLIC_SITE_URL = _public_site_url_early
 # Optional absolute URL for the logo in emails (CDN or static host). When set, inline attachment is skipped.
 EMAIL_LOGO_URL = os.getenv("EMAIL_LOGO_URL", "").strip()
 # Embed frontend/assets/imgs/theme/logo-email.png as CID attachment (recommended; works in Gmail/Outlook).

@@ -150,16 +150,22 @@ def _resolve_frontend_path(page_path: str) -> Path:
     return resolved
 
 
+def _frontend_content_type(file_path: Path) -> str:
+    name = file_path.name.lower()
+    if name.endswith(".js") or ".js" in name:
+        return "application/javascript"
+    if name.endswith(".css") or ".css" in name:
+        return "text/css"
+    guessed, _encoding = mimetypes.guess_type(str(file_path))
+    return guessed or "application/octet-stream"
+
+
 def frontend_page(request, page_path="index.html"):
     file_path = _resolve_frontend_path(page_path)
-    file_name = file_path.name.lower()
-    if file_name.endswith(".js") or ".js@" in file_name:
-        content_type = "application/javascript"
-    elif file_name.endswith(".css") or ".css@" in file_name:
-        content_type = "text/css"
-    else:
-        content_type = mimetypes.guess_type(str(file_path))[0] or "application/octet-stream"
-    return FileResponse(open(file_path, "rb"), content_type=content_type)
+    return FileResponse(
+        open(file_path, "rb"),
+        content_type=_frontend_content_type(file_path),
+    )
 
 
 def get_dashboard_language(request):

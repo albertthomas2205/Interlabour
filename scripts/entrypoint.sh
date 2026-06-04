@@ -8,6 +8,15 @@ python manage.py migrate --noinput
 echo "Collecting static files..."
 python manage.py collectstatic --noinput
 
+# Theme file is main.js@v=1.0 — nginx MIME maps the last extension (.0). Expose as main.js too.
+if [ -f staticfiles/js/main.js@v=1.0 ]; then
+  ln -sf main.js@v=1.0 staticfiles/js/main.js
+  echo "Linked staticfiles/js/main.js -> main.js@v=1.0"
+fi
+if [ -f frontend/assets/js/main.js@v=1.0 ]; then
+  ln -sf main.js@v=1.0 frontend/assets/js/main.js
+fi
+
 # Optional: bootstrap application users from environment variables.
 # This is idempotent: existing users are updated in place.
 echo "Ensuring bootstrap users..."

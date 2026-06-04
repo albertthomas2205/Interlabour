@@ -40,6 +40,9 @@ elif [[ "$MODE" == "venv" ]]; then
 
   python manage.py migrate --noinput
   python manage.py collectstatic --noinput
+  if [[ -f staticfiles/js/main.js@v=1.0 ]]; then
+    ln -sf main.js@v=1.0 staticfiles/js/main.js
+  fi
 
   sudo cp deploy/ec2/systemd/interlabour.service /etc/systemd/system/interlabour.service
   sudo systemctl daemon-reload
