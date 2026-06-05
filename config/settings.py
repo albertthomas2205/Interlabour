@@ -254,6 +254,8 @@ OTP_FROM_MAILBOX = _OTP_MB
 # Public site URL used to build absolute image URLs in HTML emails (fallback logo).
 # Example: https://www.interlabour.nl — no trailing slash. Prefer inline PNG or EMAIL_LOGO_URL.
 PUBLIC_SITE_URL = _public_site_url_early
+SITE_PHONE_DISPLAY = os.getenv("SITE_PHONE_DISPLAY", "+91 7559999161").strip()
+SITE_PHONE_TEL = os.getenv("SITE_PHONE_TEL", "+917559999161").strip()
 # Optional absolute URL for the logo in emails (CDN or static host). When set, inline attachment is skipped.
 EMAIL_LOGO_URL = os.getenv("EMAIL_LOGO_URL", "").strip()
 # Embed frontend/assets/imgs/theme/logo-email.png as CID attachment (recommended; works in Gmail/Outlook).

@@ -13,6 +13,7 @@
                 (document.head || document.body || document.documentElement).appendChild(s);
             } catch (_e) {}
         }
+        inject("/assets/js/site-contact.js?v=1", "data-site-contact-loader");
         inject("/assets/js/i18n.js", "data-i18n-loader");
         inject("/assets/js/dynamic-jobs.js?v=3", "data-dyn-jobs-loader");
         inject("/assets/js/dynamic-services.js?v=13", "data-dyn-services-loader");
