@@ -1,11 +1,9 @@
 /* Inter Labour - Dynamic home content
  *
- * 1. Replaces the static "What Our Clients Say" testimonial cards with live
- *    testimonials from /api/testimonials/.
+ * 1. Replaces the "What Our Clients Say" section with live testimonials from
+ *    /api/testimonials/ (home + about pages; only is_active items are public).
  * 2. Replaces the static partner-logos strip with a smooth, infinite,
- *    auto-scrolling marquee fed from /api/partners/.
- *
- * Runs on the home page only.
+ *    auto-scrolling marquee fed from /api/partners/ (home page only).
  */
 (function () {
     "use strict";
@@ -27,7 +25,10 @@
     /* ────────────────────────────────────────────────────────────────────── */
 
     function findTestimonialsSection() {
-        // Locate by heading text — "Wat Onze Klanten Zeggen" / "What Our Clients Say"
+        var marked = document.querySelector("[data-il-testimonials='1']");
+        if (marked) return marked;
+
+        // Fallback: heading text — "Wat Onze Klanten Zeggen" / "What Our Clients Say"
         var headings = document.querySelectorAll("h2.section-title");
         for (var i = 0; i < headings.length; i += 1) {
             var t = (headings[i].textContent || "").trim().toLowerCase();
@@ -595,12 +596,12 @@
     /* ────────────────────────────────────────────────────────────────────── */
 
     function init() {
-        if (!isHomePage()) return;
-
         var section = findTestimonialsSection();
         if (section) {
             loadTestimonials().then(function (items) { renderTestimonials(section, items); });
         }
+
+        if (!isHomePage()) return;
 
         var strip = findPartnerStrip();
         if (strip) {
